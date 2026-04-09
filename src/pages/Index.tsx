@@ -46,9 +46,14 @@ const Index = () => {
         {/* Header */}
         <motion.div className="text-center space-y-4" variants={fadeUp}>
           <img
+            src={`${import.meta.env.BASE_URL}plonbliLogoBezTlaKolo-removebg-preview.png`}
+            alt="Plonbli"
+            className="mx-auto h-32 w-auto dark:hidden"
+          />
+          <img
             src={`${import.meta.env.BASE_URL}plonbliLogoBezTla-removebg-preview.png`}
             alt="Plonbli"
-            className="mx-auto h-32 w-auto"
+            className="mx-auto h-32 w-auto hidden dark:block"
           />
           <p className="text-lg text-muted-foreground">
             Plonbli — plon blisko Ciebie!
