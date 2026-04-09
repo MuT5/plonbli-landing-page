@@ -44,10 +44,12 @@ const Index = () => {
         animate="show"
       >
         {/* Header */}
-        <motion.div className="text-center space-y-2" variants={fadeUp}>
-          <h1 className="text-5xl font-bold tracking-tight text-foreground">
-            Plonbli
-          </h1>
+        <motion.div className="text-center space-y-4" variants={fadeUp}>
+          <img
+            src={`${import.meta.env.BASE_URL}plonbliLogoBezTla-removebg-preview.png`}
+            alt="Plonbli"
+            className="mx-auto h-32 w-auto"
+          />
           <p className="text-lg text-muted-foreground">
             Plonbli — plon blisko Ciebie!
           </p>
