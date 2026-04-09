@@ -3,20 +3,46 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const STORAGE_KEY = "theme";
+
+function resolveInitialDark(): boolean {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored !== null) return stored === "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
 const ThemeToggle = () => {
-  const [dark, setDark] = useState(() =>
-    document.documentElement.classList.contains("dark")
-  );
+  const [dark, setDark] = useState(() => resolveInitialDark());
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
+  // Follow system changes only when no manual override is stored
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e: MediaQueryListEvent) => {
+      if (localStorage.getItem(STORAGE_KEY) === null) {
+        setDark(e.matches);
+      }
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const toggle = () => {
+    setDark((d) => {
+      const next = !d;
+      localStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
+      return next;
+    });
+  };
+
   return (
     <Button
       variant="outline"
       size="icon"
-      onClick={() => setDark((d) => !d)}
+      onClick={toggle}
       className="fixed top-4 right-4 z-50 rounded-full"
       aria-label="Toggle theme"
     >
