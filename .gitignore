@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Git worktrees
+.worktrees
+
+# Local environment variables — never commit
+.env
