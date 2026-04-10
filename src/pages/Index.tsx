@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
+import { supabase } from "@/lib/supabase";
 
 const socials = [
   { name: "Telegram", icon: Send, href: "#" },
@@ -27,11 +28,20 @@ const fadeUp = {
 const Index = () => {
   const [email, setEmail] = useState("");
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    toast.success("Dziękujemy za zapisanie się!");
-    setEmail("");
+
+    const { error } = await supabase.from('subscribers').insert({ email });
+
+    if (!error) {
+      toast.success("Dziękujemy za zapisanie się!");
+      setEmail("");
+    } else if (error.code === '23505') {
+      toast.error("Ten adres e-mail jest już zapisany");
+    } else {
+      toast.error("Wystąpił błąd. Spróbuj ponownie.");
+    }
   };
 
   return (
