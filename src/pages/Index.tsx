@@ -69,6 +69,11 @@ const Index = () => {
           <p className="text-lg text-muted-foreground">
             Plonbli — plon blisko Ciebie!
           </p>
+          <div className="inline-block px-4 py-2 border-2 border-[#69b044] rounded-xl bg-[#69b044]/5">
+            <p className="text-sm font-bold text-[#69b044]">
+              Kupuj lokalnie - znajdź rolnika w Twojej okolicy i wspieraj polskich producentów!
+            </p>
+          </div>
         </motion.div>
 
         {/* Coming Soon Card */}
@@ -93,7 +98,7 @@ const Index = () => {
             >
               <Button
                 variant="outline"
-                className="h-12 gap-2 text-sm w-full"
+                className="h-12 gap-2 text-sm w-full hover:bg-[#fefcda] hover:text-[#69b044]"
                 asChild
               >
                 <a href={href} target="_blank" rel="noopener noreferrer">
@@ -119,7 +124,7 @@ const Index = () => {
                   className="flex-1"
                 />
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button type="submit">Zapisz się</Button>
+                  <Button type="submit" className="bg-[#69b044] hover:bg-[#fefcda] hover:text-[#69b044] text-white">Zapisz się</Button>
                 </motion.div>
               </form>
             </CardContent>
