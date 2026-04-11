@@ -13,7 +13,7 @@ const socials = [
   { name: "Telegram (Grupa)", icon: Send, href: "https://t.me/Plonbligrupa" },
   { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/plonbli/" },
   { name: "Facebook", icon: Facebook, href: "https://www.facebook.com/share/1YkUnnggkF/" },
-  // { name: "X", icon: Twitter, href: "#" },
+  { name: "X", icon: Twitter, href: "https://x.com/plonbli" },
 ];
 
 const container = {
