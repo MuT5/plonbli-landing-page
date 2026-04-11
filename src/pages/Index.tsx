@@ -9,10 +9,11 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { supabase } from "@/lib/supabase";
 
 const socials = [
-  { name: "Telegram", icon: Send, href: "#" },
-  { name: "Instagram", icon: Instagram, href: "#" },
-  { name: "Facebook", icon: Facebook, href: "#" },
-  { name: "X", icon: Twitter, href: "#" },
+  { name: "Telegram (Kanał)", icon: Send, href: "https://t.me/plonbli" },
+  { name: "Telegram (Grupa)", icon: Send, href: "https://t.me/Plonbligrupa" },
+  { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/plonbli/" },
+  { name: "Facebook", icon: Facebook, href: "https://www.facebook.com/share/1YkUnnggkF/" },
+  // { name: "X", icon: Twitter, href: "#" },
 ];
 
 const container = {
@@ -82,7 +83,7 @@ const Index = () => {
         </motion.div>
 
         {/* Social Buttons */}
-        <motion.div className="grid grid-cols-2 gap-3" variants={fadeUp}>
+        <motion.div className="flex flex-col gap-3" variants={fadeUp}>
           {socials.map(({ name, icon: Icon, href }, i) => (
             <motion.div
               key={name}
