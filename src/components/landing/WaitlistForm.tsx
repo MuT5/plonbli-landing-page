@@ -1,5 +1,5 @@
 import { FormEvent, useRef, useState } from "react";
-import { Check, LoaderCircle, Mail, TriangleAlert } from "lucide-react";
+import { ArrowRight, Check, LoaderCircle, Mail, TriangleAlert } from "lucide-react";
 
 import type { WaitlistFormContent } from "@/types/landing";
 import { joinWaitlist, WaitlistError } from "@/lib/waitlist";
@@ -87,6 +87,7 @@ export default function WaitlistForm({ content }: WaitlistFormProps) {
             <button className="button-primary min-h-14 justify-center px-6 sm:min-w-44" type="submit" disabled={isSubmitting}>
               {isSubmitting ? <LoaderCircle aria-hidden="true" className="size-5 animate-spin" /> : null}
               {isSubmitting ? content.submittingLabel : content.submitLabel}
+              {!isSubmitting ? <ArrowRight aria-hidden="true" className="button-icon" /> : null}
             </button>
           </div>
         </div>

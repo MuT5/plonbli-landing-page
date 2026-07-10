@@ -15,8 +15,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"Lora"', 'Georgia', 'serif'],
-        display: ['"Lora"', 'Georgia', 'serif'],
+        sans: ['"Alegreya Sans"', 'Segoe UI', 'sans-serif'],
+        display: ['"Alegreya"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -1,8 +1,6 @@
 export type HttpsUrl = `https://${string}`;
-export type MailtoUrl = `mailto:${string}`;
 export type InternalAnchor = `#${string}`;
-export type LinkHref = HttpsUrl | MailtoUrl | InternalAnchor;
-export type EmailAddress = `${string}@${string}.${string}`;
+export type LinkHref = HttpsUrl | InternalAnchor;
 
 export type SiteLinkKey =
   | "home"
@@ -10,10 +8,9 @@ export type SiteLinkKey =
   | "howItWorks"
   | "forLocals"
   | "forFarms"
-  | "faq"
-  | "contact";
+  | "faq";
 
-export type SocialChannel = "telegramChannel" | "telegramGroup" | "instagram" | "facebook" | "x";
+export type SocialChannel = "telegramChannel" | "telegramGroup" | "instagram" | "facebook" | "x" | "youtube";
 
 export type LandingCtaId =
   | "header-waitlist"
@@ -43,10 +40,6 @@ export interface SiteConfig {
   readonly locale: "pl-PL";
   readonly language: "pl";
   readonly siteUrl: HttpsUrl;
-  readonly contact: Readonly<{
-    general: EmailAddress;
-    privacy: EmailAddress;
-  }>;
   readonly links: Readonly<Record<SiteLinkKey, LinkHref>>;
   readonly social: Readonly<Record<SocialChannel, SocialLinkConfig>>;
 }
@@ -121,7 +114,6 @@ export interface LandingContent {
     description: string;
     primaryCta: CtaContent;
     secondaryCta: CtaContent;
-    note: string;
     imageAlt: string;
   }>;
   readonly waitlist: Readonly<{
@@ -136,7 +128,6 @@ export interface LandingContent {
     title: string;
     description: string;
     steps: readonly [HowItWorksStep, HowItWorksStep, HowItWorksStep];
-    note: string;
   }>;
   readonly forLocals: Readonly<{
     eyebrow: string;
@@ -150,13 +141,6 @@ export interface LandingContent {
     description: string;
     benefits: readonly BenefitItem[];
     cta: CtaContent;
-    note: string;
-  }>;
-  readonly trust: Readonly<{
-    eyebrow: string;
-    title: string;
-    description: string;
-    points: readonly string[];
   }>;
   readonly faq: Readonly<{
     eyebrow: string;
@@ -169,15 +153,11 @@ export interface LandingContent {
     title: string;
     description: string;
     cta: CtaContent;
-    note: string;
   }>;
   readonly footer: Readonly<{
     description: string;
     navigationLabel: string;
     socialLabel: string;
-    contactLabel: string;
-    privacyLabel: string;
     waitlistLabel: string;
-    disclaimer: string;
   }>;
 }

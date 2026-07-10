@@ -6,7 +6,6 @@ import HeroSection from "@/components/landing/HeroSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import SiteFooter from "@/components/landing/SiteFooter";
 import SiteHeader from "@/components/landing/SiteHeader";
-import TrustSection from "@/components/landing/TrustSection";
 import { FinalCtaSection, WaitlistSection } from "@/components/landing/WaitlistSection";
 
 export default function Index() {
@@ -19,7 +18,6 @@ export default function Index() {
           <HowItWorksSection />
           <WaitlistSection />
           <AudienceSections />
-          <TrustSection />
           <FaqSection />
           <FinalCtaSection />
         </main>

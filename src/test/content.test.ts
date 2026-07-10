@@ -36,18 +36,31 @@ describe("landing content contract", () => {
 
   it("keeps public copy clear of transactional and disallowed wording", () => {
     const publicCopy = JSON.stringify(landingContent).toLowerCase();
-    const disallowedPhrases = ["producent", "kupuj", "kup teraz", "koszyk", "checkout", "marketplace", "sprzedawaj"];
+    const disallowedPhrases = [
+      "producent",
+      "pracowni",
+      "kupuj",
+      "kup teraz",
+      "koszyk",
+      "checkout",
+      "marketplace",
+      "sprzedawaj",
+      "plonbli nie jest sklepem",
+      "nie obsługuje płatności",
+      "nie przejmuje płatności",
+    ];
 
     for (const phrase of disallowedPhrases) {
       expect(publicCopy).not.toContain(phrase);
     }
   });
 
-  it("states the service boundary explicitly", () => {
-    const publicCopy = JSON.stringify(landingContent);
+  it("keeps the contact email private and exposes the YouTube channel", () => {
+    const serializedPublicContent = JSON.stringify({ siteConfig, landingContent });
 
-    expect(publicCopy).toContain("Plonbli nie jest sklepem");
-    expect(publicCopy).toContain("nie obsługuje płatności");
+    expect(serializedPublicContent).not.toContain("plonbli@gmail.com");
+    expect(Object.prototype.hasOwnProperty.call(siteConfig, "contact")).toBe(false);
+    expect(siteConfig.social.youtube.href).toBe("https://www.youtube.com/@Plonbli");
   });
 
   it("keeps the journey at exactly three ordered steps", () => {

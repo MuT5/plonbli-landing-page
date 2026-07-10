@@ -15,12 +15,12 @@ describe("waitlist form", () => {
     const join = vi.spyOn(waitlist, "joinWaitlist").mockResolvedValue("hello@example.com");
     render(<WaitlistForm content={landingContent.waitlist.form} />);
 
-    const input = screen.getByLabelText("Adres e-mail");
+    const input = screen.getByLabelText("Twój e-mail");
     fireEvent.change(input, { target: { value: " Hello@Example.com " } });
-    fireEvent.click(screen.getByRole("button", { name: "Zapisz mnie na listę" }));
+    fireEvent.click(screen.getByRole("button", { name: "Powiadom mnie" }));
 
     await waitFor(() => expect(join).toHaveBeenCalledWith("Hello@Example.com"));
-    expect(await screen.findByText("Jesteś na liście!")).toBeInTheDocument();
+    expect(await screen.findByText("Jesteś blisko od początku")).toBeInTheDocument();
     expect(input).toHaveValue("");
   });
 
@@ -28,20 +28,20 @@ describe("waitlist form", () => {
     vi.spyOn(waitlist, "joinWaitlist").mockRejectedValue(new WaitlistError("duplicate", "duplicate"));
     render(<WaitlistForm content={landingContent.waitlist.form} />);
 
-    fireEvent.change(screen.getByLabelText("Adres e-mail"), { target: { value: "hello@example.com" } });
-    fireEvent.click(screen.getByRole("button", { name: "Zapisz mnie na listę" }));
+    fireEvent.change(screen.getByLabelText("Twój e-mail"), { target: { value: "hello@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Powiadom mnie" }));
 
-    expect(await screen.findByText("Ten adres jest już na liście")).toBeInTheDocument();
+    expect(await screen.findByText("Ten adres już jest z nami")).toBeInTheDocument();
   });
 
   it("shows a controlled error for a rejected request", async () => {
     vi.spyOn(waitlist, "joinWaitlist").mockRejectedValue(new Error("network"));
     render(<WaitlistForm content={landingContent.waitlist.form} />);
 
-    fireEvent.change(screen.getByLabelText("Adres e-mail"), { target: { value: "hello@example.com" } });
-    fireEvent.click(screen.getByRole("button", { name: "Zapisz mnie na listę" }));
+    fireEvent.change(screen.getByLabelText("Twój e-mail"), { target: { value: "hello@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "Powiadom mnie" }));
 
-    expect(await screen.findByText("Nie udało się zapisać adresu")).toBeInTheDocument();
+    expect(await screen.findByText("Nie udało się dołączyć")).toBeInTheDocument();
   });
 
   it("locks repeated submissions while the request is pending", async () => {
@@ -52,8 +52,8 @@ describe("waitlist form", () => {
     const join = vi.spyOn(waitlist, "joinWaitlist").mockReturnValue(pending);
     render(<WaitlistForm content={landingContent.waitlist.form} />);
 
-    fireEvent.change(screen.getByLabelText("Adres e-mail"), { target: { value: "hello@example.com" } });
-    const form = screen.getByRole("button", { name: "Zapisz mnie na listę" }).closest("form");
+    fireEvent.change(screen.getByLabelText("Twój e-mail"), { target: { value: "hello@example.com" } });
+    const form = screen.getByRole("button", { name: "Powiadom mnie" }).closest("form");
     fireEvent.submit(form!);
     fireEvent.submit(form!);
 
@@ -61,20 +61,20 @@ describe("waitlist form", () => {
     expect(screen.getByRole("button", { name: "Zapisujemy…" })).toBeDisabled();
 
     resolveRequest?.("hello@example.com");
-    expect(await screen.findByText("Jesteś na liście!")).toBeInTheDocument();
+    expect(await screen.findByText("Jesteś blisko od początku")).toBeInTheDocument();
   });
 
   it("silently accepts the honeypot without contacting the service", async () => {
     const join = vi.spyOn(waitlist, "joinWaitlist");
     render(<WaitlistForm content={landingContent.waitlist.form} />);
 
-    fireEvent.change(screen.getByLabelText("Adres e-mail"), { target: { value: "bot@example.com" } });
+    fireEvent.change(screen.getByLabelText("Twój e-mail"), { target: { value: "bot@example.com" } });
     const honeypot = document.getElementById("company") as HTMLInputElement;
     fireEvent.change(honeypot, { target: { value: "Spam Ltd" } });
     fireEvent.submit(honeypot.closest("form")!);
 
     expect(join).not.toHaveBeenCalled();
-    expect(await screen.findByText("Jesteś na liście!")).toBeInTheDocument();
+    expect(await screen.findByText("Jesteś blisko od początku")).toBeInTheDocument();
   });
 });
 

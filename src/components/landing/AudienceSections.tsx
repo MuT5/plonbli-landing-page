@@ -1,4 +1,4 @@
-import { ArrowDownRight, Wheat } from "lucide-react";
+import { ArrowDownRight } from "lucide-react";
 
 import CtaLink from "@/components/landing/CtaLink";
 import LandingIcon from "@/components/landing/LandingIcon";
@@ -17,12 +17,6 @@ export default function AudienceSections() {
             <p className="eyebrow">{local.eyebrow}</p>
             <h2 className="section-title mt-5">{local.title}</h2>
             <p className="section-lead mt-5">{local.description}</p>
-            <div aria-hidden="true" className="mt-10 hidden max-w-sm lg:block">
-              <div className="organic-field-card">
-                <Wheat className="size-16 text-[var(--color-brand)]" strokeWidth={1.2} />
-                <p className="mt-5 font-display text-3xl font-bold text-[var(--color-olive)]">Blisko. Czytelnie. Bezpośrednio.</p>
-              </div>
-            </div>
           </Reveal>
 
           <div className="grid gap-5">
@@ -45,26 +39,27 @@ export default function AudienceSections() {
       <section id="dla-gospodarstw" className="section-space scroll-mt-24">
         <div className="site-container">
           <div className="farm-section-shell grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
-            <div>
-              <p className="eyebrow eyebrow--light">{farms.eyebrow}</p>
-              <h2 className="section-title mt-5 text-[var(--color-ivory)]">{farms.title}</h2>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-[#fff8e7]/80">{farms.description}</p>
+            <Reveal>
+              <p className="eyebrow">{farms.eyebrow}</p>
+              <h2 className="section-title mt-5">{farms.title}</h2>
+              <p className="section-lead mt-5">{farms.description}</p>
               <div className="mt-8">
-                <CtaLink content={farms.cta} className="justify-center border-[var(--color-ivory)] bg-[var(--color-ivory)] text-[var(--color-olive)] hover:bg-white sm:justify-start" />
+                <CtaLink content={farms.cta} className="justify-center border-[var(--color-olive)] bg-[var(--color-olive)] text-[var(--color-ivory)] hover:bg-[#3f5629] sm:justify-start" />
               </div>
-              <p className="mt-5 text-sm leading-6 text-[#fff8e7]/70">{farms.note}</p>
-            </div>
+            </Reveal>
             <div className="grid gap-4">
-              {farms.benefits.map((benefit) => (
-                <article key={benefit.id} className="farm-benefit-card">
-                  <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-brand)] text-[var(--color-ivory)]">
-                    <LandingIcon name={benefit.icon} className="size-5" />
-                  </span>
-                  <div>
-                    <h3 className="font-display text-2xl font-bold text-[var(--color-ivory)]">{benefit.title}</h3>
-                    <p className="mt-2 leading-7 text-[#fff8e7]/75">{benefit.description}</p>
-                  </div>
-                </article>
+              {farms.benefits.map((benefit, index) => (
+                <Reveal key={benefit.id} delay={index * 0.06}>
+                  <article className="farm-benefit-card">
+                    <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-brand)] text-[var(--color-ivory)]">
+                      <LandingIcon name={benefit.icon} className="size-5" />
+                    </span>
+                    <div>
+                      <h3 className="font-display text-2xl font-bold text-[var(--color-olive)]">{benefit.title}</h3>
+                      <p className="mt-2 leading-7 text-[var(--color-ink-muted)]">{benefit.description}</p>
+                    </div>
+                  </article>
+                </Reveal>
               ))}
             </div>
           </div>

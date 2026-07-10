@@ -5,10 +5,6 @@ export const siteConfig = {
   locale: "pl-PL",
   language: "pl",
   siteUrl: "https://plonbli.pl",
-  contact: {
-    general: "contact@plonbli.pl",
-    privacy: "privacy@plonbli.pl",
-  },
   links: {
     home: "https://plonbli.pl",
     waitlist: "#lista-oczekujacych",
@@ -16,16 +12,15 @@ export const siteConfig = {
     forLocals: "#dla-szukajacych-lokalnie",
     forFarms: "#dla-gospodarstw",
     faq: "#faq",
-    contact: "mailto:contact@plonbli.pl",
   },
   social: {
     telegramChannel: {
-      label: "Telegram — kanał",
+      label: "Kanał Telegram",
       ariaLabel: "Otwórz kanał Plonbli na Telegramie",
       href: "https://t.me/plonbli",
     },
     telegramGroup: {
-      label: "Telegram — grupa",
+      label: "Grupa Telegram",
       ariaLabel: "Otwórz grupę Plonbli na Telegramie",
       href: "https://t.me/Plonbligrupa",
     },
@@ -43,6 +38,11 @@ export const siteConfig = {
       label: "X",
       ariaLabel: "Otwórz profil Plonbli w serwisie X",
       href: "https://x.com/plonbli",
+    },
+    youtube: {
+      label: "YouTube",
+      ariaLabel: "Otwórz kanał Plonbli na YouTube",
+      href: "https://www.youtube.com/@Plonbli",
     },
   },
 } as const satisfies SiteConfig;

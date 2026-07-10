@@ -1,4 +1,5 @@
 import type { MouseEventHandler } from "react";
+import { ArrowRight } from "lucide-react";
 
 import { siteConfig } from "@/config/site";
 import type { CtaContent } from "@/types/landing";
@@ -29,7 +30,8 @@ export default function CtaLink({ content, className = "", onClick }: CtaLinkPro
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
     >
-      {content.label}
+      <span>{content.label}</span>
+      <ArrowRight aria-hidden="true" className="button-icon" />
     </a>
   );
 }

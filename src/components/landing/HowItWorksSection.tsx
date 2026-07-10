@@ -1,70 +1,194 @@
 import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
+import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
-import HarvestGrowth, { MobileHarvestStage } from "@/components/landing/HarvestGrowth";
+import HarvestGrowth from "@/components/landing/HarvestGrowth";
 import LandingIcon from "@/components/landing/LandingIcon";
+import Reveal from "@/components/landing/Reveal";
 import { landingContent } from "@/content/landing.pl";
 
+interface StoryScene {
+  id: string;
+  desktopSrc: string;
+  mobileSrc: string;
+  alt: string;
+  label: string;
+  input: number[];
+  output: number[];
+}
+
+const storyScenes: readonly StoryScene[] = [
+  {
+    id: "discovery",
+    desktopSrc: "landing/story-01-discovery.webp",
+    mobileSrc: "landing/story-01-discovery-mobile.webp",
+    alt: "Kobieta idąca polną drogą w stronę gospodarstwa",
+    label: "Odkrycie miejsca",
+    input: [0, 0.24, 0.42],
+    output: [1, 1, 0],
+  },
+  {
+    id: "offer",
+    desktopSrc: "landing/story-02-offer.webp",
+    mobileSrc: "landing/story-02-offer-mobile.webp",
+    alt: "Sezonowe warzywa, pieczywo i miód prezentowane przy gospodarstwie",
+    label: "Poznanie oferty",
+    input: [0.26, 0.44, 0.64, 0.78],
+    output: [0, 1, 1, 0],
+  },
+  {
+    id: "contact",
+    desktopSrc: "landing/story-03-contact.webp",
+    mobileSrc: "landing/story-03-contact-mobile.webp",
+    alt: "Bezpośrednie spotkanie i przekazanie kosza lokalnych produktów",
+    label: "Bezpośrednie spotkanie",
+    input: [0.62, 0.8, 1],
+    output: [0, 1, 1],
+  },
+];
+
+interface StoryboardSceneProps {
+  progress: MotionValue<number>;
+  scene: StoryScene;
+}
+
+function StoryboardScene({ progress, scene }: StoryboardSceneProps) {
+  const opacity = useTransform(progress, scene.input, scene.output);
+  const scale = useTransform(progress, [0, 1], [1.025, 1]);
+
+  return (
+    <motion.figure
+      className="story-visual-scene"
+      data-storyboard-scene={scene.id}
+      style={{ opacity, scale }}
+    >
+      <img
+        src={`${import.meta.env.BASE_URL}${scene.desktopSrc}`}
+        alt=""
+        width="1280"
+        height="853"
+        className="h-full w-full object-cover"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption className="story-visual-caption">{scene.label}</figcaption>
+    </motion.figure>
+  );
+}
+
 export default function HowItWorksSection() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const stepsRef = useRef<HTMLDivElement>(null);
   const reducedMotion = Boolean(useReducedMotion());
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start 82%", "end 28%"],
+  const { scrollYProgress: desktopGrowthProgress } = useScroll({
+    target: stepsRef,
+    offset: ["start 82%", "end 34%"],
   });
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 82, damping: 26, mass: 0.3 });
-  const growthProgress = reducedMotion ? scrollYProgress : smoothProgress;
+  const { scrollYProgress: mobileGrowthProgress } = useScroll({
+    target: stepsRef,
+    offset: ["start 90%", "end 30%"],
+  });
   const content = landingContent.howItWorks;
 
   return (
-    <section id="jak-to-dziala" ref={sectionRef} className="section-space scroll-mt-24 bg-[var(--color-ivory)]/70">
-      <div className="site-container">
-        <div className="mx-auto max-w-3xl text-center">
+    <section id="jak-to-dziala" className="story-section section-space relative scroll-mt-24 overflow-clip">
+      <div className="story-mobile-thread lg:hidden" aria-hidden="true">
+        <div className="story-mobile-thread-sticky" data-testid="mobile-harvest-scene">
+          <HarvestGrowth progress={mobileGrowthProgress} reducedMotion={reducedMotion} variant="mobile" />
+        </div>
+      </div>
+
+      <div className="site-container relative z-10">
+        <Reveal className="mx-auto max-w-3xl text-center">
           <p className="eyebrow justify-center">{content.eyebrow}</p>
           <h2 className="section-title mt-5">{content.title}</h2>
           <p className="section-lead mx-auto mt-5">{content.description}</p>
-        </div>
+        </Reveal>
 
-        <div className={`mt-12 grid items-start gap-8 lg:grid-cols-[minmax(14rem,.68fr)_minmax(0,1.32fr)] lg:gap-16 ${reducedMotion ? "" : "lg:mt-16"}`}>
-          <div className="harvest-sticky sticky top-24 hidden h-[calc(100svh-7rem)] min-h-[26rem] max-h-[44rem] lg:block">
-            <div className="harvest-accent h-full">
-              <HarvestGrowth progress={growthProgress} />
+        <div className="story-layout mt-14 lg:mt-20">
+          <div className="story-visual-column hidden lg:block" aria-hidden="true">
+            <div className="story-visual-sticky">
+              {reducedMotion ? (
+                <div className="story-reduced-collage">
+                  {storyScenes.map((scene) => (
+                    <figure key={scene.id} className="story-reduced-tile">
+                      <img
+                        src={`${import.meta.env.BASE_URL}${scene.desktopSrc}`}
+                        alt=""
+                        width="1280"
+                        height="853"
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </figure>
+                  ))}
+                </div>
+              ) : (
+                storyScenes.map((scene) => (
+                  <StoryboardScene key={scene.id} progress={desktopGrowthProgress} scene={scene} />
+                ))
+              )}
+
+              <div className="story-visual-shade" aria-hidden="true" />
+              <div className="story-harvest-overlay" aria-hidden="true">
+                <HarvestGrowth progress={desktopGrowthProgress} reducedMotion={reducedMotion} />
+              </div>
+              <div className="story-progress-rail" aria-hidden="true">
+                <motion.span style={reducedMotion ? { scaleY: 1 } : { scaleY: desktopGrowthProgress }} />
+              </div>
             </div>
           </div>
 
-          <div className={reducedMotion ? "space-y-5 lg:pb-60 lg:pt-8" : "space-y-5 lg:space-y-[14svh] lg:py-[8svh]"}>
-            {content.steps.map((step) => (
-              <motion.article
-                key={step.id}
-                className={`harvest-chapter story-card ${reducedMotion ? "" : "lg:min-h-[42svh]"}`}
-                initial={reducedMotion ? false : { opacity: 0.42, y: 24 }}
-                whileInView={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ amount: 0.58 }}
-                transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="flex h-full items-center">
-                  <div>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <span className="step-icon">
-                          <LandingIcon name={step.icon} className="size-6" />
-                        </span>
-                        <span className="font-display text-4xl font-bold text-[var(--color-border)] sm:text-5xl">0{step.number}</span>
-                      </div>
-                      <MobileHarvestStage stage={step.number} reducedMotion={reducedMotion} />
+          <div ref={stepsRef} data-testid="harvest-steps" className="story-chapters">
+            {content.steps.map((step, index) => {
+              const scene = storyScenes[index];
+
+              return (
+                <motion.article
+                  key={step.id}
+                  className="harvest-chapter story-chapter"
+                  initial={reducedMotion ? false : { opacity: 0.36, y: 18 }}
+                  whileInView={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <motion.figure
+                    className="story-mobile-scene lg:hidden"
+                    initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+                    whileInView={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.28 }}
+                    transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <img
+                      src={`${import.meta.env.BASE_URL}${scene.mobileSrc}`}
+                      alt={scene.alt}
+                      width="800"
+                      height="1000"
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </motion.figure>
+
+                  <div className="story-chapter-copy">
+                    <div className="story-chapter-meta">
+                      <span className="story-chapter-icon">
+                        <LandingIcon name={step.icon} className="size-5" />
+                      </span>
+                      <span className="story-chapter-number">0{step.number}</span>
+                      <span className="story-chapter-label">{scene.label}</span>
                     </div>
-                    <h3 className="mt-7 font-display text-3xl font-bold text-[var(--color-olive)] sm:text-4xl">{step.title}</h3>
-                    <p className="mt-4 max-w-xl text-base leading-7 text-[var(--color-ink-muted)] sm:text-lg sm:leading-8">{step.description}</p>
+                    <h3 className="mt-6 font-display text-[clamp(2.25rem,4vw,3.4rem)] font-bold leading-[1.02] text-[var(--color-olive)]">
+                      {step.title}
+                    </h3>
+                    <p className="mt-4 max-w-xl text-lg leading-8 text-[var(--color-ink-muted)]">
+                      {step.description}
+                    </p>
                   </div>
-                </div>
-              </motion.article>
-            ))}
+                </motion.article>
+              );
+            })}
           </div>
         </div>
-
-        <p className="mx-auto mt-10 max-w-3xl rounded-2xl border border-[var(--color-border)] bg-white/45 px-5 py-4 text-center text-sm leading-6 text-[var(--color-earth)]">
-          {content.note}
-        </p>
       </div>
     </section>
   );

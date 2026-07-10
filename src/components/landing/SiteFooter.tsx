@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Mail, Send, Twitter } from "lucide-react";
+import { Facebook, Instagram, Send, Twitter, Youtube } from "lucide-react";
 
 import { landingContent } from "@/content/landing.pl";
 import { siteConfig } from "@/config/site";
@@ -7,6 +7,7 @@ const socialLinks = [
   { ...siteConfig.social.instagram, Icon: Instagram },
   { ...siteConfig.social.facebook, Icon: Facebook },
   { ...siteConfig.social.x, Icon: Twitter },
+  { ...siteConfig.social.youtube, Icon: Youtube },
   { ...siteConfig.social.telegramChannel, Icon: Send },
   { ...siteConfig.social.telegramGroup, Icon: Send },
 ] as const;
@@ -18,7 +19,7 @@ export default function SiteFooter() {
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-ivory)]/75 py-12 sm:py-16">
       <div className="site-container grid gap-10 lg:grid-cols-[1.3fr_.7fr_.8fr]">
         <div>
-          <a href={siteConfig.links.home} className="inline-flex items-center gap-3" aria-label="Plonbli — strona główna">
+          <a href={siteConfig.links.home} className="inline-flex items-center gap-3" aria-label="Strona główna Plonbli">
             <img
               src={`${import.meta.env.BASE_URL}plonbliLogoBezTlaKolo-removebg-preview.png`}
               width="52"
@@ -29,7 +30,6 @@ export default function SiteFooter() {
             <span className="font-display text-3xl font-bold text-[var(--color-olive)]">Plonbli</span>
           </a>
           <p className="mt-5 max-w-xl leading-7 text-[var(--color-ink-muted)]">{content.description}</p>
-          <p className="mt-5 max-w-xl text-sm leading-6 text-[var(--color-earth)]">{content.disclaimer}</p>
         </div>
 
         <div>
@@ -43,16 +43,8 @@ export default function SiteFooter() {
         </div>
 
         <div>
-          <h2 className="text-sm font-extrabold uppercase tracking-[0.16em] text-[var(--color-olive)]">{content.contactLabel}</h2>
-          <a className="footer-link mt-5 inline-flex items-center gap-2" href={siteConfig.links.contact}>
-            <Mail aria-hidden="true" className="size-4" />
-            {siteConfig.contact.general}
-          </a>
-          <a className="footer-link mt-3 block" href={`mailto:${siteConfig.contact.privacy}`}>
-            {content.privacyLabel}
-          </a>
-          <h2 className="mt-8 text-sm font-extrabold uppercase tracking-[0.16em] text-[var(--color-olive)]">{content.socialLabel}</h2>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <h2 className="text-sm font-extrabold uppercase tracking-[0.16em] text-[var(--color-olive)]">{content.socialLabel}</h2>
+          <div className="mt-5 flex flex-wrap gap-2">
             {socialLinks.map(({ href, ariaLabel, Icon }) => (
               <a
                 key={href}
