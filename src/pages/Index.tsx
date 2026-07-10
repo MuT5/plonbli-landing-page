@@ -1,6 +1,7 @@
 import { MotionConfig } from "framer-motion";
 
-import AudienceSections from "@/components/landing/AudienceSections";
+import { ForFarmsSection, ForLocalsSection } from "@/components/landing/AudienceSections";
+import { AmbientStoryChapter, AmbientStorySequence } from "@/components/landing/AmbientStorySequence";
 import FaqSection from "@/components/landing/FaqSection";
 import HeroSection from "@/components/landing/HeroSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
@@ -16,10 +17,21 @@ export default function Index() {
         <main id="tresc-glowna">
           <HeroSection />
           <HowItWorksSection />
-          <WaitlistSection />
-          <AudienceSections />
-          <FaqSection />
-          <FinalCtaSection />
+          <AmbientStorySequence>
+            <AmbientStoryChapter scene="contact">
+              <WaitlistSection />
+            </AmbientStoryChapter>
+            <AmbientStoryChapter scene="discovery">
+              <ForLocalsSection />
+            </AmbientStoryChapter>
+            <AmbientStoryChapter scene="offer">
+              <ForFarmsSection />
+            </AmbientStoryChapter>
+            <AmbientStoryChapter scene="contact">
+              <FaqSection />
+              <FinalCtaSection />
+            </AmbientStoryChapter>
+          </AmbientStorySequence>
         </main>
         <SiteFooter />
       </div>

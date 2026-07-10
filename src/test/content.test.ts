@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { siteConfig } from "@/config/site";
 import { landingContent } from "@/content/landing.pl";
+import { storyScenes } from "@/content/storyScenes";
 import type { CtaContent } from "@/types/landing";
 
 const ctas: readonly CtaContent[] = [
@@ -70,5 +71,17 @@ describe("landing content contract", () => {
     expect(steps.map((step) => step.number)).toEqual([1, 2, 3]);
     expect(steps.map((step) => step.id)).toEqual(["find-nearby", "check-offer", "contact-directly"]);
     expect(new Set(steps.map((step) => step.id)).size).toBe(3);
+  });
+
+  it("keeps one responsive asset pair for every story scene", () => {
+    expect(storyScenes.map((scene) => scene.id)).toEqual(["discovery", "offer", "contact"]);
+    expect(new Set(storyScenes.map((scene) => scene.desktopSrc)).size).toBe(3);
+    expect(new Set(storyScenes.map((scene) => scene.mobileSrc)).size).toBe(3);
+
+    for (const scene of storyScenes) {
+      expect(scene.desktopSrc).toMatch(/\.webp$/);
+      expect(scene.mobileSrc).toMatch(/-mobile\.webp$/);
+      expect(scene.input).toHaveLength(scene.output.length);
+    }
   });
 });

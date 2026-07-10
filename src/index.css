@@ -632,6 +632,97 @@
     padding: 0.5rem 0.35rem 1.2rem;
   }
 
+  .ambient-story-sequence {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .ambient-story-stage {
+    position: sticky;
+    top: 0;
+    z-index: 0;
+    height: 100svh;
+    margin-bottom: -100svh;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .ambient-story-frame {
+    position: absolute;
+    top: 6svh;
+    right: -8vw;
+    bottom: 6svh;
+    width: min(68vw, 60rem);
+    overflow: hidden;
+    border-radius: 7rem 0 0 11rem;
+    background: rgb(216 196 154 / 0.18);
+    box-shadow: 0 2.5rem 7rem rgb(77 103 50 / 0.1);
+  }
+
+  .ambient-story-scene {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transform-origin: 60% 50%;
+  }
+
+  .ambient-story-scene img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 52% center;
+    opacity: 0.72;
+    user-select: none;
+  }
+
+  .ambient-story-scene[data-ambient-story-scene="discovery"] img {
+    object-position: 48% center;
+  }
+
+  .ambient-story-scene[data-ambient-story-scene="offer"] img {
+    object-position: 56% center;
+  }
+
+  .ambient-story-image-tone {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+      linear-gradient(180deg, rgb(245 238 220 / 0.5), transparent 23%, transparent 72%, rgb(245 238 220 / 0.7)),
+      linear-gradient(90deg, rgb(245 238 220 / 0.36), transparent 42%);
+  }
+
+  .ambient-story-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background:
+      linear-gradient(
+        90deg,
+        rgb(245 238 220 / 0.99) 0%,
+        rgb(245 238 220 / 0.96) 36%,
+        rgb(245 238 220 / 0.72) 68%,
+        rgb(245 238 220 / 0.45) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgb(245 238 220 / 0.96) 0%,
+        transparent 18%,
+        transparent 78%,
+        rgb(245 238 220 / 0.98) 100%
+      );
+  }
+
+  .ambient-story-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .ambient-story-chapter {
+    position: relative;
+  }
+
   .benefit-icon {
     display: inline-flex;
     width: 3.25rem;
@@ -650,7 +741,7 @@
     gap: 1.25rem;
     border: 1px solid rgb(216 196 154 / 0.82);
     border-radius: 2rem;
-    background: rgb(255 248 231 / 0.7);
+    background: rgb(255 248 231 / 0.86);
     padding: clamp(1.5rem, 3vw, 2.25rem);
     box-shadow: 0 1rem 2.5rem rgb(77 103 50 / 0.035);
     transition: border-color 220ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1), background-color 220ms ease, box-shadow 220ms ease;
@@ -676,7 +767,7 @@
     background:
       radial-gradient(circle at 90% 12%, rgb(155 197 106 / 0.2), transparent 26rem),
       radial-gradient(circle at 4% 100%, rgb(191 213 216 / 0.22), transparent 20rem),
-      rgb(255 248 231 / 0.74);
+      rgb(255 248 231 / 0.7);
     box-shadow: 0 1.5rem 4rem rgb(77 103 50 / 0.1);
   }
 
@@ -685,7 +776,7 @@
     gap: 1rem;
     border: 1px solid rgb(216 196 154 / 0.8);
     border-radius: 1.5rem;
-    background: rgb(255 255 255 / 0.48);
+    background: rgb(255 255 255 / 0.84);
     padding: 1.25rem;
     box-shadow: 0 0.75rem 2rem rgb(77 103 50 / 0.06);
     transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), border-color 220ms ease, background-color 220ms ease, box-shadow 220ms ease;
@@ -696,7 +787,7 @@
     background:
       radial-gradient(circle at 7% 95%, rgb(111 175 63 / 0.24), transparent 23rem),
       radial-gradient(circle at 94% 0%, rgb(191 213 216 / 0.12), transparent 20rem),
-      linear-gradient(142deg, #455d2f, #263b1c);
+      linear-gradient(142deg, rgb(69 93 47 / 0.97), rgb(38 59 28 / 0.78));
     box-shadow: 0 2rem 5rem rgb(43 62 29 / 0.2);
   }
 
@@ -749,7 +840,7 @@
     overflow: hidden;
     border: 1px solid rgb(216 196 154 / 0.82);
     border-radius: 1.35rem;
-    background: rgb(255 248 231 / 0.64);
+    background: rgb(255 248 231 / 0.84);
     transition: border-color 160ms ease, background-color 160ms ease;
   }
 
@@ -775,7 +866,7 @@
     background:
       radial-gradient(circle at 10% 100%, rgb(155 197 106 / 0.24), transparent 23rem),
       radial-gradient(circle at 95% 0%, rgb(191 213 216 / 0.26), transparent 20rem),
-      rgb(255 248 231 / 0.82);
+      rgb(255 248 231 / 0.72);
     padding: clamp(2.25rem, 5vw, 4.25rem) clamp(1.25rem, 5vw, 4rem);
     box-shadow: 0 1.5rem 4rem rgb(77 103 50 / 0.09);
   }
@@ -821,6 +912,25 @@
 }
 
 @media (min-width: 640px) and (max-width: 1023px) {
+  .ambient-story-frame {
+    top: 8svh;
+    right: -16vw;
+    bottom: 8svh;
+    width: 82vw;
+  }
+
+  .ambient-story-veil {
+    background:
+      linear-gradient(
+        90deg,
+        rgb(245 238 220 / 0.99) 0%,
+        rgb(245 238 220 / 0.96) 42%,
+        rgb(245 238 220 / 0.7) 74%,
+        rgb(245 238 220 / 0.48) 100%
+      ),
+      linear-gradient(180deg, rgb(245 238 220 / 0.96), transparent 20%, transparent 78%, rgb(245 238 220 / 0.98));
+  }
+
   .story-chapter {
     display: grid;
     grid-template-columns: minmax(0, 0.94fr) minmax(18rem, 1.06fr);
@@ -884,12 +994,44 @@
     left: 1rem;
   }
 
+  .ambient-story-frame {
+    top: 9svh;
+    right: -46vw;
+    bottom: 9svh;
+    width: 112vw;
+    border-radius: 5rem 0 0 8rem;
+  }
+
+  .ambient-story-scene img {
+    opacity: 0.62;
+  }
+
+  .ambient-story-veil {
+    background:
+      linear-gradient(
+        90deg,
+        rgb(245 238 220 / 0.995) 0%,
+        rgb(245 238 220 / 0.97) 54%,
+        rgb(245 238 220 / 0.76) 82%,
+        rgb(245 238 220 / 0.58) 100%
+      ),
+      linear-gradient(180deg, rgb(245 238 220 / 0.97), transparent 18%, transparent 80%, rgb(245 238 220 / 0.99));
+  }
+
   .benefit-card {
     border-radius: 1.5rem;
   }
 }
 
 @media (min-width: 1024px) and (max-height: 600px) and (orientation: landscape) {
+  .ambient-story-frame {
+    top: 5rem;
+    right: -4vw;
+    bottom: 1rem;
+    width: min(62vw, 54rem);
+    border-radius: 4rem 0 0 7rem;
+  }
+
   .story-visual-sticky {
     top: 5rem;
     height: calc(100svh - 6.5rem);
