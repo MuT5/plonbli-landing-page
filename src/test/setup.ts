@@ -13,3 +13,8 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: () => {},
   }),
 });
+
+Object.defineProperty(globalThis, "localStorage", {
+  configurable: true,
+  value: window.localStorage,
+});

@@ -1,28 +1,73 @@
 <!doctype html>
-<html lang="en">
+<html lang="pl-PL">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/plonbli-landing-page/plonbliLogoBezTlaKolo-removebg-preview.png" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>Plonbli — plon blisko Ciebie!</title>
-    <meta name="description" content="Plonbli — plon blisko Ciebie! Aplikacja już wkrótce." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#F5EEDC" />
+    <meta name="color-scheme" content="light" />
+
+    <title>Plonbli — lokalne produkty bliżej Ciebie</title>
+    <meta
+      name="description"
+      content="Plonbli powstaje, aby ułatwić odkrywanie lokalnych gospodarstw, sprawdzanie ich ofert i bezpośredni kontakt. Dołącz do listy oczekujących."
+    />
+    <meta
+      name="keywords"
+      content="lokalne produkty, lokalne gospodarstwa, żywność z okolicy, rolnicy w okolicy, Plonbli"
+    />
     <meta name="author" content="Plonbli" />
-    <meta property="og:title" content="Plonbli" />
-    <meta property="og:description" content="Plonbli — plon blisko Ciebie! Aplikacja już wkrótce." />
+    <link rel="canonical" href="https://plonbli.pl/" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" type="image/png" href="/plonbliLogoBezTlaKolo-removebg-preview.png" />
+
+    <meta property="og:title" content="Plonbli — lokalne produkty bliżej Ciebie" />
+    <meta
+      property="og:description"
+      content="Odkrywaj lokalne gospodarstwa, sprawdzaj ich oferty i pytaj bezpośrednio o szczegóły. Zapisz się na listę oczekujących Plonbli."
+    />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:url" content="https://plonbli.pl/" />
+    <meta property="og:image" content="https://plonbli.pl/landing/og-plonbli.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Plonbli — lokalne gospodarstwa i żywność blisko Ciebie" />
 
     <meta name="twitter:card" content="summary_large_image" />
-  </head>
+    <meta name="twitter:title" content="Plonbli — lokalne produkty bliżej Ciebie" />
+    <meta
+      name="twitter:description"
+      content="Odkrywaj lokalne gospodarstwa, sprawdzaj ich oferty i pytaj bezpośrednio o szczegóły."
+    />
+    <meta name="twitter:image" content="https://plonbli.pl/landing/og-plonbli.jpg" />
 
-  <body>
-    <script>
-      (function () {
-        var stored = localStorage.getItem("theme");
-        var dark = stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-        if (dark) document.documentElement.classList.add("dark");
-      })();
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://plonbli.pl/#organization",
+            "name": "Plonbli",
+            "url": "https://plonbli.pl/",
+            "logo": "https://plonbli.pl/plonbliLogoBezTlaKolo-removebg-preview.png",
+            "email": "contact@plonbli.pl"
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://plonbli.pl/#website",
+            "url": "https://plonbli.pl/",
+            "name": "Plonbli",
+            "inLanguage": "pl-PL",
+            "publisher": { "@id": "https://plonbli.pl/#organization" }
+          }
+        ]
+      }
     </script>
+  </head>
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

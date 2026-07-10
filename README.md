@@ -1,24 +1,55 @@
-# Plonbli Landing Page
+# Plonbli — landing page przed premierą
 
-Coming-soon landing page for [Plonbli](https://0xjaqbek.github.io/plonbli-landing-page/) — *plon blisko Ciebie!*
+Responsywny landing Plonbli kierujący do listy oczekujących. Strona przedstawia ideę serwisu, sposób działania i korzyści dla osób szukających lokalnej żywności oraz gospodarstw i lokalnych pracowni.
 
-## Tech Stack
+## Najważniejsze elementy
 
-- [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- [Vite](https://vitejs.dev/) — build tool
-- [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) — styling & components
-- [Framer Motion](https://www.framer.com/motion/) — animations
-- [next-themes](https://github.com/pacocoursey/next-themes) — dark/light mode
+- kierunek wizualny „Natural Premium Storybook”;
+- autorska ilustracja hero oraz animowana opowieść o rosnącym plonie podczas przewijania;
+- układ dopracowany dla desktopu i urządzeń mobilnych;
+- dostępna nawigacja, formularz i obsługa `prefers-reduced-motion`;
+- lista oczekujących oparta na Supabase;
+- metadane SEO, Open Graph, dane strukturalne, sitemap i robots.txt.
 
-## Development
+## Uruchomienie lokalne
+
+Wymagany jest Node.js 20+ albo aktualny Bun.
+
+```bash
+npm install
+npm run dev
+```
+
+Alternatywnie:
 
 ```bash
 bun install
 bun run dev
 ```
 
-## Deployment
+## Konfiguracja formularza
 
-Automatically deployed to GitHub Pages via GitHub Actions on every push to `main`.
+Skopiuj `.env.example` do `.env` i uzupełnij publiczne dane projektu Supabase:
 
-Live at: `https://0xjaqbek.github.io/plonbli-landing-page/`
+```env
+VITE_SUPABASE_URL=https://twoj-projekt.supabase.co
+VITE_SUPABASE_ANON_KEY=twoj-publiczny-klucz-anon
+```
+
+Formularz zapisuje wyłącznie znormalizowany adres e-mail do tabeli `public.subscribers`. Kolumna `email` powinna mieć ograniczenie `UNIQUE`; rola anonimowa powinna móc wykonać tylko `INSERT`, bez dostępu do odczytu listy.
+
+## Kontrola jakości
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npm run test:e2e
+```
+
+Testy E2E wymagają przeglądarek Playwright (`npx playwright install`).
+
+## Wdrożenie
+
+Workflow GitHub Actions buduje i publikuje stronę na GitHub Pages po zmianach w gałęzi `main`. W repozytorium należy ustawić sekrety `VITE_SUPABASE_URL` i `VITE_SUPABASE_ANON_KEY`. Domena docelowa jest skonfigurowana jako [plonbli.pl](https://plonbli.pl/).

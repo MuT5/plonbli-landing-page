@@ -11,6 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
+*.tsbuildinfo
+test-results
+playwright-report
+blob-report
+.playwright-cli
+output/playwright
 
 # Editor directories and files
 .vscode/*
@@ -27,4 +33,5 @@ dist-ssr
 .worktrees
 
 # Local environment variables — never commit
-.env
+.env*
+!.env.example
