@@ -431,6 +431,9 @@
 
   .hero-illustration-frame {
     position: relative;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     min-height: 30rem;
     aspect-ratio: 4 / 3;
     overflow: hidden;
@@ -1132,6 +1135,17 @@
 
   .benefit-card {
     border-radius: 1.5rem;
+  }
+}
+
+@media (max-width: 639px) and (orientation: portrait) {
+  .hero-illustration-frame {
+    aspect-ratio: 1 / 1;
+  }
+
+  .hero-image {
+    object-position: 84% center;
+    transform-origin: 84% 55%;
   }
 }
 

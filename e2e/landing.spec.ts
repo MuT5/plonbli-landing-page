@@ -26,6 +26,40 @@ test("renders the pre-launch story and waitlist", async ({ page }) => {
   expect(consoleErrors).toEqual([]);
 });
 
+test("contains the three-person hero scene across mobile viewports", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const frame = page.locator(".hero-illustration-frame");
+  const image = page.locator(".hero-image");
+  const portraitLayout = await frame.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return {
+      clientWidth: document.documentElement.clientWidth,
+      left: rect.left,
+      right: rect.right,
+      width: rect.width,
+    };
+  });
+
+  expect(portraitLayout.left).toBeGreaterThanOrEqual(0);
+  expect(portraitLayout.right).toBeLessThanOrEqual(portraitLayout.clientWidth);
+  expect(portraitLayout.width).toBeLessThanOrEqual(portraitLayout.clientWidth);
+  await expect(image).toHaveCSS("object-position", "84% 50%");
+
+  await page.setViewportSize({ width: 640, height: 360 });
+  await page.goto("/");
+
+  const landscapeLayout = await frame.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { clientWidth: document.documentElement.clientWidth, left: rect.left, right: rect.right };
+  });
+
+  expect(landscapeLayout.left).toBeGreaterThanOrEqual(0);
+  expect(landscapeLayout.right).toBeLessThanOrEqual(landscapeLayout.clientWidth);
+  await expect(image).toHaveCSS("object-position", "68% 50%");
+});
+
 test("keeps the mobile harvest contained without horizontal overflow", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
 
