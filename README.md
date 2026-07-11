@@ -52,4 +52,6 @@ Testy E2E wymagają przeglądarek Playwright (`npx playwright install`).
 
 ## Wdrożenie
 
-Workflow GitHub Actions buduje i publikuje stronę na GitHub Pages po zmianach w gałęzi `main`. W repozytorium należy ustawić sekrety `VITE_SUPABASE_URL` i `VITE_SUPABASE_ANON_KEY`. Domena docelowa jest skonfigurowana jako [plonbli.pl](https://plonbli.pl/).
+GitHub Actions odpowiada wyłącznie za kontrolę jakości i nie publikuje strony. Hosting konfiguruje się niezależnie w Netlify albo Vercelu, używając polecenia `npm run build` i katalogu wynikowego `dist`.
+
+Zmienne `VITE_SUPABASE_URL` i `VITE_SUPABASE_ANON_KEY` należy dodać w ustawieniach środowiska wybranej platformy hostingowej. Nie należy udostępniać klucza `service_role` aplikacji frontendowej.

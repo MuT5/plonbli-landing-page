@@ -119,17 +119,22 @@ test("keeps the story visible on short landscape screens", async ({ page }, test
     await page.setViewportSize({ width: 1023, height: 768 });
     await page.goto("/");
 
-    const tabletScene = page.locator(".story-mobile-scene").first();
+    const tabletScene = page.getByTestId("storyboard-visual");
     await tabletScene.scrollIntoViewIfNeeded();
     const tabletSceneRect = await tabletScene.boundingBox();
-    const tabletImageWidth = await tabletScene.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth);
+    const tabletImage = await tabletScene
+      .locator('[data-storyboard-scene="discovery"] img')
+      .evaluate((image: HTMLImageElement) => ({ complete: image.complete, naturalWidth: image.naturalWidth }));
     const tabletLayout = await page.evaluate(() => ({
       clientWidth: document.documentElement.clientWidth,
       scrollWidth: document.documentElement.scrollWidth,
     }));
 
     expect(tabletSceneRect).not.toBeNull();
-    expect(tabletSceneRect!.width).toBeLessThan(tabletImageWidth);
+    expect(tabletSceneRect!.x).toBeGreaterThanOrEqual(0);
+    expect(tabletSceneRect!.x + tabletSceneRect!.width).toBeLessThanOrEqual(tabletLayout.clientWidth);
+    expect(tabletImage.complete).toBe(true);
+    expect(tabletImage.naturalWidth).toBeGreaterThan(0);
     expect(tabletLayout.scrollWidth).toBeLessThanOrEqual(tabletLayout.clientWidth);
 
     return;
@@ -220,7 +225,9 @@ test("removes defensive disclaimers and the public contact email", async ({ page
   );
 });
 
-test("reveals the desktop harvest while scrolling", async ({ page }) => {
+test("reveals the desktop harvest while scrolling", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Desktop harvest is covered by the desktop project");
+
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
