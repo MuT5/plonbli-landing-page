@@ -78,9 +78,9 @@ export default function SiteHeader() {
               id="mobile-navigation"
               aria-label="Nawigacja mobilna"
               className="mobile-navigation lg:hidden"
-              initial={reducedMotion ? false : { opacity: 0, y: -6 }}
-              animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-              exit={reducedMotion ? undefined : { opacity: 0, y: -6 }}
+              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
+              animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
               transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
             >
               <div className="site-container flex flex-col gap-1 py-4">

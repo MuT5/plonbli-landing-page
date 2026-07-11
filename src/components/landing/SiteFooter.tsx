@@ -16,8 +16,8 @@ export default function SiteFooter() {
   const content = landingContent.footer;
 
   return (
-    <footer className="border-t border-[var(--color-border)] bg-[var(--color-ivory)]/75 py-12 sm:py-16">
-      <div className="site-container grid gap-10 lg:grid-cols-[1.3fr_.7fr_.8fr]">
+    <footer className="site-footer py-12 sm:py-16">
+      <div className="site-container relative z-10 grid gap-10 lg:grid-cols-[1.3fr_.7fr_.8fr]">
         <div>
           <a href={siteConfig.links.home} className="inline-flex items-center gap-3" aria-label="Strona główna Plonbli">
             <img
@@ -25,15 +25,15 @@ export default function SiteFooter() {
               width="52"
               height="52"
               alt=""
-              className="size-12 object-contain"
+              className="site-footer-logo size-12 object-contain"
             />
-            <span className="font-display text-3xl font-bold text-[var(--color-olive)]">Plonbli</span>
+            <span className="font-display text-3xl font-bold text-[var(--color-ivory)]">Plonbli</span>
           </a>
-          <p className="mt-5 max-w-xl leading-7 text-[var(--color-ink-muted)]">{content.description}</p>
+          <p className="site-footer-description mt-5 max-w-xl leading-7">{content.description}</p>
         </div>
 
         <div>
-          <h2 className="text-sm font-extrabold uppercase tracking-[0.16em] text-[var(--color-olive)]">{content.navigationLabel}</h2>
+          <h2 className="site-footer-heading text-sm font-extrabold uppercase tracking-[0.16em]">{content.navigationLabel}</h2>
           <nav className="mt-5 flex flex-col gap-3" aria-label="Nawigacja w stopce">
             {landingContent.navigation.items.map((item) => (
               <a key={item.target} className="footer-link" href={siteConfig.links[item.target]}>{item.label}</a>
@@ -43,7 +43,7 @@ export default function SiteFooter() {
         </div>
 
         <div>
-          <h2 className="text-sm font-extrabold uppercase tracking-[0.16em] text-[var(--color-olive)]">{content.socialLabel}</h2>
+          <h2 className="site-footer-heading text-sm font-extrabold uppercase tracking-[0.16em]">{content.socialLabel}</h2>
           <div className="mt-5 flex flex-wrap gap-2">
             {socialLinks.map(({ href, ariaLabel, Icon }) => (
               <a
@@ -52,7 +52,7 @@ export default function SiteFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={ariaLabel}
-                className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--color-border)] bg-white/55 text-[var(--color-olive)] transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25"
+                className="site-footer-social"
               >
                 <Icon aria-hidden="true" className="size-4" />
               </a>
@@ -60,7 +60,7 @@ export default function SiteFooter() {
           </div>
         </div>
       </div>
-      <div className="site-container mt-10 border-t border-[var(--color-border)] pt-6 text-sm text-[var(--color-earth)]">
+      <div className="site-footer-bottom site-container relative z-10 mt-10 border-t pt-6 text-sm">
         © {new Date().getFullYear()} Plonbli. Wszelkie prawa zastrzeżone.
       </div>
     </footer>

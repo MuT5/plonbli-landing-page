@@ -24,34 +24,34 @@ export default function HeroSection() {
         <div className="max-w-3xl">
           <motion.p
             className="eyebrow"
-            initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0.38 : 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
             <Sparkles aria-hidden="true" className="size-4" />
             {content.eyebrow}
           </motion.p>
           <motion.h1
             className="mt-6 max-w-[12ch] font-display text-[clamp(3rem,6.4vw,6rem)] font-bold leading-[.94] tracking-[-0.026em] text-[var(--color-olive)]"
-            initial={reducedMotion ? false : { opacity: 0, y: 16 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0.46 : 0.65, delay: reducedMotion ? 0.03 : 0.06, ease: [0.22, 1, 0.36, 1] }}
           >
             {content.title}
           </motion.h1>
           <motion.p
             className="mt-7 max-w-2xl text-lg leading-8 text-[var(--color-ink-muted)] sm:text-xl sm:leading-9"
-            initial={reducedMotion ? false : { opacity: 0, y: 14 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0.44 : 0.6, delay: reducedMotion ? 0.05 : 0.12, ease: [0.22, 1, 0.36, 1] }}
           >
             {content.description}
           </motion.p>
           <motion.div
             className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
-            initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0.42 : 0.55, delay: reducedMotion ? 0.07 : 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             <CtaLink content={content.primaryCta} className="justify-center sm:justify-start" />
             <CtaLink content={content.secondaryCta} className="justify-center sm:justify-start" />
@@ -60,9 +60,9 @@ export default function HeroSection() {
 
         <motion.figure
           className="hero-illustration-frame"
-          initial={reducedMotion ? false : { scale: 0.985, y: 12 }}
-          animate={reducedMotion ? undefined : { scale: 1, y: 0 }}
-          transition={{ duration: 0.78, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.985, y: 12 }}
+          animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: reducedMotion ? 0.48 : 0.78, delay: reducedMotion ? 0.04 : 0.08, ease: [0.22, 1, 0.36, 1] }}
         >
           <motion.img
             src={`${import.meta.env.BASE_URL}landing/hero-storybook.webp`}
@@ -74,9 +74,9 @@ export default function HeroSection() {
           />
           <motion.figcaption
             className="hero-caption"
-            initial={reducedMotion ? false : { opacity: 0, y: 8 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.36, ease: [0.22, 1, 0.36, 1] }}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0.38 : 0.45, delay: reducedMotion ? 0.08 : 0.36, ease: [0.22, 1, 0.36, 1] }}
           >
             <span className="inline-flex size-9 items-center justify-center rounded-full bg-[var(--color-brand)] text-[var(--color-ivory)]">
               <ArrowDown aria-hidden="true" className="size-4" />

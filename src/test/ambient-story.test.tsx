@@ -22,7 +22,45 @@ class SuccessfulImagePreloader {
 
 describe("ambient story sequence", () => {
   afterEach(() => {
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
+  });
+
+  it("keeps an opacity-only crossfade when reduced motion is requested", async () => {
+    vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+      matches: query === "(prefers-reduced-motion)",
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }));
+    vi.stubGlobal("Image", SuccessfulImagePreloader);
+
+    const { container } = render(
+      <MotionConfig reducedMotion="user">
+        <AmbientStorySequence>
+          <AmbientStoryChapter scene="contact"><section>Waitlist</section></AmbientStoryChapter>
+          <AmbientStoryChapter scene="discovery"><section>Discovery</section></AmbientStoryChapter>
+        </AmbientStorySequence>
+      </MotionConfig>,
+    );
+
+    const sequence = container.querySelector("[data-testid='ambient-story-sequence']");
+    const discovery = container.querySelector("[data-ambient-story-chapter='discovery']");
+
+    expect(sequence).toHaveAttribute("data-ambient-story-motion", "crossfade-only");
+    expect(discovery).not.toBeNull();
+
+    act(() => globalThis.triggerIntersection(discovery!));
+
+    await waitFor(() => {
+      const scenes = Array.from(container.querySelectorAll<HTMLElement>("[data-ambient-story-scene]"));
+      expect(scenes).toHaveLength(2);
+      scenes.forEach((scene) => expect(scene.style.transform).toBe(""));
+    });
   });
 
   it("renders one decorative responsive scene before scroll activation", () => {

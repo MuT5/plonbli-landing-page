@@ -67,6 +67,7 @@ export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
       <div
         className="ambient-story-sequence"
         data-ambient-story-active={visibleScene}
+        data-ambient-story-motion={reducedMotion ? "crossfade-only" : "full"}
         data-testid="ambient-story-sequence"
       >
         <div className="ambient-story-stage" aria-hidden="true">
@@ -76,12 +77,17 @@ export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
                 key={scene.id}
                 className="ambient-story-scene"
                 data-ambient-story-scene={scene.id}
-                initial={reducedMotion ? false : { opacity: 0, scale: 1.018 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={reducedMotion ? undefined : { opacity: 0, scale: 0.994 }}
+                initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.018 }}
+                animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.994 }}
                 transition={
                   reducedMotion
-                    ? { duration: 0 }
+                    ? {
+                        opacity: {
+                          duration: 0.82,
+                          ease: [0.45, 0, 0.55, 1],
+                        },
+                      }
                     : {
                         opacity: {
                           duration: 1.45,

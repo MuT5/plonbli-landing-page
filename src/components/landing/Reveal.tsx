@@ -8,16 +8,20 @@ interface RevealProps extends PropsWithChildren {
 }
 
 export default function Reveal({ children, className, delay = 0, initialVisible = false }: RevealProps) {
-  const reducedMotion = useReducedMotion();
-  const shouldAnimate = reducedMotion !== true && !initialVisible;
+  const reducedMotion = Boolean(useReducedMotion());
+  const shouldReveal = !initialVisible;
 
   return (
     <motion.div
       className={className}
-      initial={shouldAnimate ? { opacity: 0, y: 20, scale: 0.992 } : false}
-      whileInView={shouldAnimate ? { opacity: 1, y: 0, scale: 1 } : undefined}
+      initial={shouldReveal ? (reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.992 }) : false}
+      whileInView={shouldReveal ? (reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }) : undefined}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.68, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{
+        duration: reducedMotion ? 0.46 : 0.68,
+        delay: reducedMotion ? Math.min(delay, 0.08) : delay,
+        ease: [0.22, 1, 0.36, 1],
+      }}
     >
       {children}
     </motion.div>

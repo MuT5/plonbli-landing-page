@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, type MotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 
 import HarvestGrowth from "@/components/landing/HarvestGrowth";
 import LandingIcon from "@/components/landing/LandingIcon";
@@ -8,11 +8,13 @@ import { landingContent } from "@/content/landing.pl";
 import { storyScenes, type StoryScene } from "@/content/storyScenes";
 
 interface StoryboardSceneProps {
+  index: number;
   progress: MotionValue<number>;
+  reducedMotion: boolean;
   scene: StoryScene;
 }
 
-function StoryboardScene({ progress, scene }: StoryboardSceneProps) {
+function StoryboardScene({ index, progress, reducedMotion, scene }: StoryboardSceneProps) {
   const opacity = useTransform(progress, scene.input, scene.output);
   const scale = useTransform(progress, [0, 1], [1.025, 1]);
 
@@ -20,18 +22,23 @@ function StoryboardScene({ progress, scene }: StoryboardSceneProps) {
     <motion.figure
       className="story-visual-scene"
       data-storyboard-scene={scene.id}
-      style={{ opacity, scale }}
+      data-storyboard-step={index + 1}
+      style={reducedMotion ? { opacity } : { opacity, scale }}
     >
-      <img
-        src={`${import.meta.env.BASE_URL}${scene.desktopSrc}`}
-        alt=""
-        width="1280"
-        height="853"
-        className="h-full w-full object-cover"
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption className="story-visual-caption">{scene.label}</figcaption>
+      <picture>
+        <source
+          media="(min-width: 1024px)"
+          srcSet={`${import.meta.env.BASE_URL}${scene.desktopSrc}`}
+        />
+        <img
+          src={`${import.meta.env.BASE_URL}${scene.mobileSrc}`}
+          alt=""
+          width="800"
+          height="1000"
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
     </motion.figure>
   );
 }
@@ -47,10 +54,16 @@ export default function HowItWorksSection() {
     target: stepsRef,
     offset: ["start 90%", "end 30%"],
   });
+  const smoothDesktopProgress = useSpring(desktopGrowthProgress, {
+    stiffness: 120,
+    damping: 28,
+    mass: 0.35,
+  });
+  const storyboardProgress = reducedMotion ? desktopGrowthProgress : smoothDesktopProgress;
   const content = landingContent.howItWorks;
 
   return (
-    <section id="jak-to-dziala" className="story-section section-space relative scroll-mt-24 overflow-clip">
+    <section id="jak-to-dziala" className="story-section section-space relative scroll-mt-24">
       <div className="story-mobile-thread lg:hidden" aria-hidden="true">
         <div className="story-mobile-thread-sticky" data-testid="mobile-harvest-scene">
           <HarvestGrowth progress={mobileGrowthProgress} reducedMotion={reducedMotion} variant="mobile" />
@@ -65,36 +78,25 @@ export default function HowItWorksSection() {
         </Reveal>
 
         <div className="story-layout mt-14 lg:mt-20">
-          <div className="story-visual-column hidden lg:block" aria-hidden="true">
-            <div className="story-visual-sticky">
-              {reducedMotion ? (
-                <div className="story-reduced-collage">
-                  {storyScenes.map((scene) => (
-                    <figure key={scene.id} className="story-reduced-tile">
-                      <img
-                        src={`${import.meta.env.BASE_URL}${scene.desktopSrc}`}
-                        alt=""
-                        width="1280"
-                        height="853"
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </figure>
-                  ))}
-                </div>
-              ) : (
-                storyScenes.map((scene) => (
-                  <StoryboardScene key={scene.id} progress={desktopGrowthProgress} scene={scene} />
-                ))
-              )}
+          <div className="story-visual-column" aria-hidden="true">
+            <div
+              className="story-visual-sticky"
+              data-storyboard-motion={reducedMotion ? "crossfade-only" : "full"}
+              data-testid="storyboard-visual"
+            >
+              {storyScenes.map((scene, index) => (
+                <StoryboardScene
+                  key={scene.id}
+                  index={index}
+                  progress={storyboardProgress}
+                  reducedMotion={reducedMotion}
+                  scene={scene}
+                />
+              ))}
 
               <div className="story-visual-shade" aria-hidden="true" />
               <div className="story-harvest-overlay" aria-hidden="true">
-                <HarvestGrowth progress={desktopGrowthProgress} reducedMotion={reducedMotion} />
-              </div>
-              <div className="story-progress-rail" aria-hidden="true">
-                <motion.span style={reducedMotion ? { scaleY: 1 } : { scaleY: desktopGrowthProgress }} />
+                <HarvestGrowth progress={storyboardProgress} reducedMotion={reducedMotion} />
               </div>
             </div>
           </div>
@@ -107,29 +109,11 @@ export default function HowItWorksSection() {
                 <motion.article
                   key={step.id}
                   className="harvest-chapter story-chapter"
-                  initial={reducedMotion ? false : { opacity: 0.36, y: 18 }}
-                  whileInView={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+                  initial={reducedMotion ? { opacity: 0 } : { opacity: 0.36, y: 18 }}
+                  whileInView={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <motion.figure
-                    className="story-mobile-scene lg:hidden"
-                    initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-                    whileInView={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.28 }}
-                    transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <img
-                      src={`${import.meta.env.BASE_URL}${scene.mobileSrc}`}
-                      alt={scene.alt}
-                      width="800"
-                      height="1000"
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </motion.figure>
-
                   <div className="story-chapter-copy">
                     <div className="story-chapter-meta">
                       <span className="story-chapter-icon">
