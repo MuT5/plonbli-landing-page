@@ -7,6 +7,19 @@ import {
   AmbientStorySequence,
 } from "@/components/landing/AmbientStorySequence";
 
+class SuccessfulImagePreloader {
+  onload: (() => void) | null = null;
+  onerror: (() => void) | null = null;
+
+  set src(_value: string) {
+    queueMicrotask(() => this.onload?.());
+  }
+
+  decode() {
+    return Promise.resolve();
+  }
+}
+
 describe("ambient story sequence", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -39,19 +52,6 @@ describe("ambient story sequence", () => {
   });
 
   it("activates the prepared scene as each chapter reaches the viewport center", async () => {
-    class SuccessfulImagePreloader {
-      onload: (() => void) | null = null;
-      onerror: (() => void) | null = null;
-
-      set src(_value: string) {
-        queueMicrotask(() => this.onload?.());
-      }
-
-      decode() {
-        return Promise.resolve();
-      }
-    }
-
     vi.stubGlobal("Image", SuccessfulImagePreloader);
 
     const { container } = render(
@@ -82,5 +82,32 @@ describe("ambient story sequence", () => {
 
     act(() => globalThis.triggerIntersection(contacts[1]));
     await waitFor(() => expect(sequence).toHaveAttribute("data-ambient-story-active", "contact"));
+  });
+
+  it("keeps the outgoing and incoming images mounted during the crossfade", async () => {
+    vi.stubGlobal("Image", SuccessfulImagePreloader);
+
+    const { container } = render(
+      <MotionConfig reducedMotion="never">
+        <AmbientStorySequence>
+          <AmbientStoryChapter scene="contact"><section>Waitlist</section></AmbientStoryChapter>
+          <AmbientStoryChapter scene="discovery"><section>Discovery</section></AmbientStoryChapter>
+        </AmbientStorySequence>
+      </MotionConfig>,
+    );
+
+    const discovery = container.querySelector("[data-ambient-story-chapter='discovery']");
+    expect(discovery).not.toBeNull();
+
+    act(() => globalThis.triggerIntersection(discovery!));
+
+    await waitFor(() => {
+      const scenes = Array.from(container.querySelectorAll("[data-ambient-story-scene]"));
+      expect(scenes).toHaveLength(2);
+      expect(scenes.map((scene) => scene.getAttribute("data-ambient-story-scene"))).toEqual([
+        "contact",
+        "discovery",
+      ]);
+    });
   });
 });

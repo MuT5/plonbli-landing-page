@@ -17,7 +17,11 @@ export function WaitlistSection() {
             <h2 className="section-title mt-5 text-[var(--color-ivory)]">{content.title}</h2>
             <p className="mt-5 max-w-xl text-lg leading-8 text-[#fff8e7]/80">{content.description}</p>
           </Reveal>
-          <Reveal className="relative z-10 self-center lg:col-start-2 lg:row-span-2 lg:row-start-1" delay={0.08}>
+          <Reveal
+            className="conversion-reveal relative z-10 self-center lg:col-start-2 lg:row-span-2 lg:row-start-1"
+            delay={0.08}
+            initialVisible
+          >
             <WaitlistForm content={content.form} />
           </Reveal>
           <Reveal className="relative z-10 lg:col-start-1 lg:row-start-2" delay={0.16}>
@@ -45,12 +49,12 @@ export function FinalCtaSection() {
     <section className="pb-16 pt-2 sm:pb-24">
       <div className="site-container">
         <div className="final-cta-shell text-center">
-          <Reveal className="relative z-10">
+          <Reveal className="conversion-reveal relative z-10" initialVisible>
             <p className="eyebrow justify-center">{content.eyebrow}</p>
             <h2 className="section-title mx-auto mt-5 max-w-4xl">{content.title}</h2>
             <p className="section-lead mx-auto mt-5">{content.description}</p>
             <div className="mt-8 flex justify-center">
-              <CtaLink content={content.cta} className="justify-center" />
+              <CtaLink content={content.cta} className="final-cta-button justify-center" />
             </div>
           </Reveal>
         </div>

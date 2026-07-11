@@ -664,6 +664,7 @@
     inset: 0;
     display: block;
     transform-origin: 60% 50%;
+    backface-visibility: hidden;
   }
 
   .ambient-story-scene img {
@@ -860,15 +861,16 @@
 
   .final-cta-shell {
     position: relative;
+    isolation: isolate;
     overflow: hidden;
     border: 1px solid var(--color-border);
     border-radius: 2.5rem;
     background:
       radial-gradient(circle at 10% 100%, rgb(155 197 106 / 0.24), transparent 23rem),
       radial-gradient(circle at 95% 0%, rgb(191 213 216 / 0.26), transparent 20rem),
-      rgb(255 248 231 / 0.72);
+      rgb(255 248 231 / 0.82);
     padding: clamp(2.25rem, 5vw, 4.25rem) clamp(1.25rem, 5vw, 4rem);
-    box-shadow: 0 1.5rem 4rem rgb(77 103 50 / 0.09);
+    box-shadow: 0 1.5rem 4rem rgb(44 62 31 / 0.14);
   }
 
   .final-cta-shell::before {
@@ -876,6 +878,30 @@
     bottom: -15rem;
     border-color: rgb(77 103 50 / 0.13);
     box-shadow: 0 0 0 3rem rgb(111 175 63 / 0.035), 0 0 0 7rem rgb(111 175 63 / 0.025);
+  }
+
+  .final-cta-shell::after {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    content: "";
+    background: radial-gradient(
+      ellipse at center,
+      rgb(255 248 231 / 0.98) 0%,
+      rgb(255 248 231 / 0.88) 48%,
+      rgb(255 248 231 / 0.34) 100%
+    );
+  }
+
+  .final-cta-button {
+    width: min(100%, 19rem);
+    border-color: #31451f;
+    background: #3e5527;
+    color: var(--color-ivory);
+    box-shadow:
+      0 1rem 2.5rem rgb(49 69 31 / 0.3),
+      0 0 0 0.35rem rgb(255 248 231 / 0.58);
   }
 }
 
@@ -893,6 +919,13 @@
   .waitlist-form-shell:hover {
     transform: translateY(-2px);
     box-shadow: 0 1.8rem 4rem rgb(20 32 14 / 0.26);
+  }
+
+  .final-cta-button:hover {
+    background: #31451f;
+    box-shadow:
+      0 1.2rem 2.8rem rgb(49 69 31 / 0.36),
+      0 0 0 0.35rem rgb(255 248 231 / 0.7);
   }
 }
 

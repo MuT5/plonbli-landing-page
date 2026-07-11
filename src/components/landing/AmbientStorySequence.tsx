@@ -34,11 +34,14 @@ export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
     const preloader = new Image();
     let cancelled = false;
     let revealed = false;
+    let revealFrame: number | null = null;
 
     const reveal = () => {
       if (cancelled || revealed) return;
       revealed = true;
-      setVisibleScene(requestedScene);
+      revealFrame = window.requestAnimationFrame(() => {
+        if (!cancelled) setVisibleScene(requestedScene);
+      });
     };
 
     preloader.onload = reveal;
@@ -53,6 +56,7 @@ export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
 
     return () => {
       cancelled = true;
+      if (revealFrame !== null) window.cancelAnimationFrame(revealFrame);
       preloader.onload = null;
       preloader.onerror = null;
     };
@@ -72,13 +76,23 @@ export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
                 key={scene.id}
                 className="ambient-story-scene"
                 data-ambient-story-scene={scene.id}
-                initial={reducedMotion ? false : { opacity: 0, scale: 1.028 }}
+                initial={reducedMotion ? false : { opacity: 0, scale: 1.018 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={reducedMotion ? undefined : { opacity: 0, scale: 0.992 }}
-                transition={{
-                  duration: reducedMotion ? 0 : 1.05,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
+                exit={reducedMotion ? undefined : { opacity: 0, scale: 0.994 }}
+                transition={
+                  reducedMotion
+                    ? { duration: 0 }
+                    : {
+                        opacity: {
+                          duration: 1.45,
+                          ease: [0.45, 0, 0.55, 1],
+                        },
+                        scale: {
+                          duration: 1.9,
+                          ease: [0.16, 1, 0.3, 1],
+                        },
+                      }
+                }
               >
                 <source
                   media="(min-width: 1024px)"
