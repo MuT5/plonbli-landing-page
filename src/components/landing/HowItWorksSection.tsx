@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { motion, type MotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { motion, type MotionStyle, type MotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 
 import HarvestGrowth from "@/components/landing/HarvestGrowth";
 import LandingIcon from "@/components/landing/LandingIcon";
@@ -40,6 +40,52 @@ function StoryboardScene({ index, progress, reducedMotion, scene }: StoryboardSc
         />
       </picture>
     </motion.figure>
+  );
+}
+
+interface StoryChapterProps {
+  index: number;
+  progress: MotionValue<number>;
+  reducedMotion: boolean;
+  scene: StoryScene;
+  step: (typeof landingContent.howItWorks.steps)[number];
+}
+
+type StoryChapterMotionStyle = MotionStyle & {
+  "--story-chapter-opacity": MotionValue<number>;
+};
+
+function StoryChapter({ index, progress, reducedMotion, scene, step }: StoryChapterProps) {
+  const opacity = useTransform(progress, scene.input, scene.output);
+  const scrollFadeStyle: StoryChapterMotionStyle = { "--story-chapter-opacity": opacity };
+  const revealOnEntry = !reducedMotion;
+
+  return (
+    <motion.article
+      className="harvest-chapter story-chapter"
+      data-mobile-scroll-fade="responsive"
+      data-story-step={index + 1}
+      initial={revealOnEntry ? { opacity: 0.36, y: 18 } : false}
+      whileInView={revealOnEntry ? { opacity: 1, y: 0 } : undefined}
+      viewport={revealOnEntry ? { once: true, amount: 0.2 } : undefined}
+      transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <motion.div className="story-chapter-copy" style={scrollFadeStyle}>
+        <div className="story-chapter-meta">
+          <span className="story-chapter-icon">
+            <LandingIcon name={step.icon} className="size-5" />
+          </span>
+          <span className="story-chapter-number">0{step.number}</span>
+          <span className="story-chapter-label">{scene.label}</span>
+        </div>
+        <h3 className="mt-6 font-display text-[clamp(2.25rem,4vw,3.4rem)] font-bold leading-[1.02] text-[var(--color-olive)]">
+          {step.title}
+        </h3>
+        <p className="mt-4 max-w-xl text-lg leading-8 text-[var(--color-ink-muted)]">
+          {step.description}
+        </p>
+      </motion.div>
+    </motion.article>
   );
 }
 
@@ -103,30 +149,14 @@ export default function HowItWorksSection() {
                 const scene = storyScenes[index];
 
                 return (
-                  <motion.article
+                  <StoryChapter
                     key={step.id}
-                    className="harvest-chapter story-chapter"
-                    initial={reducedMotion ? { opacity: 0 } : { opacity: 0.36, y: 18 }}
-                    whileInView={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.2 }}
-                    transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <div className="story-chapter-copy">
-                      <div className="story-chapter-meta">
-                        <span className="story-chapter-icon">
-                          <LandingIcon name={step.icon} className="size-5" />
-                        </span>
-                        <span className="story-chapter-number">0{step.number}</span>
-                        <span className="story-chapter-label">{scene.label}</span>
-                      </div>
-                      <h3 className="mt-6 font-display text-[clamp(2.25rem,4vw,3.4rem)] font-bold leading-[1.02] text-[var(--color-olive)]">
-                        {step.title}
-                      </h3>
-                      <p className="mt-4 max-w-xl text-lg leading-8 text-[var(--color-ink-muted)]">
-                        {step.description}
-                      </p>
-                    </div>
-                  </motion.article>
+                    index={index}
+                    progress={storyboardProgress}
+                    reducedMotion={reducedMotion}
+                    scene={scene}
+                    step={step}
+                  />
                 );
               })}
             </div>

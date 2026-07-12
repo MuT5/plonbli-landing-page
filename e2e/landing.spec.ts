@@ -108,6 +108,67 @@ test("keeps the mobile harvest contained without horizontal overflow", async ({ 
   }
 });
 
+test("gives mobile story chapters a photo-height pause and fades the previous step", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const layout = await page.evaluate(() => {
+    const stage = document.querySelector<HTMLElement>(".story-visual-column")!;
+    const chapters = Array.from(document.querySelectorAll<HTMLElement>(".story-chapter"));
+    const copies = Array.from(document.querySelectorAll<HTMLElement>(".story-chapter-copy"));
+    const stageHeight = stage.getBoundingClientRect().height;
+
+    return {
+      stageHeight,
+      gaps: copies.slice(0, -1).map((copy, index) => {
+        const current = copy.getBoundingClientRect();
+        const next = copies[index + 1].getBoundingClientRect();
+        return next.top - current.bottom;
+      }),
+      borders: chapters.map((chapter) => getComputedStyle(chapter).borderBottomWidth),
+      fadeModes: chapters.map((chapter) => chapter.dataset.mobileScrollFade),
+    };
+  });
+
+  expect(layout.fadeModes).toEqual(["responsive", "responsive", "responsive"]);
+  expect(layout.borders).toEqual(["0px", "0px", "0px"]);
+  layout.gaps.forEach((gap) => expect(Math.abs(gap - layout.stageHeight)).toBeLessThanOrEqual(1));
+
+  await page.evaluate(() => {
+    const chapterList = document.querySelector<HTMLElement>("[data-testid='harvest-steps']")!;
+    const absoluteTop = chapterList.getBoundingClientRect().top + window.scrollY;
+    const progressStart = absoluteTop - window.innerHeight * 0.82;
+    const progressEnd = absoluteTop + chapterList.offsetHeight - window.innerHeight * 0.34;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo({ top: progressStart + (progressEnd - progressStart) * 0.45, behavior: "auto" });
+  });
+
+  const chapterOpacity = async (step: number) =>
+    Number(
+      await page
+        .locator(`[data-story-step="${step}"] .story-chapter-copy`)
+        .evaluate((element) => getComputedStyle(element).opacity),
+    );
+
+  await expect.poll(() => chapterOpacity(2)).toBeGreaterThan(0.8);
+  await expect.poll(() => chapterOpacity(1)).toBeLessThan(0.7);
+
+  const firstOpacity = await chapterOpacity(1);
+  const secondOpacity = await chapterOpacity(2);
+  expect(firstOpacity).toBeGreaterThan(0.05);
+  expect(secondOpacity).toBeGreaterThan(firstOpacity);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect
+    .poll(() =>
+      page.locator(".story-chapter-copy").evaluateAll((elements) =>
+        elements.map((element) => getComputedStyle(element).opacity),
+      ),
+    )
+    .toEqual(["1", "1", "1"]);
+});
+
 test("crossfades a three-scene storyboard behind the journey", async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 1440, height: 900 });

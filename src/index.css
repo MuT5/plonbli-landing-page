@@ -1015,6 +1015,26 @@
   }
 }
 
+@media (max-width: 767px) {
+  .story-chapter-list {
+    display: grid;
+    row-gap: var(--story-stage-height);
+    padding-bottom: var(--story-stage-height);
+  }
+
+  .story-chapter {
+    min-height: 0;
+    border-bottom: 0;
+    padding-block: 0;
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .story-chapter-copy {
+    opacity: var(--story-chapter-opacity, 1);
+  }
+}
+
 @media (min-width: 640px) and (max-width: 1023px) {
   .hero-section {
     padding-block: 4rem 5rem;
