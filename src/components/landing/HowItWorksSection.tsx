@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { type RefObject, useRef } from "react";
 import { motion, type MotionStyle, type MotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 
 import HarvestGrowth from "@/components/landing/HarvestGrowth";
@@ -10,21 +10,34 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface StoryboardSceneProps {
   index: number;
+  isMobile: boolean;
+  mobileOpacity: MotionValue<number>;
   progress: MotionValue<number>;
   reducedMotion: boolean;
   scene: StoryScene;
 }
 
-function StoryboardScene({ index, progress, reducedMotion, scene }: StoryboardSceneProps) {
-  const opacity = useTransform(progress, scene.input, scene.output);
+type StoryboardSceneMotionStyle = MotionStyle & {
+  "--story-scene-desktop-opacity": MotionValue<number>;
+  "--story-scene-mobile-opacity": MotionValue<number>;
+};
+
+function StoryboardScene({ index, isMobile, mobileOpacity, progress, reducedMotion, scene }: StoryboardSceneProps) {
+  const desktopOpacity = useTransform(progress, scene.input, scene.output);
   const scale = useTransform(progress, [0, 1], [1.025, 1]);
+  const sceneStyle: StoryboardSceneMotionStyle = {
+    "--story-scene-desktop-opacity": desktopOpacity,
+    "--story-scene-mobile-opacity": mobileOpacity,
+    ...(reducedMotion || isMobile ? {} : { scale }),
+  };
 
   return (
     <motion.figure
       className="story-visual-scene"
       data-storyboard-scene={scene.id}
       data-storyboard-step={index + 1}
-      style={reducedMotion ? { opacity } : { opacity, scale }}
+      data-mobile-scene-sync="card-entry"
+      style={sceneStyle}
     >
       <picture>
         <source
@@ -45,6 +58,7 @@ function StoryboardScene({ index, progress, reducedMotion, scene }: StoryboardSc
 }
 
 interface StoryChapterProps {
+  chapterRef: RefObject<HTMLDivElement>;
   index: number;
   isMobile: boolean;
   reducedMotion: boolean;
@@ -56,8 +70,7 @@ type StoryChapterMotionStyle = MotionStyle & {
   "--story-chapter-opacity": MotionValue<number>;
 };
 
-function StoryChapter({ index, isMobile, reducedMotion, scene, step }: StoryChapterProps) {
-  const chapterRef = useRef<HTMLElement>(null);
+function StoryChapter({ chapterRef, index, isMobile, reducedMotion, scene, step }: StoryChapterProps) {
   const { scrollYProgress: imageOverlapProgress } = useScroll({
     target: chapterRef,
     offset: ["start 51%", "end 14%"],
@@ -73,7 +86,6 @@ function StoryChapter({ index, isMobile, reducedMotion, scene, step }: StoryChap
 
   return (
     <motion.article
-      ref={chapterRef}
       className="harvest-chapter story-chapter"
       data-mobile-scroll-fade="image-overlap"
       data-story-step={index + 1}
@@ -82,7 +94,7 @@ function StoryChapter({ index, isMobile, reducedMotion, scene, step }: StoryChap
       viewport={revealOnEntry ? { once: true, amount: 0.2 } : undefined}
       transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
     >
-      <motion.div className="story-chapter-copy" style={scrollFadeStyle}>
+      <motion.div ref={chapterRef} className="story-chapter-copy" data-story-card={index + 1} style={scrollFadeStyle}>
         <div className="story-chapter-meta">
           <span className="story-chapter-icon">
             <LandingIcon name={step.icon} className="size-5" />
@@ -103,6 +115,9 @@ function StoryChapter({ index, isMobile, reducedMotion, scene, step }: StoryChap
 
 export default function HowItWorksSection() {
   const stepsRef = useRef<HTMLDivElement>(null);
+  const firstChapterRef = useRef<HTMLDivElement>(null);
+  const secondChapterRef = useRef<HTMLDivElement>(null);
+  const thirdChapterRef = useRef<HTMLDivElement>(null);
   const reducedMotion = Boolean(useReducedMotion());
   const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({
@@ -115,6 +130,21 @@ export default function HowItWorksSection() {
     mass: 0.35,
   });
   const storyboardProgress = reducedMotion ? scrollYProgress : smoothScrollProgress;
+  const { scrollYProgress: secondChapterEntry } = useScroll({
+    target: secondChapterRef,
+    offset: ["start end", "end end"],
+  });
+  const { scrollYProgress: thirdChapterEntry } = useScroll({
+    target: thirdChapterRef,
+    offset: ["start end", "end end"],
+  });
+  const discoveryMobileOpacity = useTransform(secondChapterEntry, [0, 1], [1, 0]);
+  const offerMobileOpacity = useTransform(
+    [secondChapterEntry, thirdChapterEntry],
+    ([secondEntry, thirdEntry]: number[]) => Math.max(0, Math.min(secondEntry, 1 - thirdEntry)),
+  );
+  const contactMobileOpacity = thirdChapterEntry;
+  const mobileSceneOpacities = [discoveryMobileOpacity, offerMobileOpacity, contactMobileOpacity] as const;
   const content = landingContent.howItWorks;
 
   return (
@@ -143,6 +173,8 @@ export default function HowItWorksSection() {
                 <StoryboardScene
                   key={scene.id}
                   index={index}
+                  isMobile={isMobile}
+                  mobileOpacity={mobileSceneOpacities[index]}
                   progress={storyboardProgress}
                   reducedMotion={reducedMotion}
                   scene={scene}
@@ -160,9 +192,11 @@ export default function HowItWorksSection() {
             <div ref={stepsRef} data-testid="harvest-steps" className="story-chapter-list">
               {content.steps.map((step, index) => {
                 const scene = storyScenes[index];
+                const chapterRef = index === 0 ? firstChapterRef : index === 1 ? secondChapterRef : thirdChapterRef;
 
                 return (
                   <StoryChapter
+                    chapterRef={chapterRef}
                     key={step.id}
                     index={index}
                     isMobile={isMobile}

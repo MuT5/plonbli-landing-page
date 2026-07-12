@@ -153,7 +153,7 @@ test("gives mobile story chapters a photo-height pause and fades them over the i
   const placeChapterAt = async (step: number, viewportRatio: number) => {
     await page.evaluate(
       ({ chapterStep, ratio }) => {
-        const chapter = document.querySelector<HTMLElement>(`[data-story-step="${chapterStep}"]`)!;
+        const chapter = document.querySelector<HTMLElement>(`[data-story-card="${chapterStep}"]`)!;
         const absoluteTop = chapter.getBoundingClientRect().top + window.scrollY;
         document.documentElement.style.scrollBehavior = "auto";
         window.scrollTo({ top: absoluteTop - window.innerHeight * ratio, behavior: "auto" });
@@ -182,6 +182,59 @@ test("gives mobile story chapters a photo-height pause and fades them over the i
       ),
     )
     .toEqual(["1", "1", "1"]);
+});
+
+test("finishes each mobile image transition when the next text card is fully visible", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const sceneOpacity = async (scene: string) =>
+    Number(
+      await page
+        .locator(`[data-storyboard-scene="${scene}"]`)
+        .evaluate((element) => getComputedStyle(element).opacity),
+    );
+
+  const positionChapter = async (step: number, visibleFraction: number) =>
+    page.evaluate(
+      ({ chapterStep, fraction }) => {
+        const chapter = document.querySelector<HTMLElement>(`[data-story-card="${chapterStep}"]`)!;
+        const rect = chapter.getBoundingClientRect();
+        const absoluteTop = rect.top + window.scrollY;
+        const targetTop = window.innerHeight - rect.height * fraction;
+        document.documentElement.style.scrollBehavior = "auto";
+        window.scrollTo({ top: absoluteTop - targetTop, behavior: "auto" });
+        const positionedRect = chapter.getBoundingClientRect();
+        return {
+          bottom: positionedRect.bottom,
+          top: positionedRect.top,
+          viewportHeight: window.innerHeight,
+        };
+      },
+      { chapterStep: step, fraction: visibleFraction },
+    );
+
+  await positionChapter(2, 0);
+  await expect.poll(() => sceneOpacity("discovery")).toBeGreaterThan(0.98);
+  await expect.poll(() => sceneOpacity("offer")).toBeLessThan(0.02);
+
+  await positionChapter(2, 0.5);
+  await expect.poll(() => sceneOpacity("discovery")).toBeLessThan(0.75);
+  await expect.poll(() => sceneOpacity("discovery")).toBeGreaterThan(0.25);
+  await expect.poll(() => sceneOpacity("offer")).toBeGreaterThan(0.25);
+  await expect.poll(() => sceneOpacity("offer")).toBeLessThan(0.75);
+
+  const secondCard = await positionChapter(2, 1);
+  await expect.poll(() => sceneOpacity("discovery")).toBeLessThan(0.02);
+  await expect.poll(() => sceneOpacity("offer")).toBeGreaterThan(0.98);
+  expect(Math.abs(secondCard.bottom - secondCard.viewportHeight)).toBeLessThanOrEqual(1);
+  expect(secondCard.top).toBeGreaterThanOrEqual(0);
+
+  const thirdCard = await positionChapter(3, 1);
+  await expect.poll(() => sceneOpacity("offer")).toBeLessThan(0.02);
+  await expect.poll(() => sceneOpacity("contact")).toBeGreaterThan(0.98);
+  expect(Math.abs(thirdCard.bottom - thirdCard.viewportHeight)).toBeLessThanOrEqual(1);
 });
 
 test("crossfades a three-scene storyboard behind the journey", async ({ page }, testInfo) => {

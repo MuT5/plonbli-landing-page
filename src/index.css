@@ -530,6 +530,7 @@
   .story-visual-scene {
     position: absolute;
     inset: 0;
+    opacity: var(--story-scene-desktop-opacity, 0);
     transform-origin: center;
   }
 
@@ -1016,6 +1017,10 @@
 }
 
 @media (max-width: 767px) {
+  .story-visual-scene {
+    opacity: var(--story-scene-mobile-opacity, 0);
+  }
+
   .story-chapter-list {
     display: grid;
     row-gap: var(--story-stage-height);
