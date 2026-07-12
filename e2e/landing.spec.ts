@@ -108,7 +108,7 @@ test("keeps the mobile harvest contained without horizontal overflow", async ({ 
   }
 });
 
-test("gives mobile story chapters a photo-height pause and fades the previous step", async ({ page }) => {
+test("gives mobile story chapters a photo-height pause and fades them over the image", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -118,9 +118,12 @@ test("gives mobile story chapters a photo-height pause and fades the previous st
     const chapters = Array.from(document.querySelectorAll<HTMLElement>(".story-chapter"));
     const copies = Array.from(document.querySelectorAll<HTMLElement>(".story-chapter-copy"));
     const stageHeight = stage.getBoundingClientRect().height;
+    const stageTop = Number.parseFloat(getComputedStyle(stage).top);
 
     return {
       stageHeight,
+      imageEntryLine: stageTop + stageHeight,
+      fadeStartLine: window.innerHeight * 0.51,
       gaps: copies.slice(0, -1).map((copy, index) => {
         const current = copy.getBoundingClientRect();
         const next = copies[index + 1].getBoundingClientRect();
@@ -133,20 +136,12 @@ test("gives mobile story chapters a photo-height pause and fades the previous st
     };
   });
 
-  expect(layout.fadeModes).toEqual(["responsive", "responsive", "responsive"]);
+  expect(layout.fadeModes).toEqual(["image-overlap", "image-overlap", "image-overlap"]);
   expect(layout.borders).toEqual(["0px", "0px", "0px"]);
   expect(layout.chapterOpacities).toEqual(["1", "1", "1"]);
   expect(layout.copyOpacities).toEqual(["1", "1", "1"]);
+  expect(Math.abs(layout.fadeStartLine - layout.imageEntryLine)).toBeLessThanOrEqual(15);
   layout.gaps.forEach((gap) => expect(Math.abs(gap - layout.stageHeight)).toBeLessThanOrEqual(1));
-
-  await page.evaluate(() => {
-    const chapterList = document.querySelector<HTMLElement>("[data-testid='harvest-steps']")!;
-    const absoluteTop = chapterList.getBoundingClientRect().top + window.scrollY;
-    const progressStart = absoluteTop - window.innerHeight * 0.82;
-    const progressEnd = absoluteTop + chapterList.offsetHeight - window.innerHeight * 0.34;
-    document.documentElement.style.scrollBehavior = "auto";
-    window.scrollTo({ top: progressStart + (progressEnd - progressStart) * 0.45, behavior: "auto" });
-  });
 
   const chapterOpacity = async (step: number) =>
     Number(
@@ -155,13 +150,29 @@ test("gives mobile story chapters a photo-height pause and fades the previous st
         .evaluate((element) => getComputedStyle(element).opacity),
     );
 
-  await expect.poll(() => chapterOpacity(2)).toBeGreaterThan(0.8);
-  await expect.poll(() => chapterOpacity(1)).toBeLessThan(0.7);
+  const placeChapterAt = async (step: number, viewportRatio: number) => {
+    await page.evaluate(
+      ({ chapterStep, ratio }) => {
+        const chapter = document.querySelector<HTMLElement>(`[data-story-step="${chapterStep}"]`)!;
+        const absoluteTop = chapter.getBoundingClientRect().top + window.scrollY;
+        document.documentElement.style.scrollBehavior = "auto";
+        window.scrollTo({ top: absoluteTop - window.innerHeight * ratio, behavior: "auto" });
+      },
+      { chapterStep: step, ratio: viewportRatio },
+    );
+  };
 
-  const firstOpacity = await chapterOpacity(1);
-  const secondOpacity = await chapterOpacity(2);
-  expect(firstOpacity).toBeGreaterThan(0.05);
-  expect(secondOpacity).toBeGreaterThan(firstOpacity);
+  await placeChapterAt(1, 0.54);
+  await expect.poll(() => chapterOpacity(1)).toBeGreaterThan(0.95);
+
+  await placeChapterAt(1, 0.3);
+  await expect.poll(() => chapterOpacity(1)).toBeLessThan(0.75);
+  const overlapOpacity = await chapterOpacity(1);
+  expect(overlapOpacity).toBeGreaterThan(0.2);
+
+  await placeChapterAt(1, 0.05);
+  await expect.poll(() => chapterOpacity(1)).toBeLessThan(0.25);
+  expect(await chapterOpacity(1)).toBeLessThan(overlapOpacity);
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect

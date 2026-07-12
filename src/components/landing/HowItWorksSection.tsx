@@ -47,7 +47,6 @@ function StoryboardScene({ index, progress, reducedMotion, scene }: StoryboardSc
 interface StoryChapterProps {
   index: number;
   isMobile: boolean;
-  progress: MotionValue<number>;
   reducedMotion: boolean;
   scene: StoryScene;
   step: (typeof landingContent.howItWorks.steps)[number];
@@ -57,22 +56,26 @@ type StoryChapterMotionStyle = MotionStyle & {
   "--story-chapter-opacity": MotionValue<number>;
 };
 
-function StoryChapter({ index, isMobile, progress, reducedMotion, scene, step }: StoryChapterProps) {
-  const isFinalChapter = index === storyScenes.length - 1;
-  const fadeStart = scene.input[scene.input.length - 2];
-  const fadeEnd = scene.input[scene.input.length - 1];
-  const opacity = useTransform(
-    progress,
-    isFinalChapter ? [0, 1] : [0, fadeStart, fadeEnd],
-    isFinalChapter ? [1, 1] : [1, 1, 0.08],
-  );
+function StoryChapter({ index, isMobile, reducedMotion, scene, step }: StoryChapterProps) {
+  const chapterRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: imageOverlapProgress } = useScroll({
+    target: chapterRef,
+    offset: ["start 51%", "end 14%"],
+  });
+  const smoothImageOverlap = useSpring(imageOverlapProgress, {
+    stiffness: 160,
+    damping: 32,
+    mass: 0.28,
+  });
+  const opacity = useTransform(smoothImageOverlap, [0, 0.72, 1], [1, 0.14, 0.06]);
   const scrollFadeStyle: StoryChapterMotionStyle = { "--story-chapter-opacity": opacity };
   const revealOnEntry = !isMobile && !reducedMotion;
 
   return (
     <motion.article
+      ref={chapterRef}
       className="harvest-chapter story-chapter"
-      data-mobile-scroll-fade="responsive"
+      data-mobile-scroll-fade="image-overlap"
       data-story-step={index + 1}
       initial={revealOnEntry ? { opacity: 0.36, y: 18 } : false}
       whileInView={revealOnEntry ? { opacity: 1, y: 0 } : undefined}
@@ -163,7 +166,6 @@ export default function HowItWorksSection() {
                     key={step.id}
                     index={index}
                     isMobile={isMobile}
-                    progress={storyboardProgress}
                     reducedMotion={reducedMotion}
                     scene={scene}
                     step={step}
