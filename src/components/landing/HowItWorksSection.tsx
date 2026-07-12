@@ -27,7 +27,7 @@ function StoryboardScene({ index, progress, reducedMotion, scene }: StoryboardSc
     >
       <picture>
         <source
-          media="(min-width: 1024px)"
+          media="(min-width: 640px)"
           srcSet={`${import.meta.env.BASE_URL}${scene.desktopSrc}`}
         />
         <img
@@ -46,34 +46,30 @@ function StoryboardScene({ index, progress, reducedMotion, scene }: StoryboardSc
 export default function HowItWorksSection() {
   const stepsRef = useRef<HTMLDivElement>(null);
   const reducedMotion = Boolean(useReducedMotion());
-  const { scrollYProgress: desktopGrowthProgress } = useScroll({
+  const { scrollYProgress } = useScroll({
     target: stepsRef,
     offset: ["start 82%", "end 34%"],
   });
-  const { scrollYProgress: mobileGrowthProgress } = useScroll({
-    target: stepsRef,
-    offset: ["start 90%", "end 30%"],
-  });
-  const smoothDesktopProgress = useSpring(desktopGrowthProgress, {
+  const smoothScrollProgress = useSpring(scrollYProgress, {
     stiffness: 120,
     damping: 28,
     mass: 0.35,
   });
-  const storyboardProgress = reducedMotion ? desktopGrowthProgress : smoothDesktopProgress;
+  const storyboardProgress = reducedMotion ? scrollYProgress : smoothScrollProgress;
   const content = landingContent.howItWorks;
 
   return (
     <section id="jak-to-dziala" className="story-section section-space relative scroll-mt-24">
       <div className="story-mobile-thread lg:hidden" aria-hidden="true">
         <div className="story-mobile-thread-sticky" data-testid="mobile-harvest-scene">
-          <HarvestGrowth progress={mobileGrowthProgress} reducedMotion={reducedMotion} variant="mobile" />
+          <HarvestGrowth progress={storyboardProgress} reducedMotion={reducedMotion} variant="mobile" />
         </div>
       </div>
 
       <div className="site-container relative z-10">
         <Reveal className="mx-auto max-w-3xl text-center">
           <p className="eyebrow justify-center">{content.eyebrow}</p>
-          <h2 className="section-title mt-5">{content.title}</h2>
+          <h2 className="section-title mx-auto mt-5">{content.title}</h2>
           <p className="section-lead mx-auto mt-5">{content.description}</p>
         </Reveal>
 
@@ -101,37 +97,39 @@ export default function HowItWorksSection() {
             </div>
           </div>
 
-          <div ref={stepsRef} data-testid="harvest-steps" className="story-chapters">
-            {content.steps.map((step, index) => {
-              const scene = storyScenes[index];
+          <div className="story-chapters">
+            <div ref={stepsRef} data-testid="harvest-steps" className="story-chapter-list">
+              {content.steps.map((step, index) => {
+                const scene = storyScenes[index];
 
-              return (
-                <motion.article
-                  key={step.id}
-                  className="harvest-chapter story-chapter"
-                  initial={reducedMotion ? { opacity: 0 } : { opacity: 0.36, y: 18 }}
-                  whileInView={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <div className="story-chapter-copy">
-                    <div className="story-chapter-meta">
-                      <span className="story-chapter-icon">
-                        <LandingIcon name={step.icon} className="size-5" />
-                      </span>
-                      <span className="story-chapter-number">0{step.number}</span>
-                      <span className="story-chapter-label">{scene.label}</span>
+                return (
+                  <motion.article
+                    key={step.id}
+                    className="harvest-chapter story-chapter"
+                    initial={reducedMotion ? { opacity: 0 } : { opacity: 0.36, y: 18 }}
+                    whileInView={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="story-chapter-copy">
+                      <div className="story-chapter-meta">
+                        <span className="story-chapter-icon">
+                          <LandingIcon name={step.icon} className="size-5" />
+                        </span>
+                        <span className="story-chapter-number">0{step.number}</span>
+                        <span className="story-chapter-label">{scene.label}</span>
+                      </div>
+                      <h3 className="mt-6 font-display text-[clamp(2.25rem,4vw,3.4rem)] font-bold leading-[1.02] text-[var(--color-olive)]">
+                        {step.title}
+                      </h3>
+                      <p className="mt-4 max-w-xl text-lg leading-8 text-[var(--color-ink-muted)]">
+                        {step.description}
+                      </p>
                     </div>
-                    <h3 className="mt-6 font-display text-[clamp(2.25rem,4vw,3.4rem)] font-bold leading-[1.02] text-[var(--color-olive)]">
-                      {step.title}
-                    </h3>
-                    <p className="mt-4 max-w-xl text-lg leading-8 text-[var(--color-ink-muted)]">
-                      {step.description}
-                    </p>
-                  </div>
-                </motion.article>
-              );
-            })}
+                  </motion.article>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

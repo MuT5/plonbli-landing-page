@@ -157,7 +157,7 @@ export const landingContent = {
     ],
     cta: {
       id: "for-farms-waitlist",
-      label: "Chcę wiedzieć o starcie",
+      label: "Powiadom mnie o starcie",
       ariaLabel: "Dołącz do listy oczekujących jako gospodarstwo",
       target: "waitlist",
       variant: "secondary",

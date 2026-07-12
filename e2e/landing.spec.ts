@@ -78,6 +78,7 @@ test("keeps the mobile harvest contained without horizontal overflow", async ({ 
     await page.evaluate(() => {
       const steps = document.querySelector<HTMLElement>("[data-testid='harvest-steps']")!;
       const top = steps.getBoundingClientRect().top + window.scrollY;
+      document.documentElement.style.scrollBehavior = "auto";
       window.scrollTo({ top: top + steps.offsetHeight - window.innerHeight * 0.3, behavior: "auto" });
     });
 
@@ -210,9 +211,36 @@ test("keeps the conversion section readable and the honeypot hidden", async ({ p
   await page.goto("/");
 
   const color = await page.locator("#lista-oczekujacych h2 + p").evaluate((element) => getComputedStyle(element).color);
+  const honeypots = page.locator('input[name="company"]');
 
-  expect(color).toBe("rgba(255, 248, 231, 0.8)");
-  await expect(page.locator('input[name="company"]')).toBeHidden();
+  expect(color).toBe("rgba(255, 251, 242, 0.8)");
+  await expect(honeypots).toHaveCount(2);
+  await expect(honeypots.first()).toBeHidden();
+  await expect(honeypots.last()).toBeHidden();
+});
+
+test("switches the ambient field story between audience sections", async ({ page }) => {
+  await page.goto("/");
+
+  const sequence = page.getByTestId("ambient-story-sequence");
+  const discoveryChapter = page.locator('[data-ambient-story-chapter="discovery"]');
+  const offerChapter = page.locator('[data-ambient-story-chapter="offer"]');
+
+  await expect(sequence).toHaveAttribute("data-ambient-story-active", "contact");
+
+  await discoveryChapter.evaluate((element) => element.scrollIntoView({ block: "center" }));
+  await expect(sequence).toHaveAttribute("data-ambient-story-active", "discovery");
+  await expect(page.locator('[data-ambient-story-scene="discovery"] img')).toHaveAttribute(
+    "src",
+    "/landing/story-01-discovery-mobile.webp",
+  );
+
+  await offerChapter.evaluate((element) => element.scrollIntoView({ block: "center" }));
+  await expect(sequence).toHaveAttribute("data-ambient-story-active", "offer");
+  await expect(page.locator('[data-ambient-story-scene="offer"] img')).toHaveAttribute(
+    "src",
+    "/landing/story-02-offer-mobile.webp",
+  );
 });
 
 test("uses three steps, a cohesive type system and a raster harvest accent", async ({ page }) => {

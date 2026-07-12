@@ -17,7 +17,7 @@ export default function HeroSection() {
   const content = landingContent.hero;
 
   return (
-    <section ref={heroRef} className="relative overflow-clip pb-14 pt-10 sm:pb-20 sm:pt-16 lg:min-h-[calc(100svh-72px)] lg:pb-24 lg:pt-20">
+    <section ref={heroRef} className="hero-section relative overflow-clip">
       <div aria-hidden="true" className="hero-orb hero-orb--one" />
       <div aria-hidden="true" className="hero-orb hero-orb--two" />
       <div className="site-container relative grid items-center gap-10 lg:grid-cols-[1.03fr_.97fr] lg:gap-16">

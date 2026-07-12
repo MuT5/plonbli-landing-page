@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import SiteFooter from "@/components/landing/SiteFooter";
+import { siteConfig } from "@/config/site";
 
 describe("site footer visibility", () => {
   it("renders the footer content and social controls on a solid visual surface", () => {
@@ -15,5 +16,11 @@ describe("site footer visibility", () => {
     expect(footer.querySelector("nav")).toBeVisible();
     expect(socialLinks).toHaveLength(6);
     socialLinks.forEach((link) => expect(link).toBeVisible());
+
+    const telegramChannel = screen.getByRole("link", { name: siteConfig.social.telegramChannel.ariaLabel });
+    const telegramGroup = screen.getByRole("link", { name: siteConfig.social.telegramGroup.ariaLabel });
+
+    expect(telegramChannel.querySelector("svg")).toHaveClass("lucide-send");
+    expect(telegramGroup.querySelector("svg")).toHaveClass("lucide-users");
   });
 });

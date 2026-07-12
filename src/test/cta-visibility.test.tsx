@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { FinalCtaSection, WaitlistSection } from "@/components/landing/WaitlistSection";
 
 describe("conversion CTA visibility", () => {
-  it("keeps the waitlist form and final CTA visible before intersection observers fire", () => {
+  it("keeps both waitlist forms visible with unique IDs before intersection observers fire", () => {
     const { container } = render(
       <MotionConfig reducedMotion="never">
         <WaitlistSection />
@@ -14,12 +14,22 @@ describe("conversion CTA visibility", () => {
     );
 
     const conversionReveals = container.querySelectorAll<HTMLElement>(".conversion-reveal");
-    const finalCta = container.querySelector<HTMLElement>('[data-cta-id="final-waitlist"]');
+    const emailInputs = screen.getAllByLabelText("Twój e-mail");
+    const submitButtons = screen.getAllByRole("button", { name: "Powiadom mnie" });
+    const finalForm = container.querySelector<HTMLElement>('[data-waitlist-form-variant="compact"]');
+    const ids = Array.from(container.querySelectorAll<HTMLElement>("[id]"), (element) => element.id);
 
     expect(conversionReveals).toHaveLength(2);
-    expect(screen.getByLabelText("Twój e-mail")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Powiadom mnie" })).toBeVisible();
-    expect(finalCta).toBeVisible();
-    expect(finalCta).toHaveClass("button-primary", "final-cta-button");
+    expect(emailInputs).toHaveLength(2);
+    expect(submitButtons).toHaveLength(2);
+    emailInputs.forEach((input) => expect(input).toBeVisible());
+    submitButtons.forEach((button) => expect(button).toBeVisible());
+    expect(finalForm).toBeVisible();
+    expect(finalForm).not.toHaveClass("waitlist-form-shell");
+    expect(container.querySelector("#final-waitlist-email")).toHaveAttribute(
+      "aria-describedby",
+      "final-waitlist-privacy final-waitlist-feedback",
+    );
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });

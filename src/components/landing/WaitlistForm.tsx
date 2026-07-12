@@ -8,14 +8,20 @@ type FormStatus = "idle" | "success" | "duplicate" | "error";
 
 interface WaitlistFormProps {
   content: WaitlistFormContent;
+  idPrefix?: string;
+  variant?: "card" | "compact";
 }
 
-export default function WaitlistForm({ content }: WaitlistFormProps) {
+export default function WaitlistForm({ content, idPrefix = "waitlist", variant = "card" }: WaitlistFormProps) {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [status, setStatus] = useState<FormStatus>("idle");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submissionLock = useRef(false);
+  const emailId = `${idPrefix}-email`;
+  const companyId = `${idPrefix}-company`;
+  const privacyId = `${idPrefix}-privacy`;
+  const feedbackId = `${idPrefix}-feedback`;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,10 +59,13 @@ export default function WaitlistForm({ content }: WaitlistFormProps) {
           : null;
 
   return (
-    <div className="waitlist-form-shell">
-      <form className="space-y-4" onSubmit={handleSubmit} noValidate={false} aria-busy={isSubmitting}>
+    <div
+      className={variant === "card" ? "waitlist-form-shell" : "waitlist-form-compact text-left"}
+      data-waitlist-form-variant={variant}
+    >
+      <form className={variant === "card" ? "space-y-4" : "space-y-3"} onSubmit={handleSubmit} noValidate={false} aria-busy={isSubmitting}>
         <div>
-          <label className="mb-2 block text-sm font-bold text-[var(--color-olive)]" htmlFor="waitlist-email">
+          <label className="mb-2 block text-sm font-bold text-[var(--color-olive)]" htmlFor={emailId}>
             {content.emailLabel}
           </label>
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -66,7 +75,7 @@ export default function WaitlistForm({ content }: WaitlistFormProps) {
                 className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--color-earth)]"
               />
               <input
-                id="waitlist-email"
+                id={emailId}
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -81,7 +90,7 @@ export default function WaitlistForm({ content }: WaitlistFormProps) {
                 }}
                 placeholder={content.emailPlaceholder}
                 className="min-h-14 w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-ivory)] py-3 pl-12 pr-4 text-base text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-earth)]/60 focus:border-[var(--color-olive)] focus:ring-4 focus:ring-[var(--color-brand)]/20"
-                aria-describedby="waitlist-privacy waitlist-feedback"
+                aria-describedby={`${privacyId} ${feedbackId}`}
               />
             </div>
             <button className="button-primary min-h-14 justify-center px-6 sm:min-w-44" type="submit" disabled={isSubmitting}>
@@ -93,9 +102,9 @@ export default function WaitlistForm({ content }: WaitlistFormProps) {
         </div>
 
         <div hidden aria-hidden="true">
-          <label htmlFor="company">Firma</label>
+          <label htmlFor={companyId}>Firma</label>
           <input
-            id="company"
+            id={companyId}
             name="company"
             type="text"
             tabIndex={-1}
@@ -106,12 +115,17 @@ export default function WaitlistForm({ content }: WaitlistFormProps) {
           />
         </div>
 
-        <p id="waitlist-privacy" className="text-xs leading-5 text-[var(--color-earth)]">
+        <p id={privacyId} className="text-xs leading-5 text-[var(--color-earth)]">
           {content.privacyNote}
         </p>
       </form>
 
-      <div id="waitlist-feedback" aria-live="polite" aria-atomic="true" className="mt-4 min-h-6">
+      <div
+        id={feedbackId}
+        aria-live="polite"
+        aria-atomic="true"
+        className={`${variant === "card" ? "mt-4" : "mt-3"} min-h-6`}
+      >
         {feedback ? (
           <div className={`waitlist-feedback waitlist-feedback--${status}`}>
             <feedback.icon aria-hidden="true" className="mt-0.5 size-5 shrink-0" />

@@ -38,7 +38,7 @@ export default function SiteHeader() {
               alt=""
               className="size-11 object-contain"
             />
-            <span className="font-display text-2xl font-bold tracking-[-0.02em] text-[var(--color-olive)]">Plonbli</span>
+            <span className="header-brand-name font-display text-2xl font-bold tracking-[-0.02em] text-[var(--color-olive)]">Plonbli</span>
           </a>
 
           <nav aria-label={landingContent.navigation.ariaLabel} className="hidden items-center gap-7 lg:flex">
@@ -53,7 +53,7 @@ export default function SiteHeader() {
             <CtaLink content={landingContent.navigation.cta} className="hidden min-h-11 px-5 sm:inline-flex" />
             <a
               href={siteConfig.links.waitlist}
-              className="button-primary min-h-10 px-4 text-sm sm:hidden"
+              className="header-mobile-cta button-primary min-h-10 px-4 text-sm sm:hidden"
               aria-label={landingContent.navigation.cta.ariaLabel}
             >
               Powiadom

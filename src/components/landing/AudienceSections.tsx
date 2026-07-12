@@ -1,5 +1,3 @@
-import { ArrowDownRight } from "lucide-react";
-
 import CtaLink from "@/components/landing/CtaLink";
 import LandingIcon from "@/components/landing/LandingIcon";
 import Reveal from "@/components/landing/Reveal";
@@ -26,7 +24,6 @@ export function ForLocalsSection() {
                   <h3 className="font-display text-2xl font-bold text-[var(--color-olive)] sm:text-3xl">{benefit.title}</h3>
                   <p className="mt-3 text-base leading-7 text-[var(--color-ink-muted)] sm:text-lg sm:leading-8">{benefit.description}</p>
                 </div>
-                <ArrowDownRight aria-hidden="true" className="ml-auto hidden size-6 shrink-0 text-[var(--color-border)] sm:block" />
               </article>
             </Reveal>
           ))}
@@ -48,7 +45,7 @@ export function ForFarmsSection() {
             <h2 className="section-title mt-5">{farms.title}</h2>
             <p className="section-lead mt-5">{farms.description}</p>
             <div className="mt-8">
-              <CtaLink content={farms.cta} className="justify-center border-[var(--color-olive)] bg-[var(--color-olive)] text-[var(--color-ivory)] hover:bg-[#3f5629] sm:justify-start" />
+              <CtaLink content={farms.cta} className="justify-center border-[var(--color-olive)] bg-[var(--color-olive)] text-[var(--color-ivory)] hover:bg-[var(--color-olive-deep)] sm:justify-start" />
             </div>
           </Reveal>
           <div className="grid gap-4">

@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Send, Twitter, Youtube } from "lucide-react";
+import { Facebook, Instagram, Send, Twitter, Users, Youtube } from "lucide-react";
 
 import { landingContent } from "@/content/landing.pl";
 import { siteConfig } from "@/config/site";
@@ -9,7 +9,7 @@ const socialLinks = [
   { ...siteConfig.social.x, Icon: Twitter },
   { ...siteConfig.social.youtube, Icon: Youtube },
   { ...siteConfig.social.telegramChannel, Icon: Send },
-  { ...siteConfig.social.telegramGroup, Icon: Send },
+  { ...siteConfig.social.telegramGroup, Icon: Users },
 ] as const;
 
 export default function SiteFooter() {

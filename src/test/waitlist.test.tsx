@@ -69,12 +69,31 @@ describe("waitlist form", () => {
     render(<WaitlistForm content={landingContent.waitlist.form} />);
 
     fireEvent.change(screen.getByLabelText("Twój e-mail"), { target: { value: "bot@example.com" } });
-    const honeypot = document.getElementById("company") as HTMLInputElement;
+    const honeypot = document.getElementById("waitlist-company") as HTMLInputElement;
     fireEvent.change(honeypot, { target: { value: "Spam Ltd" } });
     fireEvent.submit(honeypot.closest("form")!);
 
     expect(join).not.toHaveBeenCalled();
     expect(await screen.findByText("Jesteś blisko od początku")).toBeInTheDocument();
+  });
+
+  it("scopes form IDs and renders the compact variant without the card shell", () => {
+    const { container } = render(
+      <WaitlistForm content={landingContent.waitlist.form} idPrefix="final-waitlist" variant="compact" />,
+    );
+
+    const input = screen.getByLabelText("Twój e-mail");
+    const wrapper = container.querySelector<HTMLElement>('[data-waitlist-form-variant="compact"]');
+
+    expect(input).toHaveAttribute("id", "final-waitlist-email");
+    expect(input).toHaveAttribute(
+      "aria-describedby",
+      "final-waitlist-privacy final-waitlist-feedback",
+    );
+    expect(container.querySelector("#final-waitlist-company")).toHaveAttribute("name", "company");
+    expect(container.querySelector("#final-waitlist-privacy")).toBeInTheDocument();
+    expect(container.querySelector("#final-waitlist-feedback")).toBeInTheDocument();
+    expect(wrapper).not.toHaveClass("waitlist-form-shell");
   });
 });
 
