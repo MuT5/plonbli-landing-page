@@ -6,6 +6,7 @@ import LandingIcon from "@/components/landing/LandingIcon";
 import Reveal from "@/components/landing/Reveal";
 import { landingContent } from "@/content/landing.pl";
 import { storyScenes, type StoryScene } from "@/content/storyScenes";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface StoryboardSceneProps {
   index: number;
@@ -45,6 +46,7 @@ function StoryboardScene({ index, progress, reducedMotion, scene }: StoryboardSc
 
 interface StoryChapterProps {
   index: number;
+  isMobile: boolean;
   progress: MotionValue<number>;
   reducedMotion: boolean;
   scene: StoryScene;
@@ -55,10 +57,17 @@ type StoryChapterMotionStyle = MotionStyle & {
   "--story-chapter-opacity": MotionValue<number>;
 };
 
-function StoryChapter({ index, progress, reducedMotion, scene, step }: StoryChapterProps) {
-  const opacity = useTransform(progress, scene.input, scene.output);
+function StoryChapter({ index, isMobile, progress, reducedMotion, scene, step }: StoryChapterProps) {
+  const isFinalChapter = index === storyScenes.length - 1;
+  const fadeStart = scene.input[scene.input.length - 2];
+  const fadeEnd = scene.input[scene.input.length - 1];
+  const opacity = useTransform(
+    progress,
+    isFinalChapter ? [0, 1] : [0, fadeStart, fadeEnd],
+    isFinalChapter ? [1, 1] : [1, 1, 0.08],
+  );
   const scrollFadeStyle: StoryChapterMotionStyle = { "--story-chapter-opacity": opacity };
-  const revealOnEntry = !reducedMotion;
+  const revealOnEntry = !isMobile && !reducedMotion;
 
   return (
     <motion.article
@@ -92,6 +101,7 @@ function StoryChapter({ index, progress, reducedMotion, scene, step }: StoryChap
 export default function HowItWorksSection() {
   const stepsRef = useRef<HTMLDivElement>(null);
   const reducedMotion = Boolean(useReducedMotion());
+  const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({
     target: stepsRef,
     offset: ["start 82%", "end 34%"],
@@ -152,6 +162,7 @@ export default function HowItWorksSection() {
                   <StoryChapter
                     key={step.id}
                     index={index}
+                    isMobile={isMobile}
                     progress={storyboardProgress}
                     reducedMotion={reducedMotion}
                     scene={scene}

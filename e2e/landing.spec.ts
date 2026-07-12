@@ -128,11 +128,15 @@ test("gives mobile story chapters a photo-height pause and fades the previous st
       }),
       borders: chapters.map((chapter) => getComputedStyle(chapter).borderBottomWidth),
       fadeModes: chapters.map((chapter) => chapter.dataset.mobileScrollFade),
+      chapterOpacities: chapters.map((chapter) => getComputedStyle(chapter).opacity),
+      copyOpacities: copies.map((copy) => getComputedStyle(copy).opacity),
     };
   });
 
   expect(layout.fadeModes).toEqual(["responsive", "responsive", "responsive"]);
   expect(layout.borders).toEqual(["0px", "0px", "0px"]);
+  expect(layout.chapterOpacities).toEqual(["1", "1", "1"]);
+  expect(layout.copyOpacities).toEqual(["1", "1", "1"]);
   layout.gaps.forEach((gap) => expect(Math.abs(gap - layout.stageHeight)).toBeLessThanOrEqual(1));
 
   await page.evaluate(() => {
