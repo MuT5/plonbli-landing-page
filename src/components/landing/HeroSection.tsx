@@ -32,7 +32,7 @@ export default function HeroSection() {
             {content.eyebrow}
           </motion.p>
           <motion.h1
-            className="mt-6 max-w-[12ch] font-display text-[clamp(3rem,6.4vw,6rem)] font-bold leading-[.94] tracking-[-0.026em] text-[var(--color-olive)]"
+            className="mt-6 max-w-[14ch] font-display text-[clamp(2.9rem,5.8vw,5.5rem)] font-bold leading-[.95] tracking-[-0.026em] text-[var(--color-olive)]"
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ duration: reducedMotion ? 0.46 : 0.65, delay: reducedMotion ? 0.03 : 0.06, ease: [0.22, 1, 0.36, 1] }}

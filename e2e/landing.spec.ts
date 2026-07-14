@@ -18,7 +18,8 @@ test("renders the pre-launch story and waitlist", async ({ page }) => {
 
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { level: 1, name: "Dobre rzeczy rosną blisko" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Dobre jedzenie jest bliżej, niż myślisz" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "To, co lokalne, nie zawsze łatwo znaleźć" })).toBeVisible();
   await expect(page.locator('[data-cta-id="hero-waitlist"]')).toBeVisible();
   await expect(page.locator('a[href*="plonbliapp.vercel.app"]')).toHaveCount(0);
   await expect(page.locator("html")).toHaveAttribute("lang", "pl-PL");
@@ -346,6 +347,56 @@ test("keeps the conversion section readable and the honeypot hidden", async ({ p
   await expect(honeypots).toHaveCount(2);
   await expect(honeypots.first()).toBeHidden();
   await expect(honeypots.last()).toBeHidden();
+});
+
+test("animates FAQ answers while opening and closing", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+
+  const question = page.getByRole("button", {
+    name: "Czy korzystanie z Plonbli będzie bezpłatne?",
+  });
+  const answer = page.locator('[data-faq-answer="free-access"]');
+
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+  });
+  await question.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(650);
+  await expect(answer).toHaveAttribute("aria-hidden", "true");
+  const closedHeight = await answer.evaluate((element) => element.getBoundingClientRect().height);
+  const transition = await answer.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    return {
+      durations: styles.transitionDuration.split(",").map((value) => Number.parseFloat(value) || 0),
+      properties: styles.transitionProperty.split(",").map((value) => value.trim()),
+    };
+  });
+
+  expect(closedHeight).toBeLessThanOrEqual(0.5);
+  expect(transition.properties).toContain("grid-template-rows");
+  expect(Math.max(...transition.durations)).toBeGreaterThanOrEqual(0.3);
+
+  await question.click();
+  await expect(answer).toHaveAttribute("aria-hidden", "false");
+  await expect.poll(() => answer.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThan(20);
+
+  await question.click();
+  await expect(answer).toHaveAttribute("aria-hidden", "true");
+  await expect.poll(() => answer.evaluate((element) => element.getBoundingClientRect().height)).toBeLessThanOrEqual(0.5);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const reducedTransition = await answer.evaluate((element) =>
+    getComputedStyle(element)
+      .transitionDuration.split(",")
+      .map((value) => Number.parseFloat(value) || 0),
+  );
+
+  expect(Math.max(...reducedTransition)).toBeGreaterThanOrEqual(0.15);
+  expect(Math.max(...reducedTransition)).toBeLessThanOrEqual(0.25);
+
+  await question.click();
+  await expect(answer).toHaveAttribute("aria-hidden", "false");
 });
 
 test("switches the ambient field story between audience sections", async ({ page }) => {

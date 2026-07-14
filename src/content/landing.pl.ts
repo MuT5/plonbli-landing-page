@@ -2,13 +2,13 @@ import type { LandingContent } from "@/types/landing";
 
 export const landingContent = {
   seo: {
-    title: "Plonbli. Dobre rzeczy rosną blisko",
+    title: "Plonbli. Dobre jedzenie jest bliżej, niż myślisz",
     description:
-      "Odkrywaj gospodarstwa, pasieki, sady i lokalne piekarnie w swojej okolicy. Poznawaj ich ofertę i pytaj u źródła. Dołącz do listy Plonbli.",
-    openGraphTitle: "Plonbli. Dobre rzeczy rosną blisko",
+      "Odkrywaj gospodarstwa, sady, pasieki, piekarnie i serowarnie w swojej okolicy. Sprawdzaj ich ofertę i rozmawiaj bezpośrednio z ludźmi, którzy za nimi stoją.",
+    openGraphTitle: "Plonbli. Dobre jedzenie jest bliżej, niż myślisz",
     openGraphDescription:
-      "Odkrywaj miejsca, ludzi i jedzenie z Twojej okolicy. Poznaj Plonbli od pierwszego dnia.",
-    openGraphImageAlt: "Plonbli, lokalne jedzenie i miejsca blisko Ciebie",
+      "Odkrywaj lokalne miejsca, sprawdzaj ich sezonową ofertę i rozmawiaj u źródła.",
+    openGraphImageAlt: "Plonbli, lokalne jedzenie i miejsca blisko ciebie",
     keywords: [
       "lokalne produkty",
       "lokalne gospodarstwa",
@@ -23,7 +23,7 @@ export const landingContent = {
     items: [
       { label: "Jak to działa", target: "howItWorks" },
       { label: "Dla szukających lokalnie", target: "forLocals" },
-      { label: "Dla gospodarstw", target: "forFarms" },
+      { label: "Dla lokalnych miejsc", target: "forFarms" },
       { label: "FAQ", target: "faq" },
     ],
     cta: {
@@ -35,10 +35,10 @@ export const landingContent = {
     },
   },
   hero: {
-    eyebrow: "Plonbli • blisko od początku",
-    title: "Dobre rzeczy rosną blisko",
+    eyebrow: "Bliżej źródła. Bliżej ludzi.",
+    title: "Dobre jedzenie jest bliżej, niż myślisz",
     description:
-      "Odkrywaj gospodarstwa, pasieki, sady i lokalne piekarnie w swojej okolicy. Poznawaj ich ofertę i pytaj u źródła.",
+      "Truskawki z pobliskiego gospodarstwa, miód z pasieki za miastem, chleb z lokalnej piekarni. Plonbli pomaga znaleźć takie miejsca, sprawdzić ich ofertę i nawiązać bezpośredni kontakt.",
     primaryCta: {
       id: "hero-waitlist",
       label: "Powiadom mnie o starcie",
@@ -55,25 +55,33 @@ export const landingContent = {
     },
     imageAlt: "Spokojna scena lokalnego gospodarstwa, pola i świeżych produktów",
   },
+  why: {
+    eyebrow: "Dlaczego powstaje Plonbli?",
+    title: "To, co lokalne, nie zawsze łatwo znaleźć",
+    paragraphs: [
+      "Nie zawsze wiemy, skąd pochodzi jedzenie, które trafia na nasze stoły.",
+      "Tymczasem kilka kilometrów od domu ktoś zbiera owoce, uprawia warzywa, pozyskuje miód, wypieka chleb albo wyrabia sery. Takie miejsca nadal bywają zaskakująco trudne do odnalezienia.",
+      "Dlatego powstaje Plonbli. Chcemy ułatwić ich odkrywanie, pokazać to, co oferują, i skrócić drogę do bezpośredniej rozmowy.",
+    ],
+  },
   waitlist: {
-    eyebrow: "Lista oczekujących",
-    title: "Poznaj Plonbli od pierwszego dnia",
-    description: "Zostaw e-mail. Napiszemy przed startem i wtedy, gdy pojawi się ważna aktualizacja.",
+    eyebrow: "Bądź blisko",
+    title: "Bądź bliżej od początku",
+    description: "Zostaw adres e-mail, a damy ci znać, gdy Plonbli będzie gotowe do startu.",
     benefits: [
       "wiadomość przed publicznym startem",
-      "wybrane aktualizacje, bez szumu",
+      "najważniejsze informacje o rozwoju Plonbli",
     ],
     form: {
       emailLabel: "Twój e-mail",
       emailPlaceholder: "twoj@email.pl",
       submitLabel: "Powiadom mnie",
       submittingLabel: "Zapisujemy…",
-      privacyNote:
-        "Adres wykorzystamy wyłącznie do najważniejszych wiadomości o Plonbli.",
+      privacyNote: "Napiszemy przed startem i wtedy, gdy pojawi się coś naprawdę ważnego.",
       successTitle: "Jesteś blisko od początku",
-      successDescription: "Dziękujemy. Odezwemy się, gdy Plonbli będzie gotowe na kolejny krok.",
+      successDescription: "Dziękujemy. Damy ci znać, gdy Plonbli będzie gotowe do startu.",
       duplicateTitle: "Ten adres już jest z nami",
-      duplicateDescription: "Nie musisz zapisywać się ponownie. Damy Ci znać o najważniejszych etapach.",
+      duplicateDescription: "Nie musisz zapisywać się ponownie. Damy ci znać o najważniejszych etapach.",
       errorTitle: "Nie udało się dołączyć",
       errorDescription: "Spróbuj ponownie za chwilę.",
     },
@@ -81,84 +89,90 @@ export const landingContent = {
   howItWorks: {
     eyebrow: "Jak to działa",
     title: "Od odkrycia do spotkania",
-    description: "Trzy chwile, które przybliżają to, co lokalne.",
+    description: "Trzy proste kroki prowadzą od znalezienia miejsca do bezpośredniego kontaktu.",
     steps: [
       {
         id: "find-nearby",
         number: 1,
         icon: "map-pin",
         title: "Odkryj blisko",
-        description: "Znajdź gospodarstwa, sady, pasieki i lokalne piekarnie w wybranej okolicy.",
+        description:
+          "Znajdź gospodarstwa, sady, pasieki, piekarnie i serowarnie w pobliżu domu, pracy lub codziennej trasy. Dobre jedzenie może czekać zaledwie kilka kilometrów od ciebie.",
       },
       {
         id: "check-offer",
         number: 2,
         icon: "search",
         title: "Poznaj ofertę",
-        description: "Zobacz produkty, sezonowość i aktualną dostępność.",
+        description:
+          "Sprawdź, co jest dostępne w danym miejscu i sezonie. Od świeżych owoców i warzyw po miód, pieczywo, sery i domowe przetwory.",
       },
       {
         id: "contact-directly",
         number: 3,
         icon: "message-circle",
         title: "Porozmawiaj u źródła",
-        description: "Zapytaj o szczegóły i umów dogodny odbiór.",
+        description:
+          "Zapytaj o dostępność i szczegóły, ustal dogodny odbiór i poznaj osobę, która stoi za tym, co wybierasz.",
       },
     ],
   },
   forLocals: {
-    eyebrow: "Dla Ciebie",
-    title: "Bliżej źródła. Bliżej ludzi.",
-    description: "Poznawaj miejsca i ludzi stojących za jedzeniem z Twojej okolicy.",
+    eyebrow: "Dla ciebie",
+    title: "Bliżej źródła na co dzień",
+    description:
+      "Odkrywaj dobre jedzenie, poznawaj nowe miejsca i dowiaduj się, od kogo pochodzą produkty trafiające na twój stół.",
     benefits: [
       {
         id: "nearby-places",
         icon: "map-pin",
-        title: "Blisko Ciebie",
-        description: "Odkrywaj miejsca przy domu, pracy i na codziennych trasach.",
+        title: "Blisko ciebie",
+        description: "Znajduj ciekawe miejsca przy domu, pracy i na trasach, którymi poruszasz się każdego dnia.",
       },
       {
         id: "source-information",
         icon: "badge-info",
         title: "W rytmie sezonu",
-        description: "Poznawaj produkty i ich aktualną dostępność.",
+        description: "Sprawdzaj bieżącą ofertę i odkrywaj produkty wtedy, gdy przychodzi na nie najlepszy moment.",
       },
       {
         id: "direct-conversation",
         icon: "heart-handshake",
         title: "Rozmowa u źródła",
-        description: "Pytaj bezpośrednio i ustalaj szczegóły po swojemu.",
+        description:
+          "Pytaj o to, co jest dla ciebie ważne, i ustalaj szczegóły bezpośrednio z osobą, która zna dany produkt najlepiej.",
       },
     ],
   },
   forFarms: {
-    eyebrow: "Dla gospodarstw",
-    title: "Pokaż, co rośnie i powstaje u Ciebie",
-    description: "Zaprezentuj swoje miejsce, sezonową ofertę i prosty sposób kontaktu.",
+    eyebrow: "Dla tych, którzy tworzą lokalnie",
+    title: "Pokaż swoje miejsce i to, co oferujesz",
+    description:
+      "W twojej okolicy są osoby, które szukają właśnie tego, co uprawiasz, zbierasz, wypiekasz lub przygotowujesz. Plonbli pomaga wam się odnaleźć.",
     benefits: [
       {
         id: "local-presence",
         icon: "sprout",
         title: "Widoczność w okolicy",
-        description: "Daj się znaleźć osobom, które szukają lokalnie.",
+        description: "Pokaż swoje miejsce osobom, które naprawdę interesuje lokalna żywność.",
       },
       {
         id: "current-offer",
         icon: "leaf",
-        title: "Oferta we właściwym czasie",
-        description: "Pokazuj to, co jest dostępne teraz i w danym sezonie.",
+        title: "Oferta zgodna z sezonem",
+        description: "Informuj o tym, co jest dostępne teraz, i aktualizuj ofertę, gdy zmienia się sezon.",
       },
       {
         id: "direct-questions",
         icon: "message-circle",
-        title: "Relacje zaczynają się od rozmowy",
-        description: "Odpowiadaj na pytania i buduj grono stałych odbiorców.",
+        title: "Relacje na dłużej",
+        description: "Bezpośrednia rozmowa pomaga budować zaufanie i sprawia, że ludzie chętniej wracają.",
       },
     ],
     cta: {
       id: "for-farms-waitlist",
       label: "Powiadom mnie o starcie",
-      ariaLabel: "Dołącz do listy oczekujących jako gospodarstwo",
+      ariaLabel: "Dołącz do listy oczekujących ze swoim lokalnym miejscem",
       target: "waitlist",
       variant: "secondary",
     },
@@ -166,30 +180,38 @@ export const landingContent = {
   faq: {
     eyebrow: "FAQ",
     title: "Warto wiedzieć",
-    description: "Krótko o starcie Plonbli.",
+    description: "Najważniejsze informacje o tym, jak będzie działać Plonbli.",
     items: [
       {
-        id: "launch-date",
-        question: "Kiedy Plonbli wystartuje?",
-        answer: "Pracujemy nad pierwszą odsłoną. Osoby z listy poznają termin jako pierwsze.",
-      },
-      {
-        id: "waitlist-benefit",
-        question: "Co otrzymam po zapisie?",
-        answer: "Wiadomość o starcie i wybrane aktualizacje. Tylko to, co naprawdę istotne.",
-      },
-      {
-        id: "farm-interest",
-        question: "Dla kogo powstaje Plonbli?",
+        id: "direct-purchase",
+        question: "Czy przez Plonbli będzie można kupować?",
         answer:
-          "Dla osób szukających lokalnych produktów oraz gospodarstw, sadów, pasiek i piekarni, które chcą być łatwiej odnajdywane.",
+          "Plonbli pomoże znaleźć lokalne miejsce, poznać jego ofertę i nawiązać bezpośredni kontakt. Szczegóły zakupu, odbioru i płatności ustalicie między sobą.",
+      },
+      {
+        id: "who-can-join",
+        question: "Kto będzie mógł dołączyć?",
+        answer:
+          "Osoby prowadzące gospodarstwa, sady, pasieki, piekarnie, serowarnie oraz inne lokalne miejsca związane z jedzeniem.",
+      },
+      {
+        id: "available-products",
+        question: "Jakie produkty będzie można znaleźć?",
+        answer:
+          "Oferta będzie zależeć od okolicy i sezonu. Mogą to być między innymi owoce, warzywa, miód, jajka, pieczywo, sery i przetwory.",
+      },
+      {
+        id: "free-access",
+        question: "Czy korzystanie z Plonbli będzie bezpłatne?",
+        answer:
+          "Tak. Korzystanie z Plonbli będzie bezpłatne. Chcemy, aby odkrywanie lokalnych miejsc i bezpośredni kontakt z ludźmi, którzy za nimi stoją, były dostępne dla każdego.",
       },
     ],
   },
   finalCta: {
     eyebrow: "Bądź blisko",
-    title: "Zobacz, co wyrośnie blisko Ciebie",
-    description: "Dołącz do listy i poznaj Plonbli od pierwszego dnia.",
+    title: "Zobacz, co wyrośnie blisko ciebie",
+    description: "Plonbli dopiero rośnie. Zostaw adres e-mail, a damy ci znać, gdy ruszymy.",
     cta: {
       id: "final-waitlist",
       label: "Powiadom mnie o starcie",
@@ -199,7 +221,7 @@ export const landingContent = {
     },
   },
   footer: {
-    description: "Plonbli przybliża lokalne jedzenie i ludzi, którzy je tworzą.",
+    description: "Plonbli pomaga odkrywać lokalne jedzenie i ludzi, którzy za nim stoją.",
     navigationLabel: "Na tej stronie",
     socialLabel: "Znajdź nas",
     waitlistLabel: "Powiadom mnie o starcie",

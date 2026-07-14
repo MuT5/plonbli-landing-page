@@ -8,6 +8,7 @@ import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import SiteFooter from "@/components/landing/SiteFooter";
 import SiteHeader from "@/components/landing/SiteHeader";
 import { FinalCtaSection, WaitlistSection } from "@/components/landing/WaitlistSection";
+import WhySection from "@/components/landing/WhySection";
 
 export default function Index() {
   return (
@@ -16,6 +17,7 @@ export default function Index() {
         <SiteHeader />
         <main id="tresc-glowna">
           <HeroSection />
+          <WhySection />
           <HowItWorksSection />
           <AmbientStorySequence>
             <AmbientStoryChapter scene="contact">

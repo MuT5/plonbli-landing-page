@@ -73,6 +73,13 @@ describe("landing content contract", () => {
     expect(new Set(steps.map((step) => step.id)).size).toBe(3);
   });
 
+  it("states that Plonbli will be free without limiting the promise to launch", () => {
+    const freeAccess = landingContent.faq.items.find((item) => item.id === "free-access");
+
+    expect(freeAccess?.answer).toContain("Korzystanie z Plonbli będzie bezpłatne");
+    expect(freeAccess?.answer.toLowerCase()).not.toContain("na start");
+  });
+
   it("keeps one responsive asset pair for every story scene", () => {
     expect(storyScenes.map((scene) => scene.id)).toEqual(["discovery", "offer", "contact"]);
     expect(new Set(storyScenes.map((scene) => scene.desktopSrc)).size).toBe(3);

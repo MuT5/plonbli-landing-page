@@ -116,6 +116,11 @@ export interface LandingContent {
     secondaryCta: CtaContent;
     imageAlt: string;
   }>;
+  readonly why: Readonly<{
+    eyebrow: string;
+    title: string;
+    paragraphs: readonly [string, string, string];
+  }>;
   readonly waitlist: Readonly<{
     eyebrow: string;
     title: string;
