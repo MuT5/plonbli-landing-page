@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { ArrowDown, Sparkles } from "lucide-react";
+import { ArrowDown, Leaf } from "lucide-react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
 import CtaLink from "@/components/landing/CtaLink";
@@ -28,7 +28,7 @@ export default function HeroSection() {
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ duration: reducedMotion ? 0.38 : 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Sparkles aria-hidden="true" className="size-4" />
+            <Leaf aria-hidden="true" className="hero-eyebrow-leaf size-4" strokeWidth={1.8} />
             {content.eyebrow}
           </motion.p>
           <motion.h1

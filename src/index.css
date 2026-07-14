@@ -156,6 +156,11 @@
     background: var(--color-brand-soft);
   }
 
+  .hero-eyebrow-leaf {
+    color: var(--color-brand);
+    transform: rotate(-12deg);
+  }
+
   .button-primary,
   .button-secondary,
   .button-text {
