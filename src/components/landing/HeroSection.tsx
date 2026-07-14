@@ -3,6 +3,7 @@ import { ArrowDown, Leaf } from "lucide-react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
 import CtaLink from "@/components/landing/CtaLink";
+import { siteConfig } from "@/config/site";
 import { landingContent } from "@/content/landing.pl";
 
 export default function HeroSection() {
@@ -72,20 +73,22 @@ export default function HeroSection() {
             className="hero-image h-full w-full object-cover object-[68%_center]"
             style={reducedMotion ? undefined : { y: imageY, scale: imageScale }}
           />
-          <motion.figcaption
+          <motion.a
+            href={siteConfig.links.howItWorks}
+            aria-label="Przejdź do historii działania Plonbli"
             className="hero-caption"
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ duration: reducedMotion ? 0.38 : 0.45, delay: reducedMotion ? 0.08 : 0.36, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="inline-flex size-9 items-center justify-center rounded-full bg-[var(--color-brand)] text-[var(--color-ivory)]">
+            <span className="hero-caption-icon inline-flex size-9 items-center justify-center rounded-full bg-[var(--color-brand)] text-[var(--color-ivory)]">
               <ArrowDown aria-hidden="true" className="size-4" />
             </span>
             <span>
               <strong className="block font-bold text-[var(--color-olive)]">Plonbli rośnie</strong>
               <span className="text-sm text-[var(--color-earth)]">Poznaj historię podczas przewijania</span>
             </span>
-          </motion.figcaption>
+          </motion.a>
         </motion.figure>
       </div>
     </section>

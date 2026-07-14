@@ -337,6 +337,33 @@ test("opens and closes the mobile navigation", async ({ page }) => {
   await expect(menuButton).toBeFocused();
 });
 
+test("uses smooth section navigation for the hero story card and CTAs", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const storyLink = page.getByRole("link", { name: "Przejdź do historii działania Plonbli" });
+  const storySection = page.locator("#jak-to-dziala");
+
+  await expect(storyLink).toHaveAttribute("href", "#jak-to-dziala");
+  await expect(page.locator("html")).toHaveCSS("scroll-behavior", "smooth");
+  await storyLink.click();
+  await expect(page).toHaveURL(/#jak-to-dziala$/);
+  await expect
+    .poll(() => storySection.evaluate((element) => Math.abs(element.getBoundingClientRect().top)))
+    .toBeLessThan(220);
+
+  await page.goto("/");
+
+  const waitlistCta = page.locator('[data-cta-id="hero-waitlist"]');
+  const waitlistSection = page.locator("#lista-oczekujacych");
+
+  await waitlistCta.click();
+  await expect(page).toHaveURL(/#lista-oczekujacych$/);
+  await expect
+    .poll(() => waitlistSection.evaluate((element) => Math.abs(element.getBoundingClientRect().top)))
+    .toBeLessThan(220);
+});
+
 test("keeps the conversion section readable and the honeypot hidden", async ({ page }) => {
   await page.goto("/");
 
@@ -490,5 +517,5 @@ test("shows a complete static harvest with reduced motion", async ({ page }) => 
   await page.locator("#jak-to-dziala").scrollIntoViewIfNeeded();
 
   expect(await clipTop(reveal)).toBeLessThanOrEqual(1);
-  await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
+  await expect(page.locator("html")).toHaveCSS("scroll-behavior", "smooth");
 });
