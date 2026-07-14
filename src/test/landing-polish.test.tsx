@@ -26,6 +26,6 @@ describe("landing component polish", () => {
   });
 
   it("uses the shared launch notification label for the farm CTA", () => {
-    expect(landingContent.forFarms.cta.label).toBe("Powiadom mnie o starcie");
+    expect(landingContent.forFarms.cta.label).toBe("Powiadom mnie o\u00A0starcie");
   });
 });

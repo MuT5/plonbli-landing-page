@@ -76,7 +76,7 @@ describe("landing content contract", () => {
   it("states that Plonbli will be free without limiting the promise to launch", () => {
     const freeAccess = landingContent.faq.items.find((item) => item.id === "free-access");
 
-    expect(freeAccess?.answer).toContain("Korzystanie z Plonbli będzie bezpłatne");
+    expect(freeAccess?.answer).toContain("Korzystanie z\u00A0Plonbli będzie bezpłatne");
     expect(freeAccess?.answer.toLowerCase()).not.toContain("na start");
   });
 

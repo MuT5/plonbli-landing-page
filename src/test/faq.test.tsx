@@ -13,7 +13,7 @@ describe("FAQ accordion", () => {
     );
 
     const question = screen.getByRole("button", {
-      name: "Czy korzystanie z Plonbli będzie bezpłatne?",
+      name: "Czy korzystanie z\u00A0Plonbli będzie bezpłatne?",
     });
 
     expect(question).toHaveAttribute("aria-expanded", "false");
@@ -22,7 +22,7 @@ describe("FAQ accordion", () => {
 
     expect(question).toHaveAttribute("aria-expanded", "true");
     const answer = screen.getByRole("region", {
-      name: "Czy korzystanie z Plonbli będzie bezpłatne?",
+      name: "Czy korzystanie z\u00A0Plonbli będzie bezpłatne?",
     });
 
     expect(answer).toHaveTextContent("Korzystanie z Plonbli będzie bezpłatne");

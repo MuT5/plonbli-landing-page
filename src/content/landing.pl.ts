@@ -1,6 +1,7 @@
+import { applyPolishTypography } from "@/lib/polishTypography";
 import type { LandingContent } from "@/types/landing";
 
-export const landingContent = {
+const rawLandingContent = {
   seo: {
     title: "Plonbli. Dobre jedzenie jest bliżej, niż myślisz",
     description:
@@ -227,3 +228,19 @@ export const landingContent = {
     waitlistLabel: "Powiadom mnie o starcie",
   },
 } as const satisfies LandingContent;
+
+const nonVisualContentKeys = new Set([
+  "seo",
+  "id",
+  "ariaLabel",
+  "imageAlt",
+  "emailPlaceholder",
+  "target",
+  "variant",
+  "icon",
+]);
+
+export const landingContent: LandingContent = applyPolishTypography(
+  rawLandingContent,
+  nonVisualContentKeys,
+);
