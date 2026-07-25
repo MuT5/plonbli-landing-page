@@ -28,7 +28,7 @@ describe("ambient story sequence", () => {
 
   it("keeps an opacity-only crossfade when reduced motion is requested", async () => {
     vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
-      matches: query === "(prefers-reduced-motion)",
+      matches: query === "(prefers-reduced-motion: reduce)",
       media: query,
       onchange: null,
       addListener: () => {},
@@ -83,7 +83,7 @@ describe("ambient story sequence", () => {
     expect(scenes).toHaveLength(1);
     expect(scenes[0]).toHaveAttribute("data-ambient-story-scene", "contact");
     expect(source).toHaveAttribute("media", "(min-width: 1024px)");
-    expect(image).toHaveAttribute("loading", "eager");
+    expect(image).toHaveAttribute("loading", "lazy");
     expect(image).toHaveAttribute("fetchpriority", "low");
     expect(image).toHaveAttribute("alt", "");
     expect(image?.closest("[aria-hidden='true']")).not.toBeNull();

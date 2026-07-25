@@ -21,10 +21,14 @@ export default function SiteFooter() {
         <div>
           <a href={siteConfig.links.home} className="inline-flex items-center gap-3" aria-label="Strona główna Plonbli">
             <img
-              src={`${import.meta.env.BASE_URL}plonbliLogoBezTlaKolo-removebg-preview.png`}
+              src={`${import.meta.env.BASE_URL}plonbli-logo-96.webp`}
+              srcSet={`${import.meta.env.BASE_URL}plonbli-logo-96.webp 96w, ${import.meta.env.BASE_URL}plonbli-logo-192.webp 192w`}
+              sizes="48px"
               width="52"
               height="52"
               alt=""
+              loading="lazy"
+              decoding="async"
               className="site-footer-logo size-12 object-contain"
             />
             <span className="font-display text-3xl font-bold text-[var(--color-ivory)]">Plonbli</span>
@@ -61,7 +65,7 @@ export default function SiteFooter() {
         </div>
       </div>
       <div className="site-footer-bottom site-container relative z-10 mt-10 border-t pt-6 text-sm">
-        © {new Date().getFullYear()} Plonbli. Wszelkie prawa zastrzeżone.
+        © {siteConfig.copyrightYear} Plonbli. Wszelkie prawa zastrzeżone.
       </div>
     </footer>
   );

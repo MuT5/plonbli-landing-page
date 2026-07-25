@@ -6,9 +6,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 
 import { getStoryScene, type StorySceneId } from "@/content/storyScenes";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 type SelectScene = (scene: StorySceneId) => void;
 
@@ -19,7 +20,7 @@ interface AmbientStorySequenceProps {
 }
 
 export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
-  const reducedMotion = Boolean(useReducedMotion());
+  const reducedMotion = useReducedMotion();
   const [requestedScene, setRequestedScene] = useState<StorySceneId>("contact");
   const [visibleScene, setVisibleScene] = useState<StorySceneId>("contact");
   const scene = getStoryScene(visibleScene);
@@ -109,7 +110,7 @@ export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
                   alt=""
                   width="800"
                   height="1000"
-                  loading={visibleScene === "contact" ? "eager" : "lazy"}
+                  loading="lazy"
                   {...{ fetchpriority: "low" }}
                   decoding="async"
                 />

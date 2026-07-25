@@ -2,23 +2,6 @@ import { applyPolishTypography } from "@/lib/polishTypography";
 import type { LandingContent } from "@/types/landing";
 
 const rawLandingContent = {
-  seo: {
-    title: "Plonbli. Dobre jedzenie jest bliżej, niż myślisz",
-    description:
-      "Odkrywaj gospodarstwa, sady, pasieki, piekarnie i serowarnie w swojej okolicy. Sprawdzaj ich ofertę i rozmawiaj bezpośrednio z ludźmi, którzy za nimi stoją.",
-    openGraphTitle: "Plonbli. Dobre jedzenie jest bliżej, niż myślisz",
-    openGraphDescription:
-      "Odkrywaj lokalne miejsca, sprawdzaj ich sezonową ofertę i rozmawiaj u źródła.",
-    openGraphImageAlt: "Plonbli, lokalne jedzenie i miejsca blisko ciebie",
-    keywords: [
-      "lokalne produkty",
-      "lokalne gospodarstwa",
-      "żywność z okolicy",
-      "rolnicy w okolicy",
-      "bezpośredni kontakt z gospodarstwem",
-      "Plonbli",
-    ],
-  },
   navigation: {
     ariaLabel: "Główna nawigacja",
     items: [
@@ -230,7 +213,6 @@ const rawLandingContent = {
 } as const satisfies LandingContent;
 
 const nonVisualContentKeys = new Set([
-  "seo",
   "id",
   "ariaLabel",
   "imageAlt",

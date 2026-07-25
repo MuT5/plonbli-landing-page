@@ -1,14 +1,15 @@
 import { useRef } from "react";
 import { ArrowDown, Leaf } from "lucide-react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 import CtaLink from "@/components/landing/CtaLink";
 import { siteConfig } from "@/config/site";
 import { landingContent } from "@/content/landing.pl";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 export default function HeroSection() {
   const heroRef = useRef<HTMLElement>(null);
-  const reducedMotion = Boolean(useReducedMotion());
+  const reducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -65,14 +66,38 @@ export default function HeroSection() {
           animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: reducedMotion ? 0.48 : 0.78, delay: reducedMotion ? 0.04 : 0.08, ease: [0.22, 1, 0.36, 1] }}
         >
-          <motion.img
-            src={`${import.meta.env.BASE_URL}landing/hero-storybook.webp`}
-            width="1536"
-            height="1024"
-            alt={content.imageAlt}
-            className="hero-image h-full w-full object-cover object-[68%_center]"
-            style={reducedMotion ? undefined : { y: imageY, scale: imageScale }}
-          />
+          <picture className="block h-full w-full">
+            <source
+              media="(max-width: 639px) and (orientation: portrait)"
+              type="image/avif"
+              srcSet={`${import.meta.env.BASE_URL}landing/hero-storybook-mobile-768.avif 768w, ${import.meta.env.BASE_URL}landing/hero-storybook-mobile-1024.avif 1024w`}
+              sizes="calc(100vw - 2rem)"
+            />
+            <source
+              media="(max-width: 639px) and (orientation: portrait)"
+              type="image/webp"
+              srcSet={`${import.meta.env.BASE_URL}landing/hero-storybook-mobile-768.webp 768w, ${import.meta.env.BASE_URL}landing/hero-storybook-mobile-1024.webp 1024w`}
+              sizes="calc(100vw - 2rem)"
+            />
+            <source
+              type="image/avif"
+              srcSet={`${import.meta.env.BASE_URL}landing/hero-storybook-768.avif 768w, ${import.meta.env.BASE_URL}landing/hero-storybook-1280.avif 1280w, ${import.meta.env.BASE_URL}landing/hero-storybook-1536.avif 1536w`}
+              sizes="(min-width: 1024px) 46vw, calc(100vw - 2rem)"
+            />
+            <motion.img
+              src={`${import.meta.env.BASE_URL}landing/hero-storybook-1280.webp`}
+              srcSet={`${import.meta.env.BASE_URL}landing/hero-storybook-768.webp 768w, ${import.meta.env.BASE_URL}landing/hero-storybook-1280.webp 1280w, ${import.meta.env.BASE_URL}landing/hero-storybook-1536.webp 1536w`}
+              sizes="(min-width: 1024px) 46vw, calc(100vw - 2rem)"
+              width="1536"
+              height="1024"
+              alt={content.imageAlt}
+              className="hero-image h-full w-full object-cover object-[68%_center]"
+              style={reducedMotion ? undefined : { y: imageY, scale: imageScale }}
+              loading="eager"
+              {...{ fetchpriority: "high" }}
+              decoding="async"
+            />
+          </picture>
           <motion.a
             href={siteConfig.links.howItWorks}
             aria-label="Przejdź do historii działania Plonbli"

@@ -1,5 +1,5 @@
 import { type RefObject, useRef } from "react";
-import { motion, type MotionStyle, type MotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { motion, type MotionStyle, type MotionValue, useScroll, useSpring, useTransform } from "framer-motion";
 
 import HarvestGrowth from "@/components/landing/HarvestGrowth";
 import LandingIcon from "@/components/landing/LandingIcon";
@@ -7,6 +7,7 @@ import Reveal from "@/components/landing/Reveal";
 import { landingContent } from "@/content/landing.pl";
 import { storyScenes, type StoryScene } from "@/content/storyScenes";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 interface StoryboardSceneProps {
   index: number;
@@ -118,7 +119,7 @@ export default function HowItWorksSection() {
   const firstChapterRef = useRef<HTMLDivElement>(null);
   const secondChapterRef = useRef<HTMLDivElement>(null);
   const thirdChapterRef = useRef<HTMLDivElement>(null);
-  const reducedMotion = Boolean(useReducedMotion());
+  const reducedMotion = useReducedMotion();
   const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({
     target: stepsRef,

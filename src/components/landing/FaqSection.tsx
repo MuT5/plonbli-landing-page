@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import Reveal from "@/components/landing/Reveal";
 import { landingContent } from "@/content/landing.pl";
+import { useClientReady } from "@/context/client-ready";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import type { FaqItem as FaqItemContent } from "@/types/landing";
 
 interface FaqItemProps {
@@ -13,20 +15,23 @@ interface FaqItemProps {
 
 function FaqItem({ index, item }: FaqItemProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const reducedMotion = Boolean(useReducedMotion());
+  const clientReady = useClientReady();
+  const reducedMotion = useReducedMotion();
+  const isExpanded = clientReady ? isOpen : true;
   const answerId = `faq-answer-${item.id}`;
   const questionId = `faq-question-${item.id}`;
 
   return (
     <Reveal delay={index * 0.05}>
-      <div className="faq-item" data-open={isOpen}>
+      <div className="faq-item" data-open={isExpanded}>
         <h3>
           <button
             id={questionId}
             type="button"
             className="faq-item-trigger flex min-h-16 w-full cursor-pointer items-center justify-between gap-5 bg-transparent px-5 py-4 text-left font-display text-xl font-bold text-[var(--color-olive)] sm:px-6 sm:text-2xl"
             aria-controls={answerId}
-            aria-expanded={isOpen}
+            aria-expanded={isExpanded}
+            disabled={!clientReady}
             onClick={() => setIsOpen((open) => !open)}
           >
             <span>{item.question}</span>
@@ -34,8 +39,8 @@ function FaqItem({ index, item }: FaqItemProps) {
             aria-hidden="true"
             className="faq-item-icon inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface)]"
             animate={{
-              rotate: isOpen ? 180 : 0,
-              scale: isOpen && !reducedMotion ? 1.04 : 1,
+              rotate: isExpanded ? 180 : 0,
+              scale: isExpanded && !reducedMotion ? 1.04 : 1,
             }}
             transition={{ duration: reducedMotion ? 0.16 : 0.28, ease: [0.22, 1, 0.36, 1] }}
             >
@@ -50,7 +55,7 @@ function FaqItem({ index, item }: FaqItemProps) {
           data-faq-answer={item.id}
           role="region"
           aria-labelledby={questionId}
-          aria-hidden={!isOpen}
+          aria-hidden={!isExpanded}
         >
           <div className="faq-item-panel-clip">
             <div className="faq-item-answer px-5 pb-6 pr-14 text-base leading-7 text-[var(--color-ink-muted)] sm:px-6 sm:text-lg sm:leading-8">

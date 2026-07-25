@@ -95,6 +95,15 @@ describe("waitlist form", () => {
     expect(container.querySelector("#final-waitlist-feedback")).toBeInTheDocument();
     expect(wrapper).not.toHaveClass("waitlist-form-shell");
   });
+
+  it("renders the email placeholder without reducing its contrast", () => {
+    render(<WaitlistForm content={landingContent.waitlist.form} />);
+
+    const input = screen.getByLabelText("Twój e-mail");
+
+    expect(input).toHaveClass("placeholder:text-[var(--color-earth)]");
+    expect(input.className).not.toContain("placeholder:text-[var(--color-earth)]/60");
+  });
 });
 
 describe("waitlist utilities", () => {

@@ -25,7 +25,7 @@ export default function HarvestGrowth({ progress, reducedMotion = false, variant
           alt=""
           aria-hidden="true"
           decoding="async"
-          loading={variant === "mobile" ? "lazy" : "eager"}
+          loading="lazy"
           className="harvest-raster"
         />
       </motion.div>

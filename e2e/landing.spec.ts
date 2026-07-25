@@ -1,4 +1,5 @@
 import { expect, test, type Locator } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 async function clipTop(locator: Locator) {
   return locator.evaluate((element) => {
@@ -25,6 +26,33 @@ test("renders the pre-launch story and waitlist", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "pl-PL");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://plonbli.pl/");
   expect(consoleErrors).toEqual([]);
+});
+
+test("keeps the prerendered page readable and the waitlist safe without JavaScript", async ({ browser, baseURL }) => {
+  if (!baseURL) throw new Error("Missing Playwright baseURL");
+
+  const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
+  const page = await context.newPage();
+
+  try {
+    await page.goto("/");
+
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.locator(".waitlist-noscript-fallback")).toHaveCount(2);
+    await expect(page.locator(".waitlist-noscript-fallback").first()).toBeVisible();
+    await expect(page.locator('form[data-js-required="waitlist"]')).toHaveCount(2);
+    await expect(page.locator('form[data-js-required="waitlist"]').first()).toBeHidden();
+    await expect(page.locator('input[type="email"]').first()).toBeDisabled();
+
+    const firstFaq = page.locator(".faq-item").first();
+    const firstAnswer = firstFaq.locator(".faq-item-panel");
+    await expect(firstFaq).toHaveAttribute("data-open", "true");
+    await expect(firstFaq.getByRole("button")).toBeDisabled();
+    await expect(firstAnswer).toHaveAttribute("aria-hidden", "false");
+    await expect(firstAnswer).toBeVisible();
+  } finally {
+    await context.close();
+  }
 });
 
 test("contains the three-person hero scene across mobile viewports", async ({ page }) => {
@@ -67,6 +95,7 @@ test("keeps the mobile harvest contained without horizontal overflow", async ({ 
   for (const width of [320, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/");
+    await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
 
     const scene = page.getByTestId("mobile-harvest-scene");
     const reveal = page.getByTestId("harvest-reveal-mobile");
@@ -274,6 +303,7 @@ test("keeps the story visible on short landscape screens", async ({ page }, test
   if (testInfo.project.name === "mobile") {
     await page.setViewportSize({ width: 640, height: 360 });
     await page.goto("/");
+    await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
 
     for (const heading of ["Odkryj blisko", "Poznaj ofertę", "Porozmawiaj u źródła"]) {
       const article = page.getByRole("heading", { level: 3, name: heading }).locator("..").locator("..");
@@ -283,6 +313,7 @@ test("keeps the story visible on short landscape screens", async ({ page }, test
 
     await page.setViewportSize({ width: 1023, height: 768 });
     await page.goto("/");
+    await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
 
     const tabletScene = page.getByTestId("storyboard-visual");
     await tabletScene.scrollIntoViewIfNeeded();
@@ -337,8 +368,8 @@ test("opens and closes the mobile navigation", async ({ page }) => {
   await expect(menuButton).toBeFocused();
 });
 
-test("uses smooth section navigation for the hero story card and CTAs", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
+test("uses smooth section navigation unless reduced motion is requested", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
 
   const storyLink = page.getByRole("link", { name: "Przejdź do historii działania Plonbli" });
@@ -346,6 +377,9 @@ test("uses smooth section navigation for the hero story card and CTAs", async ({
 
   await expect(storyLink).toHaveAttribute("href", "#jak-to-dziala");
   await expect(page.locator("html")).toHaveCSS("scroll-behavior", "smooth");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
   await storyLink.click();
   await expect(page).toHaveURL(/#jak-to-dziala$/);
   await expect
@@ -374,6 +408,78 @@ test("keeps the conversion section readable and the honeypot hidden", async ({ p
   await expect(honeypots).toHaveCount(2);
   await expect(honeypots.first()).toBeHidden();
   await expect(honeypots.last()).toBeHidden();
+});
+
+test("keeps placeholder and step numbers above their contrast targets", async ({ page }) => {
+  await page.goto("/");
+
+  const contrast = await page.evaluate(() => {
+    type Rgba = { red: number; green: number; blue: number; alpha: number };
+
+    const parseColor = (value: string): Rgba => {
+      const channels = value.match(/[\d.]+/g)?.map(Number);
+      if (!channels || channels.length < 3) throw new Error(`Unsupported CSS color: ${value}`);
+
+      return {
+        red: channels[0],
+        green: channels[1],
+        blue: channels[2],
+        alpha: channels[3] ?? 1,
+      };
+    };
+    const composite = (foreground: Rgba, background: Rgba): Rgba => ({
+      red: foreground.red * foreground.alpha + background.red * (1 - foreground.alpha),
+      green: foreground.green * foreground.alpha + background.green * (1 - foreground.alpha),
+      blue: foreground.blue * foreground.alpha + background.blue * (1 - foreground.alpha),
+      alpha: 1,
+    });
+    const luminance = ({ red, green, blue }: Rgba) => {
+      const linearize = (channel: number) => {
+        const normalized = channel / 255;
+        return normalized <= 0.04045
+          ? normalized / 12.92
+          : ((normalized + 0.055) / 1.055) ** 2.4;
+      };
+
+      return 0.2126 * linearize(red) + 0.7152 * linearize(green) + 0.0722 * linearize(blue);
+    };
+    const ratio = (foreground: Rgba, background: Rgba) => {
+      const foregroundLuminance = luminance(foreground);
+      const backgroundLuminance = luminance(background);
+      const lighter = Math.max(foregroundLuminance, backgroundLuminance);
+      const darker = Math.min(foregroundLuminance, backgroundLuminance);
+
+      return (lighter + 0.05) / (darker + 0.05);
+    };
+
+    const email = document.querySelector<HTMLInputElement>('input[type="email"]')!;
+    const placeholderColor = parseColor(getComputedStyle(email, "::placeholder").color);
+    const emailBackground = parseColor(getComputedStyle(email).backgroundColor);
+    const stepNumber = document.querySelector<HTMLElement>(".story-chapter-number")!;
+    const stepCard = stepNumber.closest<HTMLElement>(".story-chapter-copy")!;
+    const stepColor = parseColor(getComputedStyle(stepNumber).color);
+    const pageBackground = parseColor(getComputedStyle(document.body).backgroundColor);
+    const stepBackground = composite(parseColor(getComputedStyle(stepCard).backgroundColor), pageBackground);
+
+    return {
+      placeholder: ratio(composite(placeholderColor, emailBackground), emailBackground),
+      stepNumber: ratio(composite(stepColor, stepBackground), stepBackground),
+    };
+  });
+
+  expect(contrast.placeholder).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.stepNumber).toBeGreaterThanOrEqual(3);
+});
+
+test("has no automatically detectable WCAG A or AA violations", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const results = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+    .analyze();
+
+  expect(results.violations).toEqual([]);
 });
 
 test("animates FAQ answers while opening and closing", async ({ page }) => {
@@ -517,5 +623,5 @@ test("shows a complete static harvest with reduced motion", async ({ page }) => 
   await page.locator("#jak-to-dziala").scrollIntoViewIfNeeded();
 
   expect(await clipTop(reveal)).toBeLessThanOrEqual(1);
-  await expect(page.locator("html")).toHaveCSS("scroll-behavior", "smooth");
+  await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
 });

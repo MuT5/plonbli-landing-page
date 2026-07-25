@@ -12,7 +12,7 @@ describe("three-step storyboard", () => {
 
   it("keeps one layered crossfade stage when reduced motion is requested", () => {
     vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
-      matches: query === "(prefers-reduced-motion)",
+      matches: query === "(prefers-reduced-motion: reduce)",
       media: query,
       onchange: null,
       addListener: () => {},

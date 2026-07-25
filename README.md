@@ -5,26 +5,22 @@ Responsywny landing Plonbli kierujący do listy oczekujących. Strona przedstawi
 ## Najważniejsze elementy
 
 - kierunek wizualny „Natural Premium Storybook”;
-- autorska ilustracja hero oraz animowana opowieść o rosnącym plonie podczas przewijania;
-- układ dopracowany dla desktopu i urządzeń mobilnych;
+- responsywne obrazy AVIF/WebP i lokalnie hostowane fonty;
 - dostępna nawigacja, formularz i obsługa `prefers-reduced-motion`;
 - lista oczekujących oparta na Supabase;
-- metadane SEO, Open Graph, dane strukturalne, sitemap i robots.txt.
+- jedno źródło metadanych SEO, Open Graph, danych strukturalnych i ikon;
+- statyczny prerender pełnej treści strony podczas buildu.
 
-## Uruchomienie lokalne
+## Wymagania
 
-Wymagany jest Node.js 20+ albo aktualny Bun.
+- Node.js 22.x;
+- npm 10 lub nowszy.
+
+Projekt korzysta wyłącznie z npm. Po sklonowaniu repozytorium zainstaluj zależności z lockfile:
 
 ```bash
-npm install
+npm ci
 npm run dev
-```
-
-Alternatywnie:
-
-```bash
-bun install
-bun run dev
 ```
 
 ## Konfiguracja formularza
@@ -38,20 +34,33 @@ VITE_SUPABASE_ANON_KEY=twoj-publiczny-klucz-anon
 
 Formularz zapisuje wyłącznie znormalizowany adres e-mail do tabeli `public.subscribers`. Kolumna `email` powinna mieć ograniczenie `UNIQUE`; rola anonimowa powinna móc wykonać tylko `INSERT`, bez dostępu do odczytu listy.
 
+## Build i prerender
+
+`npm run build` buduje klienta, renderuje aplikację przez `react-dom/server`, wstrzykuje pełny HTML do `dist/index.html` i automatycznie sprawdza wynik. Tymczasowy bundle SSR jest usuwany po zakończeniu.
+
+```bash
+npm run build
+npm run verify:dist
+```
+
+`verify:dist` sprawdza między innymi metadane, canonical, Open Graph, JSON-LD, H1, formularz, FAQ oraz brak ukrytej treści prerenderowanej.
+
 ## Kontrola jakości
 
 ```bash
-npm run lint
+npm run lint -- --max-warnings=0
 npm run typecheck
 npm test
 npm run build
+npm run verify:dist
+npx playwright install chromium webkit
 npm run test:e2e
 ```
 
-Testy E2E wymagają przeglądarek Playwright (`npx playwright install`).
+`npm run test:e2e` najpierw odświeża build, więc lokalnie nie testuje nieaktualnego katalogu `dist`. CI korzysta z `npm run test:e2e:run`, ponieważ wykonuje build w osobnym, wcześniejszym kroku.
 
 ## Wdrożenie
 
-GitHub Actions odpowiada wyłącznie za kontrolę jakości i nie publikuje strony. Hosting konfiguruje się niezależnie w Netlify albo Vercelu, używając polecenia `npm run build` i katalogu wynikowego `dist`.
+GitHub Actions odpowiada za kontrolę jakości i nie publikuje strony. Hosting konfiguruje się niezależnie w Netlify albo Vercelu, używając polecenia `npm run build` i katalogu wynikowego `dist`.
 
 Zmienne `VITE_SUPABASE_URL` i `VITE_SUPABASE_ANON_KEY` należy dodać w ustawieniach środowiska wybranej platformy hostingowej. Nie należy udostępniać klucza `service_role` aplikacji frontendowej.

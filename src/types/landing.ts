@@ -37,6 +37,7 @@ export interface SocialLinkConfig {
 
 export interface SiteConfig {
   readonly name: "Plonbli";
+  readonly copyrightYear: number;
   readonly locale: "pl-PL";
   readonly language: "pl";
   readonly siteUrl: HttpsUrl;
@@ -55,15 +56,6 @@ export interface CtaContent {
 export interface NavigationItem {
   readonly label: string;
   readonly target: SiteLinkKey;
-}
-
-export interface SeoContent {
-  readonly title: string;
-  readonly description: string;
-  readonly openGraphTitle: string;
-  readonly openGraphDescription: string;
-  readonly openGraphImageAlt: string;
-  readonly keywords: readonly string[];
 }
 
 export interface BenefitItem {
@@ -102,7 +94,6 @@ export interface FaqItem {
 }
 
 export interface LandingContent {
-  readonly seo: SeoContent;
   readonly navigation: Readonly<{
     ariaLabel: string;
     items: readonly NavigationItem[];

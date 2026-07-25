@@ -1,12 +1,14 @@
 import type { SiteConfig } from "@/types/landing";
+import { siteMetadata } from "@/config/siteMetadata";
 
 export const siteConfig = {
-  name: "Plonbli",
-  locale: "pl-PL",
-  language: "pl",
-  siteUrl: "https://plonbli.pl",
+  name: siteMetadata.name,
+  copyrightYear: siteMetadata.copyrightYear,
+  locale: siteMetadata.locale,
+  language: siteMetadata.language,
+  siteUrl: siteMetadata.siteUrl,
   links: {
-    home: "https://plonbli.pl",
+    home: siteMetadata.siteUrl,
     waitlist: "#lista-oczekujacych",
     howItWorks: "#jak-to-dziala",
     forLocals: "#dla-szukajacych-lokalnie",
@@ -17,32 +19,32 @@ export const siteConfig = {
     telegramChannel: {
       label: "Kanał Telegram",
       ariaLabel: "Otwórz kanał Plonbli na Telegramie",
-      href: "https://t.me/plonbli",
+      href: siteMetadata.socialProfiles.telegramChannel,
     },
     telegramGroup: {
       label: "Grupa Telegram",
       ariaLabel: "Otwórz grupę Plonbli na Telegramie",
-      href: "https://t.me/Plonbligrupa",
+      href: siteMetadata.socialProfiles.telegramGroup,
     },
     instagram: {
       label: "Instagram",
       ariaLabel: "Otwórz profil Plonbli na Instagramie",
-      href: "https://www.instagram.com/plonbli/",
+      href: siteMetadata.socialProfiles.instagram,
     },
     facebook: {
       label: "Facebook",
       ariaLabel: "Otwórz stronę Plonbli na Facebooku",
-      href: "https://www.facebook.com/share/1YkUnnggkF/",
+      href: siteMetadata.socialProfiles.facebook,
     },
     x: {
       label: "X",
       ariaLabel: "Otwórz profil Plonbli w serwisie X",
-      href: "https://x.com/plonbli",
+      href: siteMetadata.socialProfiles.x,
     },
     youtube: {
       label: "YouTube",
       ariaLabel: "Otwórz kanał Plonbli na YouTube",
-      href: "https://www.youtube.com/@Plonbli",
+      href: siteMetadata.socialProfiles.youtube,
     },
   },
 } as const satisfies SiteConfig;

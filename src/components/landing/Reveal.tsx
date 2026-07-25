@@ -1,5 +1,7 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { PropsWithChildren } from "react";
+
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 interface RevealProps extends PropsWithChildren {
   className?: string;
@@ -8,7 +10,7 @@ interface RevealProps extends PropsWithChildren {
 }
 
 export default function Reveal({ children, className, delay = 0, initialVisible = false }: RevealProps) {
-  const reducedMotion = Boolean(useReducedMotion());
+  const reducedMotion = useReducedMotion();
   const shouldReveal = !initialVisible;
 
   return (

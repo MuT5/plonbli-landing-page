@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { landingContent } from "@/content/landing.pl";
 import { siteConfig } from "@/config/site";
 import CtaLink from "@/components/landing/CtaLink";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const reducedMotion = Boolean(useReducedMotion());
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (!open) return undefined;
@@ -32,10 +33,13 @@ export default function SiteHeader() {
         <div className="site-container flex min-h-[4.5rem] items-center justify-between gap-4 py-3">
           <a href={siteConfig.links.home} aria-label="Strona główna Plonbli" className="flex shrink-0 items-center gap-3">
             <img
-              src={`${import.meta.env.BASE_URL}plonbliLogoBezTlaKolo-removebg-preview.png`}
+              src={`${import.meta.env.BASE_URL}plonbli-logo-96.webp`}
+              srcSet={`${import.meta.env.BASE_URL}plonbli-logo-96.webp 96w, ${import.meta.env.BASE_URL}plonbli-logo-192.webp 192w`}
+              sizes="44px"
               width="48"
               height="48"
               alt=""
+              decoding="async"
               className="size-11 object-contain"
             />
             <span className="header-brand-name font-display text-2xl font-bold tracking-[-0.02em] text-[var(--color-olive)]">Plonbli</span>

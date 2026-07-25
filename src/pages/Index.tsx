@@ -9,11 +9,17 @@ import SiteFooter from "@/components/landing/SiteFooter";
 import SiteHeader from "@/components/landing/SiteHeader";
 import { FinalCtaSection, WaitlistSection } from "@/components/landing/WaitlistSection";
 import WhySection from "@/components/landing/WhySection";
+import { useClientReady } from "@/context/client-ready";
 
 export default function Index() {
+  const clientReady = useClientReady();
+
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen overflow-clip bg-[var(--color-surface)] text-[var(--color-ink)]">
+      <div
+        className="min-h-screen overflow-clip bg-[var(--color-surface)] text-[var(--color-ink)]"
+        data-client-ready={clientReady}
+      >
         <SiteHeader />
         <main id="tresc-glowna">
           <HeroSection />
