@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { landingContent } from "@/content/landing.pl";
 import { siteConfig } from "@/config/site";
-import CtaLink from "@/components/landing/CtaLink";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 export default function SiteHeader() {
@@ -31,10 +30,10 @@ export default function SiteHeader() {
       </a>
       <header className="site-header">
         <div className="site-container flex min-h-[4.5rem] items-center justify-between gap-4 py-3">
-          <a href={siteConfig.links.home} aria-label="Strona główna Plonbli" className="flex shrink-0 items-center gap-3">
+          <a href={siteConfig.links.home} aria-label={`Strona główna serwisu ${siteConfig.name}`} className="flex shrink-0 items-center gap-2 sm:gap-3">
             <img
-              src={`${import.meta.env.BASE_URL}plonbli-logo-96.webp`}
-              srcSet={`${import.meta.env.BASE_URL}plonbli-logo-96.webp 96w, ${import.meta.env.BASE_URL}plonbli-logo-192.webp 192w`}
+              src={`${import.meta.env.BASE_URL}od-swoich-pin-96.webp`}
+              srcSet={`${import.meta.env.BASE_URL}od-swoich-pin-96.webp 96w, ${import.meta.env.BASE_URL}od-swoich-pin-192.webp 192w`}
               sizes="44px"
               width="48"
               height="48"
@@ -42,7 +41,7 @@ export default function SiteHeader() {
               decoding="async"
               className="size-11 object-contain"
             />
-            <span className="header-brand-name font-display text-2xl font-bold tracking-[-0.02em] text-[var(--color-olive)]">Plonbli</span>
+            <span className="whitespace-nowrap font-display text-[1.6rem] font-semibold leading-none tracking-[-0.02em] text-[var(--color-brand)] sm:text-[1.85rem]">{siteConfig.name}</span>
           </a>
 
           <nav aria-label={landingContent.navigation.ariaLabel} className="hidden items-center gap-7 lg:flex">
@@ -53,27 +52,17 @@ export default function SiteHeader() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <CtaLink content={landingContent.navigation.cta} className="hidden min-h-11 px-5 sm:inline-flex" />
-            <a
-              href={siteConfig.links.waitlist}
-              className="header-mobile-cta button-primary min-h-10 px-4 text-sm sm:hidden"
-              aria-label={landingContent.navigation.cta.ariaLabel}
-            >
-              Powiadom
-            </a>
-            <button
-              ref={menuButtonRef}
-              type="button"
-              className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-ivory)] text-[var(--color-olive)] transition hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25 lg:hidden"
-              aria-label={open ? "Zamknij menu" : "Otwórz menu"}
-              aria-expanded={open}
-              aria-controls="mobile-navigation"
-              onClick={() => setOpen((value) => !value)}
-            >
-              {open ? <X aria-hidden="true" className="size-5" /> : <Menu aria-hidden="true" className="size-5" />}
-            </button>
-          </div>
+          <button
+            ref={menuButtonRef}
+            type="button"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-ivory)] text-[var(--color-olive)] transition hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-brand)]/25 lg:hidden"
+            aria-label={open ? "Zamknij menu" : "Otwórz menu"}
+            aria-expanded={open}
+            aria-controls="mobile-navigation"
+            onClick={() => setOpen((value) => !value)}
+          >
+            {open ? <X aria-hidden="true" className="size-5" /> : <Menu aria-hidden="true" className="size-5" />}
+          </button>
         </div>
 
         <AnimatePresence initial={false}>
@@ -98,7 +87,6 @@ export default function SiteHeader() {
                     {item.label}
                   </a>
                 ))}
-                <CtaLink content={landingContent.navigation.cta} className="mt-2 justify-center sm:hidden" onClick={() => setOpen(false)} />
               </div>
             </motion.nav>
           ) : null}

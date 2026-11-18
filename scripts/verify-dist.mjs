@@ -131,16 +131,12 @@ export async function verifyDist({ rootDir } = {}) {
   assert(rootStart >= 0 && bodyEnd > rootStart, "cannot locate prerendered root");
   const prerenderedRoot = html.slice(rootStart, bodyEnd);
   assert(/<h1[\s>]/i.test(prerenderedRoot), "prerendered H1 is missing");
-  assert(/<form[\s>]/i.test(prerenderedRoot), "prerendered waitlist form is missing");
-  assert(
-    /<form[^>]*data-js-required="waitlist"[^>]*hidden/i.test(prerenderedRoot),
-    "no-JS waitlist form is not safely disabled",
-  );
-  assert(prerenderedRoot.includes("waitlist-noscript-fallback"), "no-JS waitlist explanation is missing");
+  assert(!/<input\b[^>]*\btype="email"/i.test(prerenderedRoot), "public page still collects e-mail");
+  assert(!/lista-oczekujacych|data-js-required="waitlist"/i.test(prerenderedRoot), "obsolete signup link or form in public HTML");
   assert(prerenderedRoot.includes('id="faq"'), "prerendered FAQ is missing");
   assert(prerenderedRoot.includes('class="faq-item" data-open="true"'), "no-JS FAQ is not expanded");
   assert(/class="faq-item-panel"[^>]*aria-hidden="false"/i.test(prerenderedRoot), "no-JS FAQ answers are hidden");
-  assert(prerenderedRoot.includes('id="lista-oczekujacych"'), "prerendered waitlist section is missing");
+  assert(prerenderedRoot.includes('id="jak-to-dziala"'), "prerendered discovery story is missing");
   const inlineStyles = [...prerenderedRoot.matchAll(/style="([^"]*)"/gi)].map((match) => match[1]);
   assert(
     !inlineStyles.some((style) => /(?:^|;)\s*opacity:\s*0(?:;|\s|$)/i.test(style)),
@@ -152,29 +148,20 @@ export async function verifyDist({ rootDir } = {}) {
     "favicon-48.png",
     "favicon-96.png",
     "apple-touch-icon.png",
-    "plonbli-logo-96.webp",
-    "plonbli-logo-192.webp",
-    "landing/og-plonbli-logo.jpg",
-    "landing/hero-storybook-768.avif",
-    "landing/hero-storybook-768.webp",
-    "landing/hero-storybook-1280.avif",
-    "landing/hero-storybook-1280.webp",
-    "landing/hero-storybook-1536.avif",
-    "landing/hero-storybook-1536.webp",
-    "landing/hero-storybook-mobile-768.avif",
-    "landing/hero-storybook-mobile-768.webp",
-    "landing/hero-storybook-mobile-1024.avif",
-    "landing/hero-storybook-mobile-1024.webp",
+    "od-swoich-pin-96.webp",
+    "od-swoich-pin-192.webp",
+    "landing/og-od-swoich.jpg",
+    ...Object.entries({
+      "morning": [768, 1280, 1536], "morning-portrait": [640, 960],
+      "entry": [640, 960], "harvest": [640, 960], "meeting": [640, 960],
+    }).flatMap(([view, widths]) => widths.flatMap((width) =>
+      ["avif", "webp"].map((extension) => `landing/atlas-garden-${view}-${width}.${extension}`))),
+    "fonts/source-sans-3-latin.woff2",
+    "fonts/source-sans-3-latin-ext.woff2",
+    "fonts/OFL-Source-Sans-3.txt",
     "fonts/alegreya-600-700-latin.woff2",
     "fonts/alegreya-600-700-latin-ext.woff2",
-    "fonts/alegreya-sans-400-latin.woff2",
-    "fonts/alegreya-sans-400-latin-ext.woff2",
-    "fonts/alegreya-sans-500-latin.woff2",
-    "fonts/alegreya-sans-500-latin-ext.woff2",
-    "fonts/alegreya-sans-700-latin.woff2",
-    "fonts/alegreya-sans-700-latin-ext.woff2",
-    "fonts/alegreya-sans-800-latin.woff2",
-    "fonts/alegreya-sans-800-latin-ext.woff2",
+    "fonts/OFL-Alegreya.txt",
   ];
   await Promise.all(requiredAssets.map((asset) => assertAsset(distDir, asset)));
 
@@ -182,7 +169,7 @@ export async function verifyDist({ rootDir } = {}) {
     ["favicon-48.png", 48, 48, readPngDimensions],
     ["favicon-96.png", 96, 96, readPngDimensions],
     ["apple-touch-icon.png", 180, 180, readPngDimensions],
-    ["landing/og-plonbli-logo.jpg", 1200, 630, readJpegDimensions],
+    ["landing/og-od-swoich.jpg", 1200, 630, readJpegDimensions],
   ];
 
   for (const [relativePath, expectedWidth, expectedHeight, readDimensions] of expectedRasterDimensions) {

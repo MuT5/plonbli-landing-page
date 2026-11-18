@@ -2,16 +2,18 @@ import { MotionConfig } from "framer-motion";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { ForLocalsSection } from "@/components/landing/AudienceSections";
+import { ForLocalPlacesSection, ForLocalsSection } from "@/components/landing/AudienceSections";
 import SiteHeader from "@/components/landing/SiteHeader";
-import { landingContent } from "@/content/landing.pl";
 
 describe("landing component polish", () => {
-  it("exposes stable styling hooks for the compact header controls", () => {
+  it("links the new brand to the top and keeps the mobile menu closed initially", () => {
     const { container } = render(<SiteHeader />);
 
-    expect(screen.getByText("Plonbli", { selector: "span" })).toHaveClass("header-brand-name");
-    expect(container.querySelector(".header-mobile-cta")).toHaveTextContent("Powiadom");
+    const home = screen.getByRole("link", { name: "Strona główna serwisu Od Swoich" });
+    expect(home).toHaveAttribute("href", "#start");
+    expect(home).toHaveTextContent("Od Swoich");
+    expect(screen.getByRole("button", { name: "Otwórz menu" })).toHaveAttribute("aria-expanded", "false");
+    expect(container.querySelector('a[href="#lista-oczekujacych"]')).toBeNull();
   });
 
   it("keeps local benefit cards visually non-interactive", () => {
@@ -25,7 +27,9 @@ describe("landing component polish", () => {
     expect(container.querySelector(".lucide-arrow-down-right")).not.toBeInTheDocument();
   });
 
-  it("uses the shared launch notification label for the farm CTA", () => {
-    expect(landingContent.forFarms.cta.label).toBe("Powiadom mnie o\u00A0starcie");
+  it("preserves old audience bookmarks at the new local-places section", () => {
+    const { container } = render(<ForLocalPlacesSection />);
+    expect(container.querySelector("#dla-lokalnych-miejsc")).toContainElement(container.querySelector("#dla-gospodarstw"));
+    expect(container.querySelector('[data-cta-id="for-local-places-faq"]')).toHaveAttribute("href", "#faq");
   });
 });

@@ -1,16 +1,7 @@
-import { Facebook, Instagram, Send, Twitter, Users, Youtube } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { landingContent } from "@/content/landing.pl";
 import { siteConfig } from "@/config/site";
-
-const socialLinks = [
-  { ...siteConfig.social.instagram, Icon: Instagram },
-  { ...siteConfig.social.facebook, Icon: Facebook },
-  { ...siteConfig.social.x, Icon: Twitter },
-  { ...siteConfig.social.youtube, Icon: Youtube },
-  { ...siteConfig.social.telegramChannel, Icon: Send },
-  { ...siteConfig.social.telegramGroup, Icon: Users },
-] as const;
 
 export default function SiteFooter() {
   const content = landingContent.footer;
@@ -19,19 +10,19 @@ export default function SiteFooter() {
     <footer className="site-footer py-12 sm:py-16">
       <div className="site-container relative z-10 grid gap-10 lg:grid-cols-[1.3fr_.7fr_.8fr]">
         <div>
-          <a href={siteConfig.links.home} className="inline-flex items-center gap-3" aria-label="Strona główna Plonbli">
+          <a href={siteConfig.links.home} className="inline-flex items-center gap-3" aria-label={`Strona główna serwisu ${siteConfig.name}`}>
             <img
-              src={`${import.meta.env.BASE_URL}plonbli-logo-96.webp`}
-              srcSet={`${import.meta.env.BASE_URL}plonbli-logo-96.webp 96w, ${import.meta.env.BASE_URL}plonbli-logo-192.webp 192w`}
+              src={`${import.meta.env.BASE_URL}od-swoich-pin-96.webp`}
+              srcSet={`${import.meta.env.BASE_URL}od-swoich-pin-96.webp 96w, ${import.meta.env.BASE_URL}od-swoich-pin-192.webp 192w`}
               sizes="48px"
               width="52"
               height="52"
               alt=""
               loading="lazy"
               decoding="async"
-              className="site-footer-logo size-12 object-contain"
+              className="site-footer-logo size-12 object-contain p-1"
             />
-            <span className="font-display text-3xl font-bold text-[var(--color-ivory)]">Plonbli</span>
+            <span className="font-display text-3xl font-bold text-[var(--color-ivory)]">{siteConfig.name}</span>
           </a>
           <p className="site-footer-description mt-5 max-w-xl leading-7">{content.description}</p>
         </div>
@@ -42,30 +33,29 @@ export default function SiteFooter() {
             {landingContent.navigation.items.map((item) => (
               <a key={item.target} className="footer-link" href={siteConfig.links[item.target]}>{item.label}</a>
             ))}
-            <a className="footer-link" href={siteConfig.links.waitlist}>{content.waitlistLabel}</a>
           </nav>
         </div>
 
-        <div>
+        {siteConfig.social.length > 0 && <div>
           <h2 className="site-footer-heading text-sm font-extrabold uppercase tracking-[0.16em]">{content.socialLabel}</h2>
           <div className="mt-5 flex flex-wrap gap-2">
-            {socialLinks.map(({ href, ariaLabel, Icon }) => (
+            {siteConfig.social.map(({ channel, href, label, ariaLabel }) => (
               <a
-                key={href}
+                key={channel}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={ariaLabel}
                 className="site-footer-social"
               >
-                <Icon aria-hidden="true" className="size-4" />
+                {label}<ArrowUpRight aria-hidden="true" className="size-4" />
               </a>
             ))}
           </div>
-        </div>
+        </div>}
       </div>
       <div className="site-footer-bottom site-container relative z-10 mt-10 border-t pt-6 text-sm">
-        © {siteConfig.copyrightYear} Plonbli. Wszelkie prawa zastrzeżone.
+        © {siteConfig.copyrightYear} {siteConfig.name}. Wszelkie prawa zastrzeżone.
       </div>
     </footer>
   );

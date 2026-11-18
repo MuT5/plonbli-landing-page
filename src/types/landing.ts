@@ -4,20 +4,14 @@ export type LinkHref = HttpsUrl | InternalAnchor;
 
 export type SiteLinkKey =
   | "home"
-  | "waitlist"
   | "howItWorks"
   | "forLocals"
-  | "forFarms"
+  | "forLocalPlaces"
   | "faq";
 
 export type SocialChannel = "telegramChannel" | "telegramGroup" | "instagram" | "facebook" | "x" | "youtube";
 
-export type LandingCtaId =
-  | "header-waitlist"
-  | "hero-waitlist"
-  | "hero-how-it-works"
-  | "for-farms-waitlist"
-  | "final-waitlist";
+export type LandingCtaId = "hero-how-it-works" | "for-local-places-faq";
 
 export type LandingIconName =
   | "map-pin"
@@ -30,19 +24,20 @@ export type LandingIconName =
   | "badge-info";
 
 export interface SocialLinkConfig {
+  readonly channel: SocialChannel;
   readonly label: string;
   readonly ariaLabel: string;
   readonly href: HttpsUrl;
 }
 
 export interface SiteConfig {
-  readonly name: "Plonbli";
+  readonly name: "Od Swoich";
   readonly copyrightYear: number;
   readonly locale: "pl-PL";
   readonly language: "pl";
   readonly siteUrl: HttpsUrl;
   readonly links: Readonly<Record<SiteLinkKey, LinkHref>>;
-  readonly social: Readonly<Record<SocialChannel, SocialLinkConfig>>;
+  readonly social: readonly SocialLinkConfig[];
 }
 
 export interface CtaContent {
@@ -73,20 +68,6 @@ export interface HowItWorksStep {
   readonly description: string;
 }
 
-export interface WaitlistFormContent {
-  readonly emailLabel: string;
-  readonly emailPlaceholder: string;
-  readonly submitLabel: string;
-  readonly submittingLabel: string;
-  readonly privacyNote: string;
-  readonly successTitle: string;
-  readonly successDescription: string;
-  readonly duplicateTitle: string;
-  readonly duplicateDescription: string;
-  readonly errorTitle: string;
-  readonly errorDescription: string;
-}
-
 export interface FaqItem {
   readonly id: string;
   readonly question: string;
@@ -97,27 +78,20 @@ export interface LandingContent {
   readonly navigation: Readonly<{
     ariaLabel: string;
     items: readonly NavigationItem[];
-    cta: CtaContent;
   }>;
   readonly hero: Readonly<{
     eyebrow: string;
     title: string;
+    titleLines: readonly [string, string];
     description: string;
     primaryCta: CtaContent;
-    secondaryCta: CtaContent;
     imageAlt: string;
+    caption: string;
   }>;
   readonly why: Readonly<{
     eyebrow: string;
     title: string;
-    paragraphs: readonly [string, string, string];
-  }>;
-  readonly waitlist: Readonly<{
-    eyebrow: string;
-    title: string;
-    description: string;
-    benefits: readonly string[];
-    form: WaitlistFormContent;
+    paragraphs: readonly string[];
   }>;
   readonly howItWorks: Readonly<{
     eyebrow: string;
@@ -131,7 +105,7 @@ export interface LandingContent {
     description: string;
     benefits: readonly BenefitItem[];
   }>;
-  readonly forFarms: Readonly<{
+  readonly forLocalPlaces: Readonly<{
     eyebrow: string;
     title: string;
     description: string;
@@ -144,16 +118,9 @@ export interface LandingContent {
     description: string;
     items: readonly FaqItem[];
   }>;
-  readonly finalCta: Readonly<{
-    eyebrow: string;
-    title: string;
-    description: string;
-    cta: CtaContent;
-  }>;
   readonly footer: Readonly<{
     description: string;
     navigationLabel: string;
     socialLabel: string;
-    waitlistLabel: string;
   }>;
 }

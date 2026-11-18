@@ -51,7 +51,7 @@ describe("Polish typography", () => {
   it("protects every visible one-letter word in the landing copy", () => {
     const visibleCopy = collectVisibleStrings(landingContent);
 
-    expect(landingContent.hero.description).toContain("z\u00A0pobliskiego gospodarstwa");
+    expect(landingContent.hero.description).toContain("w\u00A0okolicy");
 
     for (const text of visibleCopy) {
       expect(text).not.toMatch(/(^|[\s([{„«])[aiouwzAIUOWZ] (?=\S)/u);

@@ -5,8 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Alegreya Sans"', '"Segoe UI"', "sans-serif"],
-        display: ['"Alegreya"', "Georgia", "serif"],
+        sans: ["var(--font-atlas)"],
+        display: ["var(--font-titles)"],
       },
       colors: {
         border: "hsl(var(--border))",

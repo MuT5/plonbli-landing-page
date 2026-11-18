@@ -1,17 +1,22 @@
-import { expect, test, type Locator } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { launchCategory } from "../src/content/launchCategory";
 
-async function clipTop(locator: Locator) {
-  return locator.evaluate((element) => {
-    const clipPath = getComputedStyle(element).clipPath;
-    if (clipPath === "none") return 0;
-
-    const match = clipPath.match(/inset\(\s*([-\d.]+)/);
-    return match ? Number(match[1]) : Number.NaN;
-  });
+async function positionCard(page: Page, step: number, fraction: number, desktop = false) {
+  return page.locator(`[data-story-card="${step}"]`).evaluate((card, settings) => {
+    const rect = card.getBoundingClientRect();
+    const line = window.innerHeight * (settings.desktop ? 0.65 : 1);
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo({ top: window.scrollY + rect.top - line + rect.height * settings.fraction, behavior: "instant" });
+    return Math.abs(card.getBoundingClientRect().bottom - line);
+  }, { fraction, desktop });
 }
 
-test("renders the pre-launch story and waitlist", async ({ page }) => {
+async function sceneOpacity(page: Page, id: string) {
+  return page.locator(`[data-storyboard-scene="${id}"]`).evaluate(el => Number(getComputedStyle(el).opacity));
+}
+
+test("renders the pre-launch story without inviting users to subscribe", async ({ page }) => {
   const consoleErrors: string[] = [];
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
@@ -19,16 +24,16 @@ test("renders the pre-launch story and waitlist", async ({ page }) => {
 
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { level: 1, name: "Dobre jedzenie jest bliżej, niż myślisz" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 2, name: "To, co lokalne, nie zawsze łatwo znaleźć" })).toBeVisible();
-  await expect(page.locator('[data-cta-id="hero-waitlist"]')).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Dobre rzeczy mają swój adres." })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Można mieszkać tu od lat i nie znać tego miejsca." })).toBeVisible();
+  await expect(page.locator('[data-cta-id="hero-how-it-works"]')).toBeVisible();
   await expect(page.locator('a[href*="plonbliapp.vercel.app"]')).toHaveCount(0);
   await expect(page.locator("html")).toHaveAttribute("lang", "pl-PL");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://plonbli.pl/");
   expect(consoleErrors).toEqual([]);
 });
 
-test("keeps the prerendered page readable and the waitlist safe without JavaScript", async ({ browser, baseURL }) => {
+test("keeps the story readable and does not expose a subscription fallback without JavaScript", async ({ browser, baseURL }) => {
   if (!baseURL) throw new Error("Missing Playwright baseURL");
 
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
@@ -38,11 +43,8 @@ test("keeps the prerendered page readable and the waitlist safe without JavaScri
     await page.goto("/");
 
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.locator(".waitlist-noscript-fallback")).toHaveCount(2);
-    await expect(page.locator(".waitlist-noscript-fallback").first()).toBeVisible();
-    await expect(page.locator('form[data-js-required="waitlist"]')).toHaveCount(2);
-    await expect(page.locator('form[data-js-required="waitlist"]').first()).toBeHidden();
-    await expect(page.locator('input[type="email"]').first()).toBeDisabled();
+    await expect(page.locator('form, input[type="email"], .waitlist-noscript-fallback')).toHaveCount(0);
+    await expect(page.locator('[data-cta-id="hero-how-it-works"]')).toHaveAttribute("href", "#jak-to-dziala");
 
     const firstFaq = page.locator(".faq-item").first();
     const firstAnswer = firstFaq.locator(".faq-item-panel");
@@ -55,11 +57,11 @@ test("keeps the prerendered page readable and the waitlist safe without JavaScri
   }
 });
 
-test("contains the three-person hero scene across mobile viewports", async ({ page }) => {
+test("shows the whole farm watercolor and serves a phone-sized source in portrait", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
-  const frame = page.locator(".hero-illustration-frame");
+  const frame = page.locator(".atlas-cover-image");
   const image = page.locator(".hero-image");
   const portraitLayout = await frame.evaluate((element) => {
     const rect = element.getBoundingClientRect();
@@ -74,7 +76,10 @@ test("contains the three-person hero scene across mobile viewports", async ({ pa
   expect(portraitLayout.left).toBeGreaterThanOrEqual(0);
   expect(portraitLayout.right).toBeLessThanOrEqual(portraitLayout.clientWidth);
   expect(portraitLayout.width).toBeLessThanOrEqual(portraitLayout.clientWidth);
-  await expect(image).toHaveCSS("object-position", "84% 50%");
+  await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.currentSrc)).toContain("-portrait-");
+  await expect(image).toHaveCSS("object-fit", "contain");
+  await image.evaluate((el: HTMLImageElement) => el.decode());
+  expect(await image.evaluate((el: HTMLImageElement) => el.naturalWidth / el.naturalHeight)).toBeCloseTo(1.5, 2);
 
   await page.setViewportSize({ width: 640, height: 360 });
   await page.goto("/");
@@ -86,273 +91,102 @@ test("contains the three-person hero scene across mobile viewports", async ({ pa
 
   expect(landscapeLayout.left).toBeGreaterThanOrEqual(0);
   expect(landscapeLayout.right).toBeLessThanOrEqual(landscapeLayout.clientWidth);
-  await expect(image).toHaveCSS("object-position", "68% 50%");
+  await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.currentSrc)).toMatch(/atlas-garden-morning-\d+\.(avif|webp)$/);
 });
 
-test("keeps the mobile harvest contained without horizontal overflow", async ({ page }) => {
+test("keeps the route inside the photo and spaces mobile cards by the photo height", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
-
   for (const width of [320, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/");
     await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
-
-    const scene = page.getByTestId("mobile-harvest-scene");
-    const reveal = page.getByTestId("harvest-reveal-mobile");
-    const raster = page.getByTestId("harvest-raster-mobile");
-
-    await page.locator("#jak-to-dziala").scrollIntoViewIfNeeded();
-    await expect(scene).toBeVisible();
-    await expect(raster).toBeVisible();
-
-    await page.evaluate(() => {
-      const steps = document.querySelector<HTMLElement>("[data-testid='harvest-steps']")!;
-      const top = steps.getBoundingClientRect().top + window.scrollY;
-      document.documentElement.style.scrollBehavior = "auto";
-      window.scrollTo({ top: top + steps.offsetHeight - window.innerHeight * 0.3, behavior: "auto" });
-    });
-
-    await expect.poll(() => clipTop(reveal), { timeout: 4_000 }).toBeLessThanOrEqual(1);
-
-    const layout = await page.evaluate(() => {
-      const sceneElement = document.querySelector<HTMLElement>("[data-testid='mobile-harvest-scene']")!;
-      const imageElement = document.querySelector<HTMLImageElement>("[data-testid='harvest-raster-mobile']")!;
-      const sceneRect = sceneElement.getBoundingClientRect();
-      const imageRect = imageElement.getBoundingClientRect();
-
-      return {
-        clientWidth: document.documentElement.clientWidth,
-        scrollWidth: document.documentElement.scrollWidth,
-        scene: { left: sceneRect.left, right: sceneRect.right, top: sceneRect.top, bottom: sceneRect.bottom },
-        image: { left: imageRect.left, right: imageRect.right, top: imageRect.top, bottom: imageRect.bottom },
-      };
-    });
-
-    expect.soft(layout.scrollWidth, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(layout.clientWidth);
-    expect.soft(layout.scene.left).toBeGreaterThanOrEqual(0);
-    expect.soft(layout.scene.right).toBeLessThanOrEqual(layout.clientWidth);
-    expect.soft(layout.image.left).toBeGreaterThanOrEqual(layout.scene.left);
-    expect.soft(layout.image.right).toBeLessThanOrEqual(layout.scene.right);
-    expect.soft(layout.image.top).toBeGreaterThanOrEqual(layout.scene.top);
-    expect.soft(layout.image.bottom).toBeLessThanOrEqual(layout.scene.bottom);
+    await positionCard(page, 1, 1);
+    const stage = page.getByTestId("storyboard-visual");
+    const rect = (await stage.boundingBox())!;
+    const route = (await page.getByTestId("atlas-route").boundingBox())!;
+    expect(rect.x).toBeGreaterThanOrEqual(0);
+    expect(rect.x + rect.width).toBeLessThanOrEqual(width);
+    expect(route.x).toBeGreaterThanOrEqual(rect.x);
+    expect(route.x + route.width).toBeLessThanOrEqual(rect.x + rect.width);
+    expect(route.y + route.height).toBeLessThanOrEqual(rect.y + rect.height);
+    const cards = await page.locator("[data-story-card]").evaluateAll(nodes =>
+      nodes.map(node => ({ top: node.getBoundingClientRect().top, bottom: node.getBoundingClientRect().bottom })));
+    expect(Math.abs(cards[1].top - cards[0].bottom - rect.height)).toBeLessThanOrEqual(1);
+    expect(Math.abs(cards[2].top - cards[1].bottom - rect.height)).toBeLessThanOrEqual(1);
+    await expect(page.locator("[data-story-step]").nth(1)).toHaveCSS("border-top-width", "0px");
+    const overflowing = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    expect(overflowing).toBe(false);
   }
 });
 
-test("gives mobile story chapters a photo-height pause and fades them over the image", async ({ page }) => {
+test("fades the outgoing mobile card starting at the actual photo edge", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-
-  const layout = await page.evaluate(() => {
-    const stage = document.querySelector<HTMLElement>(".story-visual-column")!;
-    const chapters = Array.from(document.querySelectorAll<HTMLElement>(".story-chapter"));
-    const copies = Array.from(document.querySelectorAll<HTMLElement>(".story-chapter-copy"));
-    const stageHeight = stage.getBoundingClientRect().height;
-    const stageTop = Number.parseFloat(getComputedStyle(stage).top);
-
-    return {
-      stageHeight,
-      imageEntryLine: stageTop + stageHeight,
-      fadeStartLine: window.innerHeight * 0.51,
-      gaps: copies.slice(0, -1).map((copy, index) => {
-        const current = copy.getBoundingClientRect();
-        const next = copies[index + 1].getBoundingClientRect();
-        return next.top - current.bottom;
-      }),
-      borders: chapters.map((chapter) => getComputedStyle(chapter).borderBottomWidth),
-      fadeModes: chapters.map((chapter) => chapter.dataset.mobileScrollFade),
-      chapterOpacities: chapters.map((chapter) => getComputedStyle(chapter).opacity),
-      copyOpacities: copies.map((copy) => getComputedStyle(copy).opacity),
-    };
-  });
-
-  expect(layout.fadeModes).toEqual(["image-overlap", "image-overlap", "image-overlap"]);
-  expect(layout.borders).toEqual(["0px", "0px", "0px"]);
-  expect(layout.chapterOpacities).toEqual(["1", "1", "1"]);
-  expect(layout.copyOpacities).toEqual(["1", "1", "1"]);
-  expect(Math.abs(layout.fadeStartLine - layout.imageEntryLine)).toBeLessThanOrEqual(15);
-  layout.gaps.forEach((gap) => expect(Math.abs(gap - layout.stageHeight)).toBeLessThanOrEqual(1));
-
-  const chapterOpacity = async (step: number) =>
-    Number(
-      await page
-        .locator(`[data-story-step="${step}"] .story-chapter-copy`)
-        .evaluate((element) => getComputedStyle(element).opacity),
-    );
-
-  const placeChapterAt = async (step: number, viewportRatio: number) => {
-    await page.evaluate(
-      ({ chapterStep, ratio }) => {
-        const chapter = document.querySelector<HTMLElement>(`[data-story-card="${chapterStep}"]`)!;
-        const absoluteTop = chapter.getBoundingClientRect().top + window.scrollY;
-        document.documentElement.style.scrollBehavior = "auto";
-        window.scrollTo({ top: absoluteTop - window.innerHeight * ratio, behavior: "auto" });
-      },
-      { chapterStep: step, ratio: viewportRatio },
-    );
-  };
-
-  await placeChapterAt(1, 0.54);
-  await expect.poll(() => chapterOpacity(1)).toBeGreaterThan(0.95);
-
-  await placeChapterAt(1, 0.3);
-  await expect.poll(() => chapterOpacity(1)).toBeLessThan(0.75);
-  const overlapOpacity = await chapterOpacity(1);
-  expect(overlapOpacity).toBeGreaterThan(0.2);
-
-  await placeChapterAt(1, 0.05);
-  await expect.poll(() => chapterOpacity(1)).toBeLessThan(0.25);
-  expect(await chapterOpacity(1)).toBeLessThan(overlapOpacity);
-
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect
-    .poll(() =>
-      page.locator(".story-chapter-copy").evaluateAll((elements) =>
-        elements.map((element) => getComputedStyle(element).opacity),
-      ),
-    )
-    .toEqual(["1", "1", "1"]);
+  await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
+  await positionCard(page, 2, 1);
+  const card = page.locator('[data-story-card="2"]');
+  const placeAtOverlap = async (fraction: number) => card.evaluate((el, amount) => {
+    const photoBottom = document.querySelector(".atlas-story-stage")!.getBoundingClientRect().bottom;
+    const rect = el.getBoundingClientRect();
+    window.scrollTo({ top: window.scrollY + rect.top - photoBottom + rect.height * amount, behavior: "instant" });
+  }, fraction);
+  await placeAtOverlap(-0.1);
+  await expect(card).toHaveCSS("opacity", "1");
+  await placeAtOverlap(0.5);
+  await expect.poll(() => card.evaluate(el => Math.abs(Number(getComputedStyle(el).opacity) - 0.5))).toBeLessThan(0.02);
+  await placeAtOverlap(1.05);
+  await expect(card).toHaveCSS("opacity", "0");
 });
 
-test("finishes each mobile image transition when the next text card is fully visible", async ({ page }) => {
+test("syncs mobile photos to the entering card all the way forward and back", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-
-  const sceneOpacity = async (scene: string) =>
-    Number(
-      await page
-        .locator(`[data-storyboard-scene="${scene}"]`)
-        .evaluate((element) => getComputedStyle(element).opacity),
-    );
-
-  const positionChapter = async (step: number, visibleFraction: number) =>
-    page.evaluate(
-      ({ chapterStep, fraction }) => {
-        const chapter = document.querySelector<HTMLElement>(`[data-story-card="${chapterStep}"]`)!;
-        const rect = chapter.getBoundingClientRect();
-        const absoluteTop = rect.top + window.scrollY;
-        const targetTop = window.innerHeight - rect.height * fraction;
-        document.documentElement.style.scrollBehavior = "auto";
-        window.scrollTo({ top: absoluteTop - targetTop, behavior: "auto" });
-        const positionedRect = chapter.getBoundingClientRect();
-        return {
-          bottom: positionedRect.bottom,
-          top: positionedRect.top,
-          viewportHeight: window.innerHeight,
-        };
-      },
-      { chapterStep: step, fraction: visibleFraction },
-    );
-
-  await positionChapter(2, 0);
-  await expect.poll(() => sceneOpacity("discovery")).toBeGreaterThan(0.98);
-  await expect.poll(() => sceneOpacity("offer")).toBeLessThan(0.02);
-
-  await positionChapter(2, 0.5);
-  await expect.poll(() => sceneOpacity("discovery")).toBeLessThan(0.75);
-  await expect.poll(() => sceneOpacity("discovery")).toBeGreaterThan(0.25);
-  await expect.poll(() => sceneOpacity("offer")).toBeGreaterThan(0.25);
-  await expect.poll(() => sceneOpacity("offer")).toBeLessThan(0.75);
-
-  const secondCard = await positionChapter(2, 1);
-  await expect.poll(() => sceneOpacity("discovery")).toBeLessThan(0.02);
-  await expect.poll(() => sceneOpacity("offer")).toBeGreaterThan(0.98);
-  expect(Math.abs(secondCard.bottom - secondCard.viewportHeight)).toBeLessThanOrEqual(1);
-  expect(secondCard.top).toBeGreaterThanOrEqual(0);
-
-  const thirdCard = await positionChapter(3, 1);
-  await expect.poll(() => sceneOpacity("offer")).toBeLessThan(0.02);
-  await expect.poll(() => sceneOpacity("contact")).toBeGreaterThan(0.98);
-  expect(Math.abs(thirdCard.bottom - thirdCard.viewportHeight)).toBeLessThanOrEqual(1);
+  await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
+  await positionCard(page, 2, 0);
+  await expect.poll(() => sceneOpacity(page, "discovery")).toBeGreaterThan(0.98);
+  await positionCard(page, 2, 0.5);
+  for (const id of ["discovery", "offer"]) {
+    await expect.poll(async () => Math.abs(await sceneOpacity(page, id) - 0.5)).toBeLessThan(0.02);
+  }
+  expect(await positionCard(page, 2, 1)).toBeLessThanOrEqual(1);
+  await expect.poll(() => sceneOpacity(page, "offer")).toBeGreaterThan(0.98);
+  expect(await positionCard(page, 3, 1)).toBeLessThanOrEqual(1);
+  await expect.poll(() => sceneOpacity(page, "contact")).toBeGreaterThan(0.98);
+  await positionCard(page, 2, 0);
+  await expect.poll(() => sceneOpacity(page, "discovery")).toBeGreaterThan(0.98);
 });
 
-test("crossfades a three-scene storyboard behind the journey", async ({ page }, testInfo) => {
+test("reveals the route along with the desktop story", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-
-  const scenes = page.locator("[data-storyboard-scene]");
-  await expect(scenes).toHaveCount(3);
-
-  if (testInfo.project.name === "mobile") return;
-
-  const opacity = async (id: string) =>
-    Number(await page.locator(`[data-storyboard-scene="${id}"]`).evaluate((element) => getComputedStyle(element).opacity));
-
-  expect(await opacity("discovery")).toBeGreaterThan(0.2);
-
-  await page.evaluate(() => {
-    const steps = document.querySelector<HTMLElement>("[data-testid='harvest-steps']")!;
-    const top = steps.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({ top: top + steps.offsetHeight * 0.5 - window.innerHeight * 0.58, behavior: "auto" });
-  });
-  await expect.poll(() => opacity("offer"), { timeout: 4_000 }).toBeGreaterThan(0.15);
-
-  await page.evaluate(() => {
-    const steps = document.querySelector<HTMLElement>("[data-testid='harvest-steps']")!;
-    const top = steps.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({ top: top + steps.offsetHeight - window.innerHeight * 0.3, behavior: "auto" });
-  });
-  await expect.poll(() => opacity("contact"), { timeout: 4_000 }).toBeGreaterThan(0.15);
+  await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
+  const routeOffset = () => page.locator(".atlas-route-ink").evaluate(el => parseFloat(getComputedStyle(el).strokeDashoffset));
+  await expect.poll(routeOffset).toBeGreaterThan(0.8);
+  await positionCard(page, 2, 1, true);
+  await expect.poll(() => sceneOpacity(page, "offer")).toBeGreaterThan(0.98);
+  await positionCard(page, 3, 1, true);
+  await expect.poll(() => sceneOpacity(page, "contact")).toBeGreaterThan(0.98);
+  await expect.poll(routeOffset).toBeLessThan(0.02);
 });
 
-test("keeps the story visible on short landscape screens", async ({ page }, testInfo) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-
-  if (testInfo.project.name === "mobile") {
-    await page.setViewportSize({ width: 640, height: 360 });
+test("gives every step its own photo on short landscape screens and with reduced motion", async ({ page }) => {
+  for (const reduced of [true, false]) {
+    await page.emulateMedia({ reducedMotion: reduced ? "reduce" : "no-preference" });
+    await page.setViewportSize(reduced ? { width: 1440, height: 900 } : { width: 640, height: 360 });
     await page.goto("/");
-    await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
-
-    for (const heading of ["Odkryj blisko", "Poznaj ofertę", "Porozmawiaj u źródła"]) {
-      const article = page.getByRole("heading", { level: 3, name: heading }).locator("..").locator("..");
-      await article.scrollIntoViewIfNeeded();
-      await expect.poll(async () => Number(await article.evaluate((element) => getComputedStyle(element).opacity))).toBeGreaterThan(0.9);
+    await expect(page.getByTestId("storyboard-visual")).toBeHidden();
+    for (const step of [1, 2, 3]) {
+      const article = page.locator(`[data-story-step="${step}"]`);
+      const image = article.locator("[data-static-scene] img");
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toBeVisible();
+      await expect.poll(() => image.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+      await expect(article.locator("[data-story-card]")).toHaveCSS("opacity", "1");
     }
-
-    await page.setViewportSize({ width: 1023, height: 768 });
-    await page.goto("/");
-    await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
-
-    const tabletScene = page.getByTestId("storyboard-visual");
-    await tabletScene.scrollIntoViewIfNeeded();
-    const tabletSceneRect = await tabletScene.boundingBox();
-    const tabletImage = await tabletScene
-      .locator('[data-storyboard-scene="discovery"] img')
-      .evaluate((image: HTMLImageElement) => ({ complete: image.complete, naturalWidth: image.naturalWidth }));
-    const tabletLayout = await page.evaluate(() => ({
-      clientWidth: document.documentElement.clientWidth,
-      scrollWidth: document.documentElement.scrollWidth,
-    }));
-
-    expect(tabletSceneRect).not.toBeNull();
-    expect(tabletSceneRect!.x).toBeGreaterThanOrEqual(0);
-    expect(tabletSceneRect!.x + tabletSceneRect!.width).toBeLessThanOrEqual(tabletLayout.clientWidth);
-    expect(tabletImage.complete).toBe(true);
-    expect(tabletImage.naturalWidth).toBeGreaterThan(0);
-    expect(tabletLayout.scrollWidth).toBeLessThanOrEqual(tabletLayout.clientWidth);
-
-    return;
   }
-
-  await page.setViewportSize({ width: 1280, height: 600 });
-  await page.goto("/");
-
-  await page.getByRole("heading", { level: 3, name: "Porozmawiaj u źródła" }).scrollIntoViewIfNeeded();
-  const panel = page.locator(".story-visual-sticky");
-  const panelRect = await panel.boundingBox();
-
-  expect(panelRect).not.toBeNull();
-  expect(panelRect!.y + panelRect!.height).toBeGreaterThan(0);
-  expect(panelRect!.y).toBeLessThan(600);
-  await expect
-    .poll(() =>
-      page
-        .locator('[data-storyboard-scene="contact"]')
-        .evaluate((element) => Number(getComputedStyle(element).opacity)),
-    )
-    .toBeGreaterThan(0.15);
 });
 
 test("opens and closes the mobile navigation", async ({ page }) => {
@@ -372,7 +206,7 @@ test("uses smooth section navigation unless reduced motion is requested", async 
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
 
-  const storyLink = page.getByRole("link", { name: "Przejdź do historii działania Plonbli" });
+  const storyLink = page.getByRole("link", { name: "Przejdź do sekcji Jak to działa" });
   const storySection = page.locator("#jak-to-dziala");
 
   await expect(storyLink).toHaveAttribute("href", "#jak-to-dziala");
@@ -388,29 +222,23 @@ test("uses smooth section navigation unless reduced motion is requested", async 
 
   await page.goto("/");
 
-  const waitlistCta = page.locator('[data-cta-id="hero-waitlist"]');
-  const waitlistSection = page.locator("#lista-oczekujacych");
-
-  await waitlistCta.click();
-  await expect(page).toHaveURL(/#lista-oczekujacych$/);
-  await expect
-    .poll(() => waitlistSection.evaluate((element) => Math.abs(element.getBoundingClientRect().top)))
-    .toBeLessThan(220);
+  const faqLink = page.locator('[data-cta-id="for-local-places-faq"]');
+  const faq = page.locator("#faq");
+  await faqLink.click();
+  await expect(page).toHaveURL(/#faq$/);
+  await expect(faq.getByRole("heading", { level: 2 })).toBeInViewport();
 });
 
-test("keeps the conversion section readable and the honeypot hidden", async ({ page }) => {
+test("has no signup form, signup links or duplicate fragment targets", async ({ page }) => {
   await page.goto("/");
-
-  const color = await page.locator("#lista-oczekujacych h2 + p").evaluate((element) => getComputedStyle(element).color);
-  const honeypots = page.locator('input[name="company"]');
-
-  expect(color).toBe("rgba(255, 251, 242, 0.8)");
-  await expect(honeypots).toHaveCount(2);
-  await expect(honeypots.first()).toBeHidden();
-  await expect(honeypots.last()).toBeHidden();
+  await expect(page.locator('form, input[type="email"], a[href="#lista-oczekujacych"]')).toHaveCount(0);
+  const invalid = await page.locator('a[href^="#"]').evaluateAll(links =>
+    links.map(link => link.getAttribute("href")!).filter(hash =>
+      hash === "#" || document.querySelectorAll("#" + CSS.escape(decodeURIComponent(hash.slice(1)))).length !== 1));
+  expect(invalid).toEqual([]);
 });
 
-test("keeps placeholder and step numbers above their contrast targets", async ({ page }) => {
+test("keeps discovery controls, footer and step numbers above their contrast targets", async ({ page }) => {
   await page.goto("/");
 
   const contrast = await page.evaluate(() => {
@@ -452,22 +280,28 @@ test("keeps placeholder and step numbers above their contrast targets", async ({
       return (lighter + 0.05) / (darker + 0.05);
     };
 
-    const email = document.querySelector<HTMLInputElement>('input[type="email"]')!;
-    const placeholderColor = parseColor(getComputedStyle(email, "::placeholder").color);
-    const emailBackground = parseColor(getComputedStyle(email).backgroundColor);
-    const stepNumber = document.querySelector<HTMLElement>(".story-chapter-number")!;
-    const stepCard = stepNumber.closest<HTMLElement>(".story-chapter-copy")!;
+    const stepNumber = document.querySelector<HTMLElement>(".atlas-step-index span")!;
+    const stepCard = stepNumber.closest<HTMLElement>(".atlas-story-copy")!;
     const stepColor = parseColor(getComputedStyle(stepNumber).color);
     const pageBackground = parseColor(getComputedStyle(document.body).backgroundColor);
     const stepBackground = composite(parseColor(getComputedStyle(stepCard).backgroundColor), pageBackground);
+    const contrastOnSolidSurface = (text: Element, surface: Element) => {
+      const background = parseColor(getComputedStyle(surface).backgroundColor);
+      if (background.alpha !== 1) throw new Error("Text must have an opaque reading surface");
+      return ratio(composite(parseColor(getComputedStyle(text).color), background), background);
+    };
+    const primary = document.querySelector('[data-cta-id="hero-how-it-works"]')!;
+    const footer = document.querySelector("footer")!;
 
     return {
-      placeholder: ratio(composite(placeholderColor, emailBackground), emailBackground),
+      primary: contrastOnSolidSurface(primary, primary),
+      footer: contrastOnSolidSurface(footer.querySelector(".footer-link")!, footer),
       stepNumber: ratio(composite(stepColor, stepBackground), stepBackground),
     };
   });
 
-  expect(contrast.placeholder).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.primary).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.footer).toBeGreaterThanOrEqual(4.5);
   expect(contrast.stepNumber).toBeGreaterThanOrEqual(3);
 });
 
@@ -487,7 +321,7 @@ test("animates FAQ answers while opening and closing", async ({ page }) => {
   await page.goto("/");
 
   const question = page.getByRole("button", {
-    name: "Czy korzystanie z Plonbli będzie bezpłatne?",
+    name: "Czy korzystanie z aplikacji Od Swoich będzie bezpłatne?",
   });
   const answer = page.locator('[data-faq-answer="free-access"]');
 
@@ -536,57 +370,42 @@ test("switches the ambient field story between audience sections", async ({ page
   await page.goto("/");
 
   const sequence = page.getByTestId("ambient-story-sequence");
-  const discoveryChapter = page.locator('[data-ambient-story-chapter="discovery"]');
-  const offerChapter = page.locator('[data-ambient-story-chapter="offer"]');
-
-  await expect(sequence).toHaveAttribute("data-ambient-story-active", "contact");
-
-  await discoveryChapter.evaluate((element) => element.scrollIntoView({ block: "center" }));
   await expect(sequence).toHaveAttribute("data-ambient-story-active", "discovery");
-  await expect(page.locator('[data-ambient-story-scene="discovery"] img')).toHaveAttribute(
-    "src",
-    "/landing/story-01-discovery-mobile.webp",
-  );
-
-  await offerChapter.evaluate((element) => element.scrollIntoView({ block: "center" }));
-  await expect(sequence).toHaveAttribute("data-ambient-story-active", "offer");
-  await expect(page.locator('[data-ambient-story-scene="offer"] img')).toHaveAttribute(
-    "src",
-    "/landing/story-02-offer-mobile.webp",
-  );
+  for (const scene of ["discovery", "offer", "contact"] as const) {
+    const chapter = page.locator(`[data-ambient-story-chapter="${scene}"]`);
+    await chapter.evaluate(element => element.scrollIntoView({ block: "center", behavior: "instant" }));
+    await expect(sequence).toHaveAttribute("data-ambient-story-active", scene);
+    await expect(page.locator(`[data-ambient-story-scene="${scene}"] img`)).toHaveAttribute(
+      "src", `/${launchCategory.storyImages[scene].mobileSrc}`,
+    );
+  }
 });
 
-test("uses three steps, a cohesive type system and a raster harvest accent", async ({ page }) => {
+test("uses three steps, a cohesive type system and a route inside the image", async ({ page }) => {
   await page.goto("/");
-
   const section = page.locator("#jak-to-dziala");
-  await expect(section.locator(".harvest-chapter")).toHaveCount(3);
+  await expect(section.locator("[data-story-step]")).toHaveCount(3);
   await expect(section.getByText("04", { exact: true })).toHaveCount(0);
-  await expect(section.locator(".harvest-growth svg")).toHaveCount(0);
+  await expect(section.locator(".atlas-story-stage [data-testid='atlas-route']")).toHaveCount(1);
 
-  const raster = page.getByTestId("harvest-raster-desktop");
-  await expect(raster).toHaveAttribute("alt", "");
-  await expect(raster).toHaveAttribute("src", "/landing/growing-harvest.webp");
-
-  const imageState = await raster.evaluate((element: HTMLImageElement) => ({
-    complete: element.complete,
-    naturalWidth: element.naturalWidth,
-    naturalHeight: element.naturalHeight,
-  }));
-  expect(imageState).toEqual({ complete: true, naturalWidth: 740, naturalHeight: 1824 });
-
+  await page.evaluate(() => document.fonts.ready);
   const fonts = await page.evaluate(() => ({
     body: getComputedStyle(document.body).fontFamily,
     heading: getComputedStyle(document.querySelector("h1")!).fontFamily,
+    section: getComputedStyle(document.querySelector(".section-title")!).fontFamily,
+    step: getComputedStyle(document.querySelector("[data-story-card] h3")!).fontFamily,
+    loadedFaces: Array.from(document.fonts, face => face.status === "loaded" ? face.family : ""),
   }));
-  expect(fonts.body).toContain("Alegreya Sans");
-  expect(fonts.heading).toContain("Alegreya");
+  expect(fonts.body).toContain("Source Sans 3");
+  for (const family of [fonts.heading, fonts.section, fonts.step]) expect(family).toContain("Alegreya");
+  expect(fonts.loadedFaces.some(family => family.includes("Alegreya"))).toBe(true);
+  expect(fonts.loadedFaces.some(family => family.includes("Source Sans 3"))).toBe(true);
 });
 
 test("removes defensive disclaimers and the public contact email", async ({ page }) => {
   await page.goto("/");
 
-  for (const phrase of ["Plonbli nie jest sklepem", "nie obsługuje płatności", "nie przejmuje płatności"]) {
+  for (const phrase of ["Od Swoich nie jest sklepem", "nie obsługuje płatności", "nie przejmuje płatności"]) {
     await expect(page.getByText(phrase, { exact: false })).toHaveCount(0);
   }
 
@@ -594,34 +413,8 @@ test("removes defensive disclaimers and the public contact email", async ({ page
   await expect(page.getByText("plonbli@gmail.com", { exact: false })).toHaveCount(0);
   expect(await page.locator("body").innerText()).not.toMatch(/[—–]/);
   expect(await page.title()).not.toMatch(/[—–]/);
-  await expect(page.getByRole("link", { name: "Otwórz kanał Plonbli na YouTube" })).toHaveAttribute(
-    "href",
-    "https://www.youtube.com/@Plonbli",
-  );
-});
-
-test("reveals the desktop harvest while scrolling", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name === "mobile", "Desktop harvest is covered by the desktop project");
-
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-
-  const reveal = page.getByTestId("harvest-reveal-desktop");
-  expect(await clipTop(reveal)).toBeGreaterThan(90);
-
-  await page.locator("#lista-oczekujacych").scrollIntoViewIfNeeded();
-  await expect.poll(() => clipTop(reveal), { timeout: 4_000 }).toBeLessThanOrEqual(1);
-});
-
-test("shows a complete static harvest with reduced motion", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-
-  const reveal = page.getByTestId("harvest-reveal-desktop");
-  await page.locator("#jak-to-dziala").scrollIntoViewIfNeeded();
-
-  expect(await clipTop(reveal)).toBeLessThanOrEqual(1);
-  await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
+  const profiles = page.locator("footer .site-footer-social");
+  await expect(profiles).toHaveCount(1);
+  await expect(profiles).toHaveAttribute("href", "https://x.com/odswoich");
+  await expect(page.locator('a[href*="plonbli" i], a[href*="1YkUnnggkF"]')).toHaveCount(0);
 });

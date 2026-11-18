@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { siteConfig } from "@/config/site";
+import { launchCategory } from "@/content/launchCategory";
 import {
   createRobotsTxt,
   createSitemapXml,
@@ -13,16 +14,18 @@ describe("site metadata contract", () => {
     expect(siteConfig.name).toBe(siteMetadata.name);
     expect(siteConfig.locale).toBe(siteMetadata.locale);
     expect(siteConfig.siteUrl).toBe(siteMetadata.siteUrl);
-    expect(siteConfig.links.home).toBe(siteMetadata.siteUrl);
-    expect(siteConfig.social.instagram.href).toBe(siteMetadata.socialProfiles.instagram);
-    expect(siteConfig.social.facebook.href).toBe(siteMetadata.socialProfiles.facebook);
+    expect(siteConfig.links.home).toBe("#start");
+    expect(siteConfig.social).toEqual(siteMetadata.socialProfiles);
+    expect(JSON.stringify(siteMetadata.socialProfiles)).not.toMatch(/plonbli|1YkUnnggkF/i);
   });
 
   it("publishes an absolute social image with the recommended dimensions", () => {
     expect(siteMetadata.openGraph.image.url).toMatch(/^https:\/\//);
-    expect(siteMetadata.openGraph.image.url).toBe(`${siteMetadata.siteUrl}/landing/og-plonbli-logo.jpg`);
+    expect(siteMetadata.openGraph.image.url).toBe(`${siteMetadata.siteUrl}/landing/og-od-swoich.jpg`);
     expect(siteMetadata.openGraph.image.width).toBe(1200);
     expect(siteMetadata.openGraph.image.height).toBe(630);
+    expect(siteMetadata.openGraph.image.alt).toContain(launchCategory.hero.alt);
+    expect(siteMetadata.openGraph.description).toBe(launchCategory.searchDescription);
     expect(siteMetadata.twitter.card).toBe("summary_large_image");
   });
 
@@ -37,8 +40,8 @@ describe("site metadata contract", () => {
 
     expect(structuredData["@context"]).toBe("https://schema.org");
     expect(organization.url).toBe(siteMetadata.canonicalUrl);
-    expect(organization.logo).toBe(`${siteMetadata.siteUrl}/plonbli-logo-192.webp`);
-    expect(organization.sameAs).toContain(siteMetadata.socialProfiles.instagram);
+    expect(organization.logo).toBe(`${siteMetadata.siteUrl}/od-swoich-pin-192.webp`);
+    expect(organization).toHaveProperty("sameAs", ["https://x.com/odswoich"]);
     expect(website.url).toBe(siteMetadata.canonicalUrl);
     expect(website.inLanguage).toBe(siteMetadata.locale);
   });

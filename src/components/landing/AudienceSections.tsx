@@ -33,25 +33,26 @@ export function ForLocalsSection() {
   );
 }
 
-export function ForFarmsSection() {
-  const farms = landingContent.forFarms;
+export function ForLocalPlacesSection() {
+  const places = landingContent.forLocalPlaces;
 
   return (
-    <section id="dla-gospodarstw" className="section-space scroll-mt-24">
+    <section id="dla-lokalnych-miejsc" className="section-space relative scroll-mt-24">
+      <span id="dla-gospodarstw" aria-hidden="true" className="absolute top-0 scroll-mt-24" />
       <div className="site-container">
-        <div className="farm-section-shell grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
+        <div className="local-places-section-shell grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
           <Reveal>
-            <p className="eyebrow">{farms.eyebrow}</p>
-            <h2 className="section-title mt-5">{farms.title}</h2>
-            <p className="section-lead mt-5">{farms.description}</p>
+            <p className="eyebrow">{places.eyebrow}</p>
+            <h2 className="section-title mt-5">{places.title}</h2>
+            <p className="section-lead mt-5">{places.description}</p>
             <div className="mt-8">
-              <CtaLink content={farms.cta} className="justify-center border-[var(--color-olive)] bg-[var(--color-olive)] text-[var(--color-ivory)] hover:bg-[var(--color-olive-deep)] sm:justify-start" />
+              <CtaLink content={places.cta} />
             </div>
           </Reveal>
           <div className="grid gap-4">
-            {farms.benefits.map((benefit, index) => (
+            {places.benefits.map((benefit, index) => (
               <Reveal key={benefit.id} delay={index * 0.06}>
-                <article className="farm-benefit-card">
+                <article className="local-places-benefit-card">
                   <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-brand)] text-[var(--color-ivory)]">
                     <LandingIcon name={benefit.icon} className="size-5" />
                   </span>
@@ -73,7 +74,7 @@ export default function AudienceSections() {
   return (
     <>
       <ForLocalsSection />
-      <ForFarmsSection />
+      <ForLocalPlacesSection />
     </>
   );
 }

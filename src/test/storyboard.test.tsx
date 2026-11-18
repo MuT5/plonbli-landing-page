@@ -1,70 +1,51 @@
 import { render, screen } from "@testing-library/react";
-import { MotionConfig } from "framer-motion";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import { storyScenes } from "@/content/storyScenes";
+import { atlasScrollState } from "@/lib/atlas-scroll";
 
-describe("three-step storyboard", () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
+describe("atlas storyboard", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("keeps one decorative route on the photo stage and a responsive alternative for every step", () => {
+    const { container } = render(<HowItWorksSection />);
+    const stage = screen.getByTestId("storyboard-visual");
+    expect(stage).toContainElement(screen.getByTestId("atlas-route"));
+    expect(stage).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelectorAll("li[data-story-step]")).toHaveLength(3);
+    for (const scene of storyScenes) {
+      const staticFrame = container.querySelector(`[data-static-scene="${scene.id}"]`)!;
+      expect(staticFrame.querySelector("img")).toHaveAttribute("alt", scene.alt);
+      expect(staticFrame.querySelector("source")).toHaveAttribute("type", "image/avif");
+      expect(stage.querySelector(`[data-storyboard-scene="${scene.id}"] img`)).toHaveAttribute("alt", "");
+    }
   });
 
-  it("keeps one layered crossfade stage when reduced motion is requested", () => {
+  it("supports a separate static photo per card when motion is reduced", () => {
+    const original = window.matchMedia;
     vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
-      matches: query === "(prefers-reduced-motion: reduce)",
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
+      ...original(query), matches: query.includes("prefers-reduced-motion"),
     }));
-
-    const { container } = render(
-      <MotionConfig reducedMotion="user">
-        <HowItWorksSection />
-      </MotionConfig>,
-    );
-
-    const storyboard = screen.getByTestId("storyboard-visual");
-    const scenes = Array.from(container.querySelectorAll<HTMLElement>("[data-storyboard-scene]"));
-
-    expect(storyboard).toHaveAttribute("data-storyboard-motion", "crossfade-only");
-    expect(container.querySelector(".story-reduced-collage")).not.toBeInTheDocument();
-    expect(container.querySelector(".story-mobile-scene")).not.toBeInTheDocument();
-    expect(container.querySelectorAll('source[media="(min-width: 640px)"]')).toHaveLength(3);
-    expect(scenes.map((scene) => scene.dataset.storyboardScene)).toEqual([
-      "discovery",
-      "offer",
-      "contact",
-    ]);
-    scenes.forEach((scene) => expect(scene.style.transform).toBe(""));
+    render(<HowItWorksSection />);
+    expect(screen.getByTestId("storyboard-visual").parentElement).toHaveAttribute("data-storyboard-motion", "static");
   });
 
-  it("uses complementary ranges so the frame does not dim between steps", () => {
-    expect(storyScenes[0].input.slice(-2)).toEqual(storyScenes[1].input.slice(0, 2));
-    expect(storyScenes[1].input.slice(-2)).toEqual(storyScenes[2].input.slice(0, 2));
-    expect(storyScenes.map((scene) => scene.input)).toEqual([
-      [0, 0.31, 0.47],
-      [0.31, 0.47, 0.59, 0.75],
-      [0.59, 0.75, 1],
-    ]);
+  it("maps card entry in either direction to a full-strength image as its bottom arrives", () => {
+    const state = (secondTop: number) => atlasScrollState([
+      { top: -300, height: 200 }, { top: secondTop, height: 200 }, { top: 1400, height: 300 },
+    ], 800, 380, true);
+    expect(state(800).photos).toEqual([1, 0, 0]);
+    expect(state(700).photos).toEqual([0.5, 0.5, 0]);
+    expect(state(600).photos).toEqual([0, 1, 0]);
+    expect(state(750).photos).toEqual([0.75, 0.25, 0]);
   });
 
-  it("measures scroll progress from the chapter list instead of the sticky spacer", () => {
-    render(
-      <MotionConfig reducedMotion="never">
-        <HowItWorksSection />
-      </MotionConfig>,
-    );
-
-    const steps = screen.getByTestId("harvest-steps");
-
-    expect(steps).toHaveClass("story-chapter-list");
-    expect(steps).not.toHaveClass("story-chapters");
-    expect(steps.parentElement).toHaveClass("story-chapters");
-    expect(screen.getByRole("heading", { level: 2, name: "Od odkrycia do spotkania" })).toHaveClass("mx-auto");
+  it("fades copy only after reaching the measured bottom edge of the photo", () => {
+    const before = { top: 381, height: 200 };
+    const halfway = { top: 280, height: 200 };
+    const behind = { top: 180, height: 200 };
+    expect(atlasScrollState([before, halfway, behind], 800, 380, true).copy).toEqual([1, 0.5, 0]);
+    expect(atlasScrollState([before, halfway, behind], 800, 380, false).copy).toEqual([1, 1, 1]);
   });
 });

@@ -1,15 +1,16 @@
-# Plonbli — landing page przed premierą
+# Od Swoich | strona przed premierą
 
-Responsywny landing Plonbli kierujący do listy oczekujących. Strona przedstawia ideę serwisu, sposób działania i korzyści dla osób szukających lokalnej żywności oraz gospodarstw i lokalnych pracowni.
+Od Swoich pomaga odkrywać miejsca w okolicy i kontaktować się bezpośrednio. Na początek opowiadamy o lokalnym jedzeniu. Strona ma charakter informacyjny i nie zbiera adresów e-mail.
 
 ## Najważniejsze elementy
 
-- kierunek wizualny „Natural Premium Storybook”;
+- współczesny atlas z akwarelami polskiego gospodarstwa, pinezką i historią synchronizowaną z przewijaniem;
 - responsywne obrazy AVIF/WebP i lokalnie hostowane fonty;
-- dostępna nawigacja, formularz i obsługa `prefers-reduced-motion`;
-- lista oczekujących oparta na Supabase;
+- dostępna nawigacja i obsługa `prefers-reduced-motion`;
 - jedno źródło metadanych SEO, Open Graph, danych strukturalnych i ikon;
 - statyczny prerender pełnej treści strony podczas buildu.
+
+Aktualny podział treści, materiały zdjęciowe i osobny etap migracji domeny opisuje [instrukcja atlasu](docs/OD_SWOICH_ATLAS.md).
 
 ## Wymagania
 
@@ -23,16 +24,9 @@ npm ci
 npm run dev
 ```
 
-## Konfiguracja formularza
+## Status zapisów
 
-Skopiuj `.env.example` do `.env` i uzupełnij publiczne dane projektu Supabase:
-
-```env
-VITE_SUPABASE_URL=https://twoj-projekt.supabase.co
-VITE_SUPABASE_ANON_KEY=twoj-publiczny-klucz-anon
-```
-
-Formularz zapisuje wyłącznie znormalizowany adres e-mail do tabeli `public.subscribers`. Kolumna `email` powinna mieć ograniczenie `UNIQUE`; rola anonimowa powinna móc wykonać tylko `INSERT`, bez dostępu do odczytu listy.
+Zapisy są wyłączone. Podgląd i build strony nie wymagają konta Supabase, kluczy ani pliku `.env`. Zmiana nie usuwa wcześniej zebranych adresów ani nie zmienia reguł dostępu do zdalnej bazy.
 
 ## Build i prerender
 
@@ -43,7 +37,7 @@ npm run build
 npm run verify:dist
 ```
 
-`verify:dist` sprawdza między innymi metadane, canonical, Open Graph, JSON-LD, H1, formularz, FAQ oraz brak ukrytej treści prerenderowanej.
+`verify:dist` sprawdza między innymi metadane, canonical, Open Graph, JSON-LD, H1, FAQ oraz brak pól zapisu i odnośników do dawnego formularza.
 
 ## Kontrola jakości
 
@@ -62,5 +56,3 @@ npm run test:e2e
 ## Wdrożenie
 
 GitHub Actions odpowiada za kontrolę jakości i nie publikuje strony. Hosting konfiguruje się niezależnie w Netlify albo Vercelu, używając polecenia `npm run build` i katalogu wynikowego `dist`.
-
-Zmienne `VITE_SUPABASE_URL` i `VITE_SUPABASE_ANON_KEY` należy dodać w ustawieniach środowiska wybranej platformy hostingowej. Nie należy udostępniać klucza `service_role` aplikacji frontendowej.

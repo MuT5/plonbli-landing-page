@@ -17,12 +17,13 @@ const AmbientStoryContext = createContext<SelectScene | null>(null);
 
 interface AmbientStorySequenceProps {
   children: ReactNode;
+  initialScene?: StorySceneId;
 }
 
-export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
+export function AmbientStorySequence({ children, initialScene = "contact" }: AmbientStorySequenceProps) {
   const reducedMotion = useReducedMotion();
-  const [requestedScene, setRequestedScene] = useState<StorySceneId>("contact");
-  const [visibleScene, setVisibleScene] = useState<StorySceneId>("contact");
+  const [requestedScene, setRequestedScene] = useState(initialScene);
+  const [visibleScene, setVisibleScene] = useState(initialScene);
   const scene = getStoryScene(visibleScene);
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
                   reducedMotion
                     ? {
                         opacity: {
-                          duration: 0.82,
+                          duration: 0.16,
                           ease: [0.45, 0, 0.55, 1],
                         },
                       }
@@ -116,9 +117,7 @@ export function AmbientStorySequence({ children }: AmbientStorySequenceProps) {
                 />
               </motion.picture>
             </AnimatePresence>
-            <div className="ambient-story-image-tone" />
           </div>
-          <div className="ambient-story-veil" />
         </div>
 
         <div className="ambient-story-content">{children}</div>

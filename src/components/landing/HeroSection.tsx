@@ -1,120 +1,50 @@
-import { useRef } from "react";
-import { ArrowDown, Leaf } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowDownRight, MapPin } from "lucide-react";
 
 import CtaLink from "@/components/landing/CtaLink";
 import { siteConfig } from "@/config/site";
 import { landingContent } from "@/content/landing.pl";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { launchCategory } from "@/content/launchCategory";
+
+const sizes = "(min-width: 1440px) 690px, (min-width: 900px) 51vw, calc(100vw - 2.5rem)";
+const portrait = "(max-width: 639px) and (orientation: portrait)";
+
+function imageSet(stem: string, widths: number[], ext: string) {
+  return widths.map((w) => `${stem}-${w}.${ext} ${w}w`).join(", ");
+}
 
 export default function HeroSection() {
-  const heroRef = useRef<HTMLElement>(null);
-  const reducedMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const imageY = useTransform(scrollYProgress, [0, 1], [-4, 12]);
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.04, 1.08]);
-  const content = landingContent.hero;
+  const hero = landingContent.hero;
+  const stem = `${import.meta.env.BASE_URL}${launchCategory.hero.asset}`;
 
   return (
-    <section ref={heroRef} className="hero-section relative overflow-clip">
-      <div aria-hidden="true" className="hero-orb hero-orb--one" />
-      <div aria-hidden="true" className="hero-orb hero-orb--two" />
-      <div className="site-container relative grid items-center gap-10 lg:grid-cols-[1.03fr_.97fr] lg:gap-16">
-        <div className="max-w-3xl">
-          <motion.p
-            className="eyebrow"
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
-            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            transition={{ duration: reducedMotion ? 0.38 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Leaf aria-hidden="true" className="hero-eyebrow-leaf size-4" strokeWidth={1.8} />
-            {content.eyebrow}
-          </motion.p>
-          <motion.h1
-            className="mt-6 max-w-[14ch] font-display text-[clamp(2.9rem,5.8vw,5.5rem)] font-bold leading-[.95] tracking-[-0.026em] text-[var(--color-olive)]"
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
-            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            transition={{ duration: reducedMotion ? 0.46 : 0.65, delay: reducedMotion ? 0.03 : 0.06, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {content.title}
-          </motion.h1>
-          <motion.p
-            className="mt-7 max-w-2xl text-lg leading-8 text-[var(--color-ink-muted)] sm:text-xl sm:leading-9"
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
-            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            transition={{ duration: reducedMotion ? 0.44 : 0.6, delay: reducedMotion ? 0.05 : 0.12, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {content.description}
-          </motion.p>
-          <motion.div
-            className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
-            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            transition={{ duration: reducedMotion ? 0.42 : 0.55, delay: reducedMotion ? 0.07 : 0.2, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <CtaLink content={content.primaryCta} className="justify-center sm:justify-start" />
-            <CtaLink content={content.secondaryCta} className="justify-center sm:justify-start" />
-          </motion.div>
+    <section aria-labelledby="atlas-title" className="atlas-intro">
+      <div className="site-container atlas-spread">
+        <div className="atlas-intro-copy">
+          <p className="atlas-kicker"><MapPin aria-hidden="true" />{hero.eyebrow}</p>
+          <h1 id="atlas-title"><span>{hero.titleLines[0]}</span>{" "}<span>{hero.titleLines[1]}</span></h1>
+          <p className="atlas-deck">{hero.description}</p>
+          <div className="atlas-actions">
+            <CtaLink content={hero.primaryCta} />
+          </div>
         </div>
-
-        <motion.figure
-          className="hero-illustration-frame"
-          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.985, y: 12 }}
-          animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: reducedMotion ? 0.48 : 0.78, delay: reducedMotion ? 0.04 : 0.08, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <picture className="block h-full w-full">
-            <source
-              media="(max-width: 639px) and (orientation: portrait)"
-              type="image/avif"
-              srcSet={`${import.meta.env.BASE_URL}landing/hero-storybook-mobile-768.avif 768w, ${import.meta.env.BASE_URL}landing/hero-storybook-mobile-1024.avif 1024w`}
-              sizes="calc(100vw - 2rem)"
-            />
-            <source
-              media="(max-width: 639px) and (orientation: portrait)"
-              type="image/webp"
-              srcSet={`${import.meta.env.BASE_URL}landing/hero-storybook-mobile-768.webp 768w, ${import.meta.env.BASE_URL}landing/hero-storybook-mobile-1024.webp 1024w`}
-              sizes="calc(100vw - 2rem)"
-            />
-            <source
-              type="image/avif"
-              srcSet={`${import.meta.env.BASE_URL}landing/hero-storybook-768.avif 768w, ${import.meta.env.BASE_URL}landing/hero-storybook-1280.avif 1280w, ${import.meta.env.BASE_URL}landing/hero-storybook-1536.avif 1536w`}
-              sizes="(min-width: 1024px) 46vw, calc(100vw - 2rem)"
-            />
-            <motion.img
-              src={`${import.meta.env.BASE_URL}landing/hero-storybook-1280.webp`}
-              srcSet={`${import.meta.env.BASE_URL}landing/hero-storybook-768.webp 768w, ${import.meta.env.BASE_URL}landing/hero-storybook-1280.webp 1280w, ${import.meta.env.BASE_URL}landing/hero-storybook-1536.webp 1536w`}
-              sizes="(min-width: 1024px) 46vw, calc(100vw - 2rem)"
-              width="1536"
-              height="1024"
-              alt={content.imageAlt}
-              className="hero-image h-full w-full object-cover object-[68%_center]"
-              style={reducedMotion ? undefined : { y: imageY, scale: imageScale }}
-              loading="eager"
-              {...{ fetchpriority: "high" }}
-              decoding="async"
-            />
-          </picture>
-          <motion.a
-            href={siteConfig.links.howItWorks}
-            aria-label="Przejdź do historii działania Plonbli"
-            className="hero-caption"
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            transition={{ duration: reducedMotion ? 0.38 : 0.45, delay: reducedMotion ? 0.08 : 0.36, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <span className="hero-caption-icon inline-flex size-9 items-center justify-center rounded-full bg-[var(--color-brand)] text-[var(--color-ivory)]">
-              <ArrowDown aria-hidden="true" className="size-4" />
-            </span>
-            <span>
-              <strong className="block font-bold text-[var(--color-olive)]">Plonbli rośnie</strong>
-              <span className="text-sm text-[var(--color-earth)]">Poznaj historię podczas przewijania</span>
-            </span>
-          </motion.a>
-        </motion.figure>
+        <figure className="atlas-cover">
+          <div className="atlas-cover-image">
+            <picture>
+              <source media={portrait} type="image/avif" srcSet={imageSet(stem + "-portrait", [640, 960], "avif")} sizes={sizes} />
+              <source media={portrait} type="image/webp" srcSet={imageSet(stem + "-portrait", [640, 960], "webp")} sizes={sizes} />
+              <source type="image/avif" srcSet={imageSet(stem, [768, 1280, 1536], "avif")} sizes={sizes} />
+              <img className="hero-image" src={stem + "-1280.webp"} srcSet={imageSet(stem, [768, 1280, 1536], "webp")}
+                sizes={sizes} alt={hero.imageAlt} width="1536" height="1024" loading="eager" decoding="async" {...{ fetchpriority: "high" }} />
+            </picture>
+          </div>
+          <figcaption>
+            <a href={siteConfig.links.howItWorks} className="atlas-caption-link" aria-label="Przejdź do sekcji Jak to działa">
+              <span className="atlas-plate-index" aria-hidden="true">01</span>
+              <span>{hero.caption}</span>
+              <ArrowDownRight aria-hidden="true" />
+            </a>
+          </figcaption>
+        </figure>
       </div>
     </section>
   );

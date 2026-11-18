@@ -28,7 +28,7 @@ function FaqItem({ index, item }: FaqItemProps) {
           <button
             id={questionId}
             type="button"
-            className="faq-item-trigger flex min-h-16 w-full cursor-pointer items-center justify-between gap-5 bg-transparent px-5 py-4 text-left font-display text-xl font-bold text-[var(--color-olive)] sm:px-6 sm:text-2xl"
+            className="faq-item-trigger flex min-h-16 w-full cursor-pointer items-center justify-between gap-5 bg-transparent px-5 py-4 text-left text-xl text-[var(--color-olive)] sm:px-6 sm:text-2xl"
             aria-controls={answerId}
             aria-expanded={isExpanded}
             disabled={!clientReady}

@@ -1,23 +1,23 @@
+import { launchCategory } from "../content/launchCategory";
+import type { SocialLinkConfig } from "../types/landing";
+
 const siteUrl = "https://plonbli.pl" as const;
 const canonicalUrl = `${siteUrl}/` as const;
-const title = "Plonbli. Dobre rzeczy rosną blisko";
-const description =
-  "Odkrywaj gospodarstwa, pasieki, sady i lokalne piekarnie w swojej okolicy. Poznawaj ich ofertę i pytaj u źródła. Dołącz do listy Plonbli.";
-const socialDescription =
-  "Odkrywaj miejsca, ludzi i jedzenie z Twojej okolicy. Poznaj Plonbli od pierwszego dnia.";
+const name = "Od Swoich";
+export const brandHeadlineLines = ["Dobre rzeczy", "mają swój adres."] as const;
+export const brandHeadline = brandHeadlineLines.join(" ");
+const title = `${name}. ${brandHeadline}`;
+const description = launchCategory.searchDescription;
+const socialDescription = launchCategory.searchDescription;
 
-const socialProfiles = {
-  telegramChannel: "https://t.me/plonbli",
-  telegramGroup: "https://t.me/Plonbligrupa",
-  instagram: "https://www.instagram.com/plonbli/",
-  facebook: "https://www.facebook.com/share/1YkUnnggkF/",
-  x: "https://x.com/plonbli",
-  youtube: "https://www.youtube.com/@Plonbli",
-} as const;
+// Only owner-confirmed accounts belong here. The footer and JSON-LD share this list.
+const socialProfiles: readonly SocialLinkConfig[] = [
+  { channel: "x", label: "X · @odswoich", ariaLabel: "Od Swoich w serwisie X (@odswoich)", href: "https://x.com/odswoich" },
+];
 
 export const siteMetadata = {
-  name: "Plonbli",
-  author: "Plonbli",
+  name,
+  author: name,
   copyrightYear: 2026,
   language: "pl",
   locale: "pl-PL",
@@ -37,11 +37,11 @@ export const siteMetadata = {
     description: socialDescription,
     type: "website",
     image: {
-      url: `${siteUrl}/landing/og-plonbli-logo.jpg`,
+      url: `${siteUrl}/landing/og-od-swoich.jpg`,
       type: "image/jpeg",
       width: 1200,
       height: 630,
-      alt: "Plonbli, lokalne jedzenie i miejsca blisko Ciebie",
+      alt: `Logo Od Swoich z zieloną pinezką. ${launchCategory.hero.alt}`,
     },
   },
   twitter: {
@@ -49,7 +49,7 @@ export const siteMetadata = {
     title,
     description: socialDescription,
   },
-  organizationLogoUrl: `${siteUrl}/plonbli-logo-192.webp`,
+  organizationLogoUrl: `${siteUrl}/od-swoich-pin-192.webp`,
 } as const;
 
 export function createRobotsTxt() {
@@ -96,13 +96,7 @@ export function createStructuredData() {
         name: siteMetadata.name,
         url: siteMetadata.canonicalUrl,
         logo: siteMetadata.organizationLogoUrl,
-        sameAs: [
-          siteMetadata.socialProfiles.instagram,
-          siteMetadata.socialProfiles.facebook,
-          siteMetadata.socialProfiles.x,
-          siteMetadata.socialProfiles.youtube,
-          siteMetadata.socialProfiles.telegramChannel,
-        ],
+        ...(socialProfiles.length ? { sameAs: socialProfiles.map(({ href }) => href) } : {}),
       },
       {
         "@type": "WebSite",

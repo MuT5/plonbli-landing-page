@@ -13,7 +13,7 @@ describe("FAQ accordion", () => {
     );
 
     const question = screen.getByRole("button", {
-      name: "Czy korzystanie z\u00A0Plonbli będzie bezpłatne?",
+      name: "Czy korzystanie z\u00A0aplikacji Od\u00A0Swoich będzie bezpłatne?",
     });
 
     expect(question).toHaveAttribute("aria-expanded", "false");
@@ -22,10 +22,10 @@ describe("FAQ accordion", () => {
 
     expect(question).toHaveAttribute("aria-expanded", "true");
     const answer = screen.getByRole("region", {
-      name: "Czy korzystanie z\u00A0Plonbli będzie bezpłatne?",
+      name: "Czy korzystanie z\u00A0aplikacji Od\u00A0Swoich będzie bezpłatne?",
     });
 
-    expect(answer).toHaveTextContent("Korzystanie z Plonbli będzie bezpłatne");
+    expect(answer).toHaveTextContent("Korzystanie z aplikacji Od Swoich będzie bezpłatne");
     expect(answer).toHaveAttribute("aria-hidden", "false");
 
     fireEvent.click(question);

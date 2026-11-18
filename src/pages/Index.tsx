@@ -1,13 +1,12 @@
 import { MotionConfig } from "framer-motion";
 
-import { ForFarmsSection, ForLocalsSection } from "@/components/landing/AudienceSections";
+import { ForLocalPlacesSection, ForLocalsSection } from "@/components/landing/AudienceSections";
 import { AmbientStoryChapter, AmbientStorySequence } from "@/components/landing/AmbientStorySequence";
 import FaqSection from "@/components/landing/FaqSection";
 import HeroSection from "@/components/landing/HeroSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import SiteFooter from "@/components/landing/SiteFooter";
 import SiteHeader from "@/components/landing/SiteHeader";
-import { FinalCtaSection, WaitlistSection } from "@/components/landing/WaitlistSection";
 import WhySection from "@/components/landing/WhySection";
 import { useClientReady } from "@/context/client-ready";
 
@@ -17,6 +16,7 @@ export default function Index() {
   return (
     <MotionConfig reducedMotion="user">
       <div
+        id="start"
         className="min-h-screen overflow-clip bg-[var(--color-surface)] text-[var(--color-ink)]"
         data-client-ready={clientReady}
       >
@@ -25,19 +25,15 @@ export default function Index() {
           <HeroSection />
           <WhySection />
           <HowItWorksSection />
-          <AmbientStorySequence>
-            <AmbientStoryChapter scene="contact">
-              <WaitlistSection />
-            </AmbientStoryChapter>
+          <AmbientStorySequence initialScene="discovery">
             <AmbientStoryChapter scene="discovery">
               <ForLocalsSection />
             </AmbientStoryChapter>
             <AmbientStoryChapter scene="offer">
-              <ForFarmsSection />
+              <ForLocalPlacesSection />
             </AmbientStoryChapter>
             <AmbientStoryChapter scene="contact">
               <FaqSection />
-              <FinalCtaSection />
             </AmbientStoryChapter>
           </AmbientStorySequence>
         </main>

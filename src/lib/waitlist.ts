@@ -1,6 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-export type WaitlistErrorCode = "configuration" | "duplicate" | "invalid-email" | "service";
+export type WaitlistErrorCode = "paused" | "configuration" | "duplicate" | "invalid-email" | "service";
 
 export class WaitlistError extends Error {
   readonly code: WaitlistErrorCode;
@@ -60,6 +60,10 @@ function getClient(): WaitlistClient {
 }
 
 export async function joinWaitlist(value: string): Promise<string> {
+  if (import.meta.env.VITE_WAITLIST_SIGNUPS_ENABLED !== "true") {
+    throw new WaitlistError("paused", "Zapisy są wyłączone.");
+  }
+
   const email = normalizeEmail(value);
   if (!isValidEmail(email)) {
     throw new WaitlistError("invalid-email", "Nieprawidłowy adres e-mail.");

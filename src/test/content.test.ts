@@ -1,31 +1,59 @@
 import { describe, expect, it } from "vitest";
 
 import { siteConfig } from "@/config/site";
-import { landingContent } from "@/content/landing.pl";
-import { storyScenes } from "@/content/storyScenes";
+import { createLandingContent, landingContent } from "@/content/landing.pl";
+import type { LaunchCategory } from "@/content/launchCategory";
+import { createStoryScenes, storyScenes } from "@/content/storyScenes";
 import type { CtaContent } from "@/types/landing";
 
 const ctas: readonly CtaContent[] = [
-  landingContent.navigation.cta,
   landingContent.hero.primaryCta,
-  landingContent.hero.secondaryCta,
-  landingContent.forFarms.cta,
-  landingContent.finalCta.cta,
+  landingContent.forLocalPlaces.cta,
 ];
 
 describe("landing content contract", () => {
-  it("uses the waitlist as the primary conversion path", () => {
-    expect(siteConfig.links.waitlist).toBe("#lista-oczekujacych");
-    expect(landingContent.navigation.cta.target).toBe("waitlist");
-    expect(landingContent.hero.primaryCta.target).toBe("waitlist");
-    expect(landingContent.forFarms.cta.target).toBe("waitlist");
-    expect(landingContent.finalCta.cta.target).toBe("waitlist");
+  it("guides visitors into the atlas without inviting them to subscribe", () => {
+    expect(siteConfig.links.howItWorks).toBe("#jak-to-dziala");
+    expect(landingContent.hero.primaryCta.target).toBe("howItWorks");
+    expect(landingContent.forLocalPlaces.cta.target).toBe("faq");
+    expect(JSON.stringify(landingContent)).not.toMatch(/newsletter|lista-oczekujacych|powiadom mnie|zostaw.{0,12}e-mail/i);
   });
 
   it("resolves every CTA through the central site configuration", () => {
     for (const cta of ctas) {
       expect(Object.prototype.hasOwnProperty.call(siteConfig.links, cta.target)).toBe(true);
     }
+  });
+
+  it("can change the featured story without changing the brand or journey", () => {
+    const ceramic = (stem: string, label: string) => ({
+      desktopSrc: `ceramika/${stem}-960.webp`, mobileSrc: `ceramika/${stem}-640.webp`, label, alt: label,
+    });
+    const edition: LaunchCategory = {
+      hero: { lead: "Poznaj lokalną ceramikę.", asset: "ceramika/wejscie", caption: "Poranek przy piecu", alt: "Wejście do zakładu garncarskiego." },
+      why: ["Za otwartymi drzwiami wiruje koło garncarskie."],
+      storyImages: {
+        discovery: ceramic("drzwi", "Drzwi garncarni"), offer: ceramic("kubek", "Kubek z gliny"), contact: ceramic("rozmowa", "Rozmowa z garncarką"),
+      },
+      whoCanJoin: "Osoby, które tworzą ceramikę.",
+      availableOffer: "Kubki i miski.",
+      searchDescription: "Lokalna ceramika i kontakt z osobami, które ją tworzą.",
+    };
+    const content = createLandingContent(edition);
+
+    expect(content.hero.title).toBe(landingContent.hero.title);
+    expect(content.hero.titleLines.join(" ")).toBe(content.hero.title);
+    expect(content.navigation).toEqual(landingContent.navigation);
+    expect(content.howItWorks).toEqual(landingContent.howItWorks);
+    expect(content.hero.description).toBe(edition.hero.lead);
+    expect(content.hero.imageAlt).toBe(edition.hero.alt);
+    expect(content.hero.caption).toBe(edition.hero.caption);
+    expect(content.why.paragraphs).toEqual(edition.why);
+    expect(content.faq.items.find(({ id }) => id === "who-can-join")?.answer).toBe(edition.whoCanJoin);
+    expect(createStoryScenes(edition).map(({ desktopSrc, alt }) => ({ desktopSrc, alt }))).toEqual(
+      Object.values(edition.storyImages).map(({ desktopSrc, alt }) => ({ desktopSrc, alt })),
+    );
+    expect(JSON.stringify(content)).not.toMatch(/piekar|miód|pasiek|jedzeni|gospodarstw|march|rzodkiew|tunel|warzyw/i);
   });
 
   it("does not expose a test application URL or an appUrl setting", () => {
@@ -40,13 +68,15 @@ describe("landing content contract", () => {
     const disallowedPhrases = [
       "producent",
       "pracowni",
+      "rzemios",
+      "ceramik",
       "kupuj",
       "kup teraz",
       "koszyk",
       "checkout",
       "marketplace",
       "sprzedawaj",
-      "plonbli nie jest sklepem",
+      "od swoich nie jest sklepem",
       "nie obsługuje płatności",
       "nie przejmuje płatności",
     ];
@@ -56,12 +86,12 @@ describe("landing content contract", () => {
     }
   });
 
-  it("keeps the contact email private and exposes the YouTube channel", () => {
+  it("keeps the contact email private and does not advertise retired profiles", () => {
     const serializedPublicContent = JSON.stringify({ siteConfig, landingContent });
 
     expect(serializedPublicContent).not.toContain("plonbli@gmail.com");
     expect(Object.prototype.hasOwnProperty.call(siteConfig, "contact")).toBe(false);
-    expect(siteConfig.social.youtube.href).toBe("https://www.youtube.com/@Plonbli");
+    expect(JSON.stringify(siteConfig.social)).not.toMatch(/plonbli|1YkUnnggkF/i);
   });
 
   it("keeps the journey at exactly three ordered steps", () => {
@@ -73,10 +103,10 @@ describe("landing content contract", () => {
     expect(new Set(steps.map((step) => step.id)).size).toBe(3);
   });
 
-  it("states that Plonbli will be free without limiting the promise to launch", () => {
+  it("states that Od Swoich will be free without limiting the promise to launch", () => {
     const freeAccess = landingContent.faq.items.find((item) => item.id === "free-access");
 
-    expect(freeAccess?.answer).toContain("Korzystanie z\u00A0Plonbli będzie bezpłatne");
+    expect(freeAccess?.answer).toContain("Korzystanie z\u00A0aplikacji Od\u00A0Swoich będzie bezpłatne");
     expect(freeAccess?.answer.toLowerCase()).not.toContain("na start");
   });
 
@@ -87,8 +117,8 @@ describe("landing content contract", () => {
 
     for (const scene of storyScenes) {
       expect(scene.desktopSrc).toMatch(/\.webp$/);
-      expect(scene.mobileSrc).toMatch(/-mobile\.webp$/);
-      expect(scene.input).toHaveLength(scene.output.length);
+      expect(scene.mobileSrc).toMatch(/-640\.webp$/);
+      expect(scene.alt.trim()).not.toBe("");
     }
   });
 });

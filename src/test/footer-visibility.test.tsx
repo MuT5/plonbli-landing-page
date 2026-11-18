@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import SiteFooter from "@/components/landing/SiteFooter";
@@ -14,13 +14,13 @@ describe("site footer visibility", () => {
     expect(footer).toBeVisible();
     expect(footer).toHaveClass("site-footer");
     expect(footer.querySelector("nav")).toBeVisible();
-    expect(socialLinks).toHaveLength(6);
-    socialLinks.forEach((link) => expect(link).toBeVisible());
-
-    const telegramChannel = screen.getByRole("link", { name: siteConfig.social.telegramChannel.ariaLabel });
-    const telegramGroup = screen.getByRole("link", { name: siteConfig.social.telegramGroup.ariaLabel });
-
-    expect(telegramChannel.querySelector("svg")).toHaveClass("lucide-send");
-    expect(telegramGroup.querySelector("svg")).toHaveClass("lucide-users");
+    expect(socialLinks).toHaveLength(1);
+    expect(socialLinks[0]).toHaveAttribute("href", "https://x.com/odswoich");
+    for (const { ariaLabel, href } of siteConfig.social) {
+      const link = within(footer).getByRole("link", { name: ariaLabel });
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", href);
+      expect(href).not.toMatch(/plonbli|1YkUnnggkF/i);
+    }
   });
 });
