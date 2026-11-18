@@ -12,7 +12,7 @@ const socialDescription = launchCategory.searchDescription;
 
 // Only owner-confirmed accounts belong here. The footer and JSON-LD share this list.
 const socialProfiles: readonly SocialLinkConfig[] = [
-  { channel: "x", label: "X · @odswoich", ariaLabel: "Od Swoich w serwisie X (@odswoich)", href: "https://x.com/odswoich" },
+  { channel: "x", label: "@odswoich", ariaLabel: "Od Swoich w serwisie X (@odswoich)", href: "https://x.com/odswoich" },
 ];
 
 export const siteMetadata = {

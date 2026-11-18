@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 
+import LandingIcon from "@/components/landing/LandingIcon";
 import { landingContent } from "@/content/landing.pl";
 import { storyScenes, type StoryScene } from "@/content/storyScenes";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -107,7 +108,11 @@ export default function HowItWorksSection() {
                 <li key={scene.id} className="atlas-story-step" data-story-step={step.number}>
                   <div className="atlas-static-frame" data-static-scene={scene.id}><ScenePicture scene={scene} /></div>
                   <div className="atlas-story-copy" data-story-card={step.number}>
-                    <p className="atlas-step-index"><span aria-hidden="true">{String(step.number).padStart(2, "0")}</span>{scene.label}</p>
+                    <p className="atlas-step-index">
+                      <span className="atlas-step-number" aria-hidden="true">{String(step.number).padStart(2, "0")}</span>
+                      <LandingIcon name={step.icon} className="atlas-step-icon" />
+                      {scene.label}
+                    </p>
                     <h3>{step.title}</h3>
                     <p className="atlas-step-description">{step.description}</p>
                   </div>

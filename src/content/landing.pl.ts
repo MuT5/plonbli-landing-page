@@ -28,7 +28,7 @@ const rawLandingContent = (category: LaunchCategory) => ({
       variant: "primary",
     },
     imageAlt: category.hero.alt,
-    caption: category.hero.caption,
+    imageLinkLabel: "Zacznij od mapy",
   },
   why: {
     eyebrow: `Dlaczego powstaje ${brandInCopy}?`,

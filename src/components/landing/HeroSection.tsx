@@ -1,4 +1,4 @@
-import { ArrowDownRight, MapPin } from "lucide-react";
+import { ArrowDownRight, Map, MapPin } from "lucide-react";
 
 import CtaLink from "@/components/landing/CtaLink";
 import { siteConfig } from "@/config/site";
@@ -38,10 +38,10 @@ export default function HeroSection() {
             </picture>
           </div>
           <figcaption>
-            <a href={siteConfig.links.howItWorks} className="atlas-caption-link" aria-label={`${hero.caption}. Przejdź do sekcji Jak to działa`}>
-              <span className="atlas-plate-index" aria-hidden="true">01</span>
-              <span>{hero.caption}</span>
-              <ArrowDownRight aria-hidden="true" />
+            <a href={siteConfig.links.howItWorks} className="atlas-caption-link">
+              <Map className="atlas-caption-icon" aria-hidden="true" strokeWidth={1.8} />
+              <span>{hero.imageLinkLabel}</span>
+              <ArrowDownRight className="atlas-caption-arrow" aria-hidden="true" />
             </a>
           </figcaption>
         </figure>

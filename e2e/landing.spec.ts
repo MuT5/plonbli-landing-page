@@ -215,7 +215,7 @@ test("uses smooth section navigation unless reduced motion is requested", async 
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
 
-  const storyLink = page.getByRole("link", { name: "Przejdź do sekcji Jak to działa" });
+  const storyLink = page.getByRole("link", { name: "Zacznij od mapy", exact: true });
   const storySection = page.locator("#jak-to-dziala");
 
   await expect(storyLink).toHaveAttribute("href", "#jak-to-dziala");
@@ -289,7 +289,7 @@ test("keeps discovery controls, footer and step numbers above their contrast tar
       return (lighter + 0.05) / (darker + 0.05);
     };
 
-    const stepNumber = document.querySelector<HTMLElement>(".atlas-step-index span")!;
+    const stepNumber = document.querySelector<HTMLElement>(".atlas-step-number")!;
     const stepCard = stepNumber.closest<HTMLElement>(".atlas-story-copy")!;
     const stepColor = parseColor(getComputedStyle(stepNumber).color);
     const pageBackground = parseColor(getComputedStyle(document.body).backgroundColor);

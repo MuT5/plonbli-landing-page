@@ -88,11 +88,11 @@
   .atlas-cover-image { position: relative; overflow: hidden; aspect-ratio: 3 / 2; border-radius: .23rem; background: var(--color-surface); }
   .atlas-cover-image img, .atlas-cover-image picture { display: block; height: 100%; width: 100%; }
   .hero-image { object-fit: contain; }
-  .atlas-caption-link { display: flex; align-items: center; gap: .72rem; min-height: 3rem; border-bottom: 1px solid var(--color-border); color: var(--color-ink); font-size: 1rem; font-weight: 500; line-height: 1.35; }
-  .atlas-caption-link:hover { color: var(--color-brand); text-decoration: underline; text-underline-offset: .2em; }
-  .atlas-caption-link > svg { margin-left: auto; width: 1.13rem; height: 1.13rem; }
-  .atlas-plate-index { display: inline-flex; align-items: center; gap: .48rem; font-size: .78rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--color-brand); }
-  .atlas-plate-index::before { width: .6rem; height: .6rem; content: ""; border-radius: 50%; background: var(--color-sun); border: 1px solid #977625; }
+  .atlas-caption-link { display: flex; align-items: center; gap: .65rem; min-height: 3rem; padding-inline: .125rem; border-bottom: 1px solid var(--color-border); color: var(--color-brand); font-size: 1rem; font-weight: 600; line-height: 1.35; }
+  .atlas-caption-link:is(:hover, :focus-visible) span { text-decoration: underline; text-underline-offset: .2em; }
+  .atlas-caption-icon, .atlas-caption-arrow { width: 1.13rem; height: 1.13rem; flex: none; }
+  .atlas-caption-arrow { margin-inline-start: auto; transition: transform 180ms ease; }
+  .atlas-caption-link:hover .atlas-caption-arrow { transform: translate(2px, 2px); }
   .why-section { border-block: 1px solid var(--color-border); background: #e9ede6; }
   .why-story-shell { display: grid; gap: 1.5rem; }
   .why-story-copy { align-self: end; max-width: 53ch; font-size: clamp(1.125rem, 1.55vw, 1.45rem); line-height: 1.54; }
@@ -122,5 +122,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .button-icon, .animate-spin { transition: none; animation: none; }
+  .button-icon, .atlas-caption-arrow, .animate-spin { transition: none; animation: none; }
+  .atlas-caption-link:hover .atlas-caption-arrow { transform: none; }
 }

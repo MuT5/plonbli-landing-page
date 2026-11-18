@@ -16,6 +16,8 @@ describe("site footer visibility", () => {
     expect(footer.querySelector("nav")).toBeVisible();
     expect(socialLinks).toHaveLength(1);
     expect(socialLinks[0]).toHaveAttribute("href", "https://x.com/odswoich");
+    expect(socialLinks[0]).toHaveTextContent("@odswoich");
+    expect(socialLinks[0].querySelector("svg.site-footer-social-mark")).toHaveAttribute("aria-hidden", "true");
     for (const { ariaLabel, href } of siteConfig.social) {
       const link = within(footer).getByRole("link", { name: ariaLabel });
       expect(link).toBeVisible();

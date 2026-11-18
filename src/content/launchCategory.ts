@@ -9,7 +9,7 @@ export interface SceneImage {
 
 /** The current edition of the atlas. Layout, navigation and contact steps stay the same across editions. */
 export interface LaunchCategory {
-  readonly hero: { readonly lead: string; readonly asset: string; readonly caption: string; readonly alt: string };
+  readonly hero: { readonly lead: string; readonly asset: string; readonly alt: string };
   readonly why: readonly string[];
   readonly storyImages: Readonly<Record<StoryStage, SceneImage>>;
   readonly whoCanJoin: string;
@@ -21,7 +21,6 @@ export const launchCategory: LaunchCategory = {
   hero: {
     lead: "Zaczynamy od lokalnego jedzenia. Na mapie Od\u00a0Swoich znajdziesz miejsca, gdzie kupisz warzywa, owoce czy miód prosto u źródła.",
     asset: "landing/atlas-garden-morning",
-    caption: "Przy zbiorze marchwi",
     alt: "Akwarela: trzy osoby zbierają marchew na grządkach. Za nimi widać dom, ceglaną stodołę i tunel foliowy.",
   },
   why: [

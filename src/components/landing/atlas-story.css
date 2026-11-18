@@ -55,14 +55,18 @@
 .atlas-static-frame { display: none; }
 .atlas-story-copy { max-inline-size: 32rem; padding-block: 1.25rem; }
 .atlas-step-index {
-  display: flex; align-items: center; gap: .8rem; margin: 0 0 1rem;
-  color: var(--color-ink-muted); font-size: .875rem; letter-spacing: .045em; font-weight: 600;
+  display: flex; align-items: center; gap: .55rem; margin: 0 0 .9rem;
+  color: var(--color-ink-muted); font-size: .9rem; letter-spacing: .025em; font-weight: 600;
 }
-.atlas-step-index span {
-  display: inline-grid; place-items: center; min-inline-size: 2.35rem; block-size: 1.65rem;
-  border: 1px solid currentColor; border-radius: .15rem;
-  color: var(--color-brand); font-size: .8rem; letter-spacing: .075em; font-variant-numeric: tabular-nums;
+.atlas-step-number {
+  display: inline-flex; flex: none; align-items: center; gap: .55rem;
+  color: var(--color-brand); font-size: .9rem; font-weight: 700; font-variant-numeric: tabular-nums;
 }
+.atlas-step-number::after {
+  content: ""; inline-size: .24rem; block-size: .24rem; border-radius: 50%;
+  background: #9a7429;
+}
+.atlas-step-icon { inline-size: 1.15rem; block-size: 1.15rem; flex: none; color: var(--color-brand); }
 .atlas-story-copy h3 {
   max-inline-size: 17ch; margin: 0; color: var(--color-ink);
   font-family: var(--font-titles); font-weight: 600;

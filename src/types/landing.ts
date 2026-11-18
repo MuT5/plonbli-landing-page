@@ -86,7 +86,7 @@ export interface LandingContent {
     description: string;
     primaryCta: CtaContent;
     imageAlt: string;
-    caption: string;
+    imageLinkLabel: string;
   }>;
   readonly why: Readonly<{
     eyebrow: string;

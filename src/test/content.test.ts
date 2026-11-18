@@ -30,7 +30,7 @@ describe("landing content contract", () => {
       desktopSrc: `ceramika/${stem}-960.webp`, mobileSrc: `ceramika/${stem}-640.webp`, label, alt: label,
     });
     const edition: LaunchCategory = {
-      hero: { lead: "Poznaj lokalną ceramikę.", asset: "ceramika/wejscie", caption: "Poranek przy piecu", alt: "Wejście do zakładu garncarskiego." },
+      hero: { lead: "Poznaj lokalną ceramikę.", asset: "ceramika/wejscie", alt: "Wejście do zakładu garncarskiego." },
       why: ["Za otwartymi drzwiami wiruje koło garncarskie."],
       storyImages: {
         discovery: ceramic("drzwi", "Drzwi garncarni"), offer: ceramic("kubek", "Kubek z gliny"), contact: ceramic("rozmowa", "Rozmowa z garncarką"),
@@ -47,7 +47,7 @@ describe("landing content contract", () => {
     expect(content.howItWorks).toEqual(landingContent.howItWorks);
     expect(content.hero.description).toBe(edition.hero.lead);
     expect(content.hero.imageAlt).toBe(edition.hero.alt);
-    expect(content.hero.caption).toBe(edition.hero.caption);
+    expect(content.hero.imageLinkLabel).toBe(landingContent.hero.imageLinkLabel);
     expect(content.why.paragraphs).toEqual(edition.why);
     expect(content.faq.items.find(({ id }) => id === "who-can-join")?.answer).toBe(edition.whoCanJoin);
     expect(createStoryScenes(edition).map(({ desktopSrc, alt }) => ({ desktopSrc, alt }))).toEqual(
