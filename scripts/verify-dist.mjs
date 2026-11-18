@@ -6,6 +6,7 @@ import { publicAssets } from "./public-assets.mjs";
 
 const generatedAssets = /^assets\/[\w.-]+-[\w-]{8,}\.[a-z0-9]+$/i;
 const publishedFiles = new Set(["index.html", "sitemap.xml", "robots.txt", ...publicAssets]);
+const approvedTelegramGroup = /(["'\x60])https:\/\/t\.me\/Plonbligrupa\1/g;
 
 function assert(condition, message) {
   if (!condition) throw new Error(`dist verification failed: ${message}`);
@@ -60,7 +61,9 @@ async function verifyPublishedFiles(distDir, relativeDir = "") {
       "unexpected published file: " + relativePath);
     if (/\.(?:js|css|html)$/i.test(relativePath)) {
       const source = await readFile(path.join(distDir, relativePath), "utf8");
-      assert(!/plonbli/i.test(source), "legacy branding in " + relativePath);
+      // Allow this exact, quoted community link, not a lookalike URL or legacy copy.
+      const checkedSource = source.replace(approvedTelegramGroup, "");
+      assert(!/plonbli/i.test(checkedSource), "legacy branding in " + relativePath);
       if (relativePath.endsWith(".css")) {
         for (const [, reference] of source.matchAll(/url\(\s*["']?\/(?!\/)([^\s)"']+)/gi)) {
           assert(publishedFiles.has(reference) || generatedAssets.test(reference), "unapproved asset referenced in CSS: " + reference);

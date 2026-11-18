@@ -10,9 +10,10 @@ const title = `${name}. ${brandHeadline}`;
 const description = launchCategory.searchDescription;
 const socialDescription = launchCategory.searchDescription;
 
-// Only owner-confirmed accounts belong here. The footer and JSON-LD share this list.
+// Only owner-confirmed destinations belong here. Identity metadata excludes community groups.
 const socialProfiles: readonly SocialLinkConfig[] = [
   { channel: "x", label: "@odswoich", ariaLabel: "Od Swoich w serwisie X (@odswoich)", href: "https://x.com/odswoich" },
+  { channel: "telegramGroup", label: "Grupa na Telegramie", ariaLabel: "Grupa na Telegramie (Od Swoich)", href: "https://t.me/Plonbligrupa" },
 ];
 
 export const siteMetadata = {
@@ -87,6 +88,7 @@ export function createSitemapXml() {
 }
 
 export function createStructuredData() {
+  const profileUrls = socialProfiles.filter(({ channel }) => channel !== "telegramGroup").map(({ href }) => href);
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -96,7 +98,7 @@ export function createStructuredData() {
         name: siteMetadata.name,
         url: siteMetadata.canonicalUrl,
         logo: siteMetadata.organizationLogoUrl,
-        ...(socialProfiles.length ? { sameAs: socialProfiles.map(({ href }) => href) } : {}),
+        ...(profileUrls.length ? { sameAs: profileUrls } : {}),
       },
       {
         "@type": "WebSite",

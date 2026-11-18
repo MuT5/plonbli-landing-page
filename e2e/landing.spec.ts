@@ -426,7 +426,12 @@ test("removes defensive disclaimers and the public contact email", async ({ page
   expect(await page.locator("body").innerText()).not.toMatch(/[—–]/);
   expect(await page.title()).not.toMatch(/[—–]/);
   const profiles = page.locator("footer .site-footer-social");
-  await expect(profiles).toHaveCount(1);
-  await expect(profiles).toHaveAttribute("href", "https://x.com/odswoich");
-  await expect(page.locator('a[href*="plonbli" i], a[href*="1YkUnnggkF"]')).toHaveCount(0);
+  await expect(profiles).toHaveCount(2);
+  await expect(profiles.nth(0)).toHaveAttribute("href", "https://x.com/odswoich");
+  const telegram = page.locator("footer").getByRole("link", { name: "Grupa na Telegramie (Od Swoich)", exact: true });
+  await expect(telegram).toBeVisible();
+  await expect(telegram).toHaveAttribute("href", "https://t.me/Plonbligrupa");
+  const legacyLinks = page.locator('a[href*="plonbli" i], a[href*="1YkUnnggkF"]');
+  await expect(legacyLinks).toHaveCount(1);
+  await expect(legacyLinks).toHaveAttribute("href", "https://t.me/Plonbligrupa");
 });

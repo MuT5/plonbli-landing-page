@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Send } from "lucide-react";
 
 import { landingContent } from "@/content/landing.pl";
 import { siteConfig } from "@/config/site";
@@ -59,6 +59,7 @@ export default function SiteFooter() {
                     <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.64 7.584H.47l8.6-9.835L0 1.154h7.594l5.243 6.932 6.064-6.933zm-1.29 19.49h2.039L6.488 3.24H4.3z" />
                   </svg>
                 )}
+                {channel === "telegramGroup" && <Send aria-hidden="true" className="site-footer-social-mark size-3.5 shrink-0" />}
                 <span>{label}</span>
                 <ArrowUpRight aria-hidden="true" className="size-3.5 shrink-0" />
               </a>

@@ -17,7 +17,10 @@ describe("site metadata contract", () => {
     expect(siteConfig.siteUrl).toBe(siteMetadata.siteUrl);
     expect(siteConfig.links.home).toBe("#start");
     expect(siteConfig.social).toEqual(siteMetadata.socialProfiles);
-    expect(JSON.stringify(siteMetadata.socialProfiles)).not.toMatch(/plonbli|1YkUnnggkF/i);
+    expect(siteMetadata.socialProfiles.map(({ href }) => href)).toEqual([
+      "https://x.com/odswoich",
+      "https://t.me/Plonbligrupa",
+    ]);
   });
 
   it("publishes an absolute social image with the recommended dimensions", () => {
