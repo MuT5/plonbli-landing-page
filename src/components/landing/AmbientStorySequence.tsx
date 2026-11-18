@@ -8,7 +8,7 @@ import {
 } from "react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 
-import { getStoryScene, type StorySceneId } from "@/content/storyScenes";
+import { getAmbientStoryScene, type StorySceneId } from "@/content/storyScenes";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 type SelectScene = (scene: StorySceneId) => void;
@@ -24,12 +24,12 @@ export function AmbientStorySequence({ children, initialScene = "contact" }: Amb
   const reducedMotion = useReducedMotion();
   const [requestedScene, setRequestedScene] = useState(initialScene);
   const [visibleScene, setVisibleScene] = useState(initialScene);
-  const scene = getStoryScene(visibleScene);
+  const scene = getAmbientStoryScene(visibleScene);
 
   useEffect(() => {
     if (requestedScene === visibleScene) return undefined;
 
-    const nextScene = getStoryScene(requestedScene);
+    const nextScene = getAmbientStoryScene(requestedScene);
     const source = window.matchMedia("(min-width: 1024px)").matches
       ? nextScene.desktopSrc
       : nextScene.mobileSrc;

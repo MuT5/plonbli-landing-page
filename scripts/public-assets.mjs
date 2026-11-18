@@ -12,6 +12,7 @@ export const publicAssets = Object.freeze([
     morning: [768, 1280, 1536],
     "morning-portrait": [640, 960],
     entry: [640, 960],
+    "entry-phone": [640, 960],
     harvest: [640, 960],
     meeting: [640, 960],
   }).flatMap(([view, widths]) => widths.flatMap((width) =>

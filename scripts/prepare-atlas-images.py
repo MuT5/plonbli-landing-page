@@ -1,7 +1,4 @@
-"""Export the four garden watercolors without cropping. Requires Pillow with AVIF support.
-
-Usage: python scripts/prepare-atlas-images.py MORNING.png ENTRY.png HARVEST.png MEETING.png FULL_LOGO.png
-"""
+"""Export the garden watercolors without cropping. Requires Pillow with AVIF support."""
 
 import argparse
 from pathlib import Path
@@ -10,15 +7,27 @@ from PIL import Image
 
 
 def main():
-    args = argparse.ArgumentParser(description=__doc__)
+    args = argparse.ArgumentParser(
+        description=__doc__,
+        usage=(
+            "%(prog)s MORNING.png ENTRY.png HARVEST.png MEETING.png FULL_LOGO.png\n"
+            "       %(prog)s --entry-phone SOURCE.png"
+        ),
+    )
     scenes = ("morning", "entry", "harvest", "meeting")
-    for name in (*scenes, "logo"):
-        args.add_argument(name, type=Path)
+    positional_names = (*scenes, "logo")
+    for name in positional_names:
+        args.add_argument(name, type=Path, nargs="?")
+    args.add_argument(
+        "--entry-phone",
+        type=Path,
+        metavar="SOURCE.png",
+        help="export only the phone edition of the entry illustration",
+    )
     inputs = args.parse_args()
     destination = Path(__file__).resolve().parents[1] / "public" / "landing"
-    if len({getattr(inputs, name).resolve() for name in scenes}) != len(scenes):
-        args.error("Supply four separate illustrations, one per scene.")
-    for path in vars(inputs).values():
+
+    def require_source(path):
         if not path.is_file():
             args.error(f"Source does not exist: {path}")
 
@@ -28,6 +37,22 @@ def main():
             resized = image.resize(size, Image.Resampling.LANCZOS)
             for ext, options in (("webp", {"quality": 82, "method": 6}), ("avif", {"quality": 68, "speed": 6})):
                 resized.save(destination / f"atlas-garden-{name}-{width}.{ext}", **options)
+
+    paths = [getattr(inputs, name) for name in positional_names]
+    if inputs.entry_phone is not None:
+        if any(path is not None for path in paths):
+            args.error("--entry-phone cannot be combined with the full atlas inputs.")
+        require_source(inputs.entry_phone)
+        with Image.open(inputs.entry_phone) as source:
+            export(source.convert("RGB"), "entry-phone", (640, 960))
+        return
+
+    if any(path is None for path in paths):
+        args.error("Supply the four illustrations and full logo, or use --entry-phone.")
+    if len({getattr(inputs, name).resolve() for name in scenes}) != len(scenes):
+        args.error("Supply four separate illustrations, one per scene.")
+    for path in paths:
+        require_source(path)
 
     with Image.open(inputs.morning) as source:
         morning = source.convert("RGB")

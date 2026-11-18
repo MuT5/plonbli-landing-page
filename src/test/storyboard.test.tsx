@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import { storyScenes } from "@/content/storyScenes";
+import { getAmbientStoryScene, storyScenes } from "@/content/storyScenes";
 import { atlasScrollState } from "@/lib/atlas-scroll";
 
 describe("atlas storyboard", () => {
@@ -29,6 +29,17 @@ describe("atlas storyboard", () => {
     }));
     render(<HowItWorksSection />);
     expect(screen.getByTestId("storyboard-visual").parentElement).toHaveAttribute("data-storyboard-motion", "static");
+  });
+
+  it("uses the app illustration in step one but leaves the ambient backdrop unchanged", () => {
+    const { container } = render(<HowItWorksSection />);
+    const edited = "/landing/atlas-garden-entry-phone-640.webp";
+
+    expect(container.querySelector('[data-storyboard-scene="discovery"] img')).toHaveAttribute("src", edited);
+    const still = container.querySelector('[data-static-scene="discovery"] img');
+    expect(still).toHaveAttribute("src", edited);
+    expect(still).toHaveAttribute("alt", expect.stringContaining("Telefon pokazuje mapę Od Swoich"));
+    expect(getAmbientStoryScene("discovery").mobileSrc).toBe("landing/atlas-garden-entry-640.webp");
   });
 
   it("maps card entry in either direction to a full-strength image as its bottom arrives", () => {

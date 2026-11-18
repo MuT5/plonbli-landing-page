@@ -1,10 +1,14 @@
 export type StoryStage = "discovery" | "offer" | "contact";
 
-export interface SceneImage {
+export interface SceneArtwork {
   readonly desktopSrc: string;
   readonly mobileSrc: string;
-  readonly label: string;
   readonly alt: string;
+}
+
+export interface SceneImage extends SceneArtwork {
+  readonly label: string;
+  readonly stepArtwork?: SceneArtwork;
 }
 
 /** The current edition of the atlas. Layout, navigation and contact steps stay the same across editions. */
@@ -31,6 +35,10 @@ export const launchCategory: LaunchCategory = {
     discovery: {
       desktopSrc: "landing/atlas-garden-entry-960.webp", mobileSrc: "landing/atlas-garden-entry-640.webp",
       label: "Blisko ciebie", alt: "Otwarta drewniana brama pod jabłonią. Za nią polna droga prowadzi między grządkami na podwórze.",
+      stepArtwork: {
+        desktopSrc: "landing/atlas-garden-entry-phone-960.webp", mobileSrc: "landing/atlas-garden-entry-phone-640.webp",
+        alt: "Telefon pokazuje mapę Od Swoich z pinezką na gospodarstwie. Za nim widać to samo podwórze z drewnianą bramą i ceglaną stodołą.",
+      },
     },
     offer: {
       desktopSrc: "landing/atlas-garden-harvest-960.webp", mobileSrc: "landing/atlas-garden-harvest-640.webp",

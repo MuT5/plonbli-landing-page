@@ -20,7 +20,7 @@ The site uses a series of watercolors of a fictional Polish vegetable farm to il
 
 ## Farm illustration series
 
-The opening spread uses the approved harvest watercolor. All three story illustrations use the same opening illustration as the visual reference. The entry scene, detail of the day's harvest and conversation at collection are separate paintings rather than crops. The same assets also supply the ambient chapters and the static reduced-motion layout.
+The opening spread uses the approved harvest watercolor. All three story illustrations use the same opening illustration as the visual reference. The entry scene, detail of the day's harvest and conversation at collection are separate paintings rather than crops. Step 01 uses a phone variant in both the scroll story and its reduced-motion layout. Ambient chapter backgrounds keep the original paintings.
 
 Run `python scripts/prepare-atlas-images.py MORNING.png ENTRY.png HARVEST.png MEETING.png FULL_LOGO.png` to export the responsive assets in `public/landing/atlas-garden-*` and the 1200 × 630 sharing card. Mobile and desktop variants of the opening illustration retain the full composition.
 
@@ -41,6 +41,28 @@ Each prompt consists of the shared direction followed by the corresponding scene
 **meeting**
 
 > Plate 03, direct conversation at collection: intimate medium two-shot of the same blonde woman grower in a faded muted lavender working shirt with hair tied back, from the hero art, speaking to a male neighbour in a faded blue overshirt. Side on, focused on one another, unposed, one gestures naturally toward freshly gathered vegetables on a rough wooden farm table. Both faces, gesturing hand and vegetables visible around the centre of the illustration, woman left, neighbour right. A crate of carrots in front, same red brick outbuilding with wooden doors and glimpse of a low polytunnel behind. No one looks to the viewer, no payments, cash or shop. Emphasize a genuine exchange after harvest. Illustrate with the same soft hand-rendered faces, delicate washes and warm pencil as the reference, not a realistic photo.
+
+### Discovery step: phone variant
+
+Built-in ImageGen edited the original entry watercolor. The phone shows an illustrative map and a fictional listing for the farm in the picture; it is not a screenshot of a live app or a link to one. Export the selected edit with `python scripts/prepare-atlas-images.py --entry-phone ENTRY_PHONE.png`. This produces only the four approved `public/landing/atlas-garden-entry-phone-*` assets and preserves the original entry plate.
+
+Initial prompt (edit target: the original entry watercolor):
+
+> Use case: precise-object-edit.
+>
+> Asset type: horizontal 3:2 editorial watercolor for step 1 of the Od Swoich landing page.
+>
+> Input images: Image 1 is the edit target and the exact farm that must stay recognisable.
+>
+> Primary request: add a single naturally held smartphone in the foreground showing the illustrated Od Swoich app locating this very farm. Change only the addition; preserve the original late-summer Polish farm scene, same angle, palette, watercolor-and-pencil grain, and soft ivory edges. Keep the apple tree, cream farmhouse, brick barn, polytunnel, dirt lane, and right-hand gate visibly recognizable; no new backgrounds or objects.
+>
+> Composition: portrait handset, facing camera almost straight with a very slight natural tilt, modest dark forest-green bezel, held well left of center around x=30% and y=57%, phone about 50% of the frame height, whole screen visibly inside the inner 74% of the canvas for a narrower mobile crop. The hand and plain oat linen sleeve enter naturally from the lower left, realistic proportions and grip with fingers mostly behind the device and not blocking the display. Keep the lane visible on the right of the phone and the lower left corner quiet for the website’s small route diagram. The farm should remain larger and visually richer than the handset.
+>
+> Screen: clear warm-white interface and a simple map of THIS lane and the field parcels in front of the cream house and brick barn, one high-contrast golden pin at the farm. The bottom info card includes a tiny watercolor thumbnail recognizable as the same cream house and red brick barn visible behind the phone. Large restful shapes, no tiny controls. The only screen text, rendered accurately in clean dark green lettering, is “Od Swoich” and “Gospodarstwo warzywne”. No mock status text, badges, ratings, prices, addresses, other brands, or fake route instructions. Keep the screen softly luminous, not glossy or photorealistic; use tidy painted edges that fit the scene. No watermarks, borders, split scenes or canvas text. Output one full landscape watercolor composition.
+
+Final refinement (edit target: the phone illustration from the first pass; visual reference: the supplied Od Swoich pin):
+
+> Use case: precise-object-edit. Image 1 is the approved landscape watercolor with a hand holding a smartphone at a Polish farm entrance: edit this exact image. Image 2 is the official Od Swoich pin icon (reference only, green pin with white landscape, yellow sun, house and fields). Change only the tiny two-leaf symbol at the top of the handset screen, centered directly above the words “Od Swoich”. Replace that symbol with a faithful small version of Image 2, at the same visual scale and aligned with the existing heading. Keep the logo's recognizable green map-pin shape, white interior, yellow sun and small house. Do not place any icon outside the handset. Preserve literally everything else in Image 1 including crop, handset tilt and dimensions, hand, color and lighting, full original landscape, golden farm pin on the phone map, thumbnail, and the exact readable Polish strings “Od Swoich” and “Gospodarstwo warzywne”. Do not reformat the phone screen or retouch the background. No new text or icons. One horizontal 3:2 image.
 
 ## Production release
 
