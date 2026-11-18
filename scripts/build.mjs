@@ -33,7 +33,7 @@ try {
       emptyOutDir: false,
       outDir: serverOutDir,
       ssr: path.join(rootDir, "src", "entry-server.tsx"),
-      rollupOptions: {
+      rolldownOptions: {
         output: {
           entryFileNames: "entry-server.js",
         },

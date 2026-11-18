@@ -1,5 +1,5 @@
-import { launchCategory } from "../content/launchCategory";
-import type { SocialLinkConfig } from "../types/landing";
+import { launchCategory } from "../content/launchCategory.ts";
+import type { SocialLinkConfig } from "../types/landing.ts";
 
 const siteUrl = "https://odswoich.pl" as const;
 const canonicalUrl = `${siteUrl}/` as const;

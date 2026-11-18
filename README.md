@@ -14,7 +14,7 @@ Aktualny podział treści, ilustracje i listę kontrolną przed publikacją opis
 
 ## Wymagania
 
-- Node.js 22.x;
+- Node.js 22.12 lub nowszy z linii 22.x;
 - npm 10 lub nowszy.
 
 Projekt korzysta wyłącznie z npm. Po sklonowaniu repozytorium zainstaluj zależności z lockfile:

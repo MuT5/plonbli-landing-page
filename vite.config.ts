@@ -1,13 +1,13 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import path from "path";
+import { fileURLToPath } from "node:url";
 
 import {
   createRobotsTxt,
   createSitemapXml,
   createStructuredData,
   siteMetadata,
-} from "./src/config/siteMetadata";
+} from "./src/config/siteMetadata.ts";
 
 function escapeHtml(value: string) {
   return value
@@ -93,6 +93,10 @@ function siteMetadataPlugin(): Plugin {
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "/",
+  build: {
+    // Preserve the browser syntax targets used before Vite's default target changed.
+    target: ["es2020", "edge88", "firefox78", "chrome87", "safari14"],
+  },
   server: {
     host: "::",
     port: 8080,
@@ -103,7 +107,7 @@ export default defineConfig({
   plugins: [react(), siteMetadataPlugin()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
