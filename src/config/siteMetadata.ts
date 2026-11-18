@@ -1,7 +1,7 @@
 import { launchCategory } from "../content/launchCategory";
 import type { SocialLinkConfig } from "../types/landing";
 
-const siteUrl = "https://plonbli.pl" as const;
+const siteUrl = "https://odswoich.pl" as const;
 const canonicalUrl = `${siteUrl}/` as const;
 const name = "Od Swoich";
 export const brandHeadlineLines = ["Dobre rzeczy", "mają swój adres."] as const;

@@ -37,7 +37,6 @@ Each prompt consists of the shared direction followed by the corresponding scene
 
 ## Separate production cutover
 
-1. Keep `plonbli.pl` as the configured canonical domain for the local review. Do not change DNS or hosts during preview.
-2. At the approved release, attach and verify `odswoich.pl` at the chosen host, confirm HTTPS and publish the verified `dist` directory. The informational landing page does not need subscriber credentials.
-3. Update the site metadata origin and the two existing CNAME files together (or retire them if the chosen host does not use them). Check canonical, Open Graph/Twitter image and logo URLs, JSON-LD, robots and sitemap on the new origin. Only change social URLs once new account links are confirmed.
-4. Keep the old domain under control. Redirect both old host variants permanently, preserving paths and queries; use one HTTPS canonical origin and check for loops. Smoke-test navigation and FAQ, check the sharing card and submit the new sitemap after cutover.
+1. Build with `https://odswoich.pl` as the canonical origin. Check canonical, Open Graph/Twitter image and logo URLs, JSON-LD, robots and sitemap in `dist`.
+2. In Netlify, attach `odswoich.pl`, point its DNS to the project and confirm HTTPS. Netlify domain settings are separate from the legacy GitHub Pages `CNAME` files. The informational landing page does not need subscriber credentials.
+3. Smoke-test navigation and FAQ, check the sharing card and submit the new sitemap. If the old domain is also being retired, set up permanent redirects separately and preserve paths and queries.

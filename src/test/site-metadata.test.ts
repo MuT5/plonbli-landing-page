@@ -13,6 +13,7 @@ describe("site metadata contract", () => {
   it("uses one identity and URL source for metadata and visible links", () => {
     expect(siteConfig.name).toBe(siteMetadata.name);
     expect(siteConfig.locale).toBe(siteMetadata.locale);
+    expect(siteMetadata.canonicalUrl).toBe("https://odswoich.pl/");
     expect(siteConfig.siteUrl).toBe(siteMetadata.siteUrl);
     expect(siteConfig.links.home).toBe("#start");
     expect(siteConfig.social).toEqual(siteMetadata.socialProfiles);

@@ -29,7 +29,11 @@ test("renders the pre-launch story without inviting users to subscribe", async (
   await expect(page.locator('[data-cta-id="hero-how-it-works"]')).toBeVisible();
   await expect(page.locator('a[href*="plonbliapp.vercel.app"]')).toHaveCount(0);
   await expect(page.locator("html")).toHaveAttribute("lang", "pl-PL");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://plonbli.pl/");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://odswoich.pl/");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://odswoich.pl/");
+  const sharingImage = "https://odswoich.pl/landing/og-od-swoich.jpg";
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", sharingImage);
+  await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", sharingImage);
   expect(consoleErrors).toEqual([]);
 });
 
