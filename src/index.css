@@ -60,7 +60,8 @@
   .button-primary, .button-secondary, .button-text { display: inline-flex; min-height: 3rem; align-items: center; justify-content: center; gap: .65rem; border: 1px solid transparent; border-radius: .45rem; padding: .7rem 1.15rem; font-size: 1rem; font-weight: 640; line-height: 1.2; transition: background-color 180ms, color 180ms, border-color 180ms; }
   .button-primary { background: var(--color-brand); color: white; }
   .button-secondary { background: white; color: var(--color-brand); border-color: var(--color-border); }
-  .button-text { color: var(--color-brand); }
+  .button-text { color: var(--color-brand); text-decoration: underline; text-decoration-color: #84968b; text-underline-offset: .24em; }
+  .button-text:hover { text-decoration-color: currentColor; }
   .button-primary:hover { background: var(--color-olive-deep); }
   .button-secondary:hover { border-color: var(--color-brand); }
   .button-primary:disabled { opacity: .72; cursor: wait; }
@@ -109,6 +110,15 @@
 @media (max-width: 359px) {
   :root { --atlas-gutter: 1rem; }
   .atlas-actions { gap: .45rem .8rem; }
+}
+@keyframes atlas-arrival {
+  from { transform: translateY(.5rem); }
+  to { transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-atlas-enter="true"]:not(:focus-within) {
+    animation: atlas-arrival 420ms cubic-bezier(.22, 1, .36, 1) backwards;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

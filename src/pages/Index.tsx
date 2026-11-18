@@ -21,7 +21,7 @@ export default function Index() {
         data-client-ready={clientReady}
       >
         <SiteHeader />
-        <main id="tresc-glowna">
+        <main id="tresc-glowna" tabIndex={-1}>
           <HeroSection />
           <WhySection />
           <HowItWorksSection />

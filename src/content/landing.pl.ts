@@ -38,28 +38,28 @@ const rawLandingContent = (category: LaunchCategory) => ({
   howItWorks: {
     eyebrow: "Jak to działa",
     title: "Od miejsca do spotkania",
-    description: "Wybierasz miejsce, poznajesz ofertę i rozmawiasz z osobą, która za nią stoi.",
+    description: "Najpierw mapa i oferta w aplikacji. Potem rozmowa i odbiór u źródła.",
     steps: [
       {
         id: "find-nearby",
         number: 1,
         icon: "map-pin",
-        title: "Znajdź miejsce w okolicy",
-        description: "Rozejrzyj się blisko domu albo na trasie, którą jeździsz na co dzień.",
+        title: "Znajdź miejsce na mapie",
+        description: `Otwórz aplikację ${brandInCopy} i zobacz, kto działa w twojej okolicy.`,
       },
       {
         id: "check-offer",
         number: 2,
         icon: "search",
         title: "Sprawdź, co oferuje",
-        description: "Zobacz, co jest teraz dostępne, zanim wybierzesz się na miejsce.",
+        description: "Zajrzyj do aktualnej oferty, zanim zaplanujesz wizytę.",
       },
       {
         id: "contact-directly",
         number: 3,
         icon: "message-circle",
         title: "Odezwij się bezpośrednio",
-        description: "Zapytaj o szczegóły i ustal odbiór z osobą, do której się wybierasz.",
+        description: "Zapytaj o szczegóły i umów odbiór bezpośrednio z osobą, do której się wybierasz.",
       },
     ],
   },
@@ -72,7 +72,7 @@ const rawLandingContent = (category: LaunchCategory) => ({
         id: "nearby-places",
         icon: "map-pin",
         title: "Blisko ciebie",
-        description: "Sprawdź, kto działa przy twojej codziennej trasie.",
+        description: "Na mapie odkryjesz miejsca blisko domu, pracy lub po drodze.",
       },
       {
         id: "source-information",
@@ -129,7 +129,7 @@ const rawLandingContent = (category: LaunchCategory) => ({
         id: "direct-purchase",
         question: `Czy w aplikacji ${brandInCopy} będzie można kupować?`,
         answer:
-          `${brandInCopy} pomoże znaleźć lokalne miejsce, poznać jego ofertę i nawiązać bezpośredni kontakt. Szczegóły zakupu, odbioru i płatności ustalicie między sobą.`,
+          `Zakup, odbiór i płatność ustalicie bezpośrednio między sobą. W aplikacji ${brandInCopy} znajdziesz lokalne miejsce, poznasz jego ofertę i skontaktujesz się z osobą, która je prowadzi.`,
       },
       {
         id: "who-can-join",

@@ -1,9 +1,10 @@
-import { access, rm, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, rm, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { build as viteBuild } from "vite";
 
+import { publicAssets } from "./public-assets.mjs";
 import { verifyDist } from "./verify-dist.mjs";
 
 const rootDir = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
@@ -17,10 +18,13 @@ if (!mode) {
   throw new Error("Expected a value after --mode");
 }
 
-let verifiedPath;
-
 try {
-  await viteBuild({ root: rootDir, mode });
+  await viteBuild({ root: rootDir, mode, build: { copyPublicDir: false } });
+  await Promise.all(publicAssets.map(async (asset) => {
+    const destination = path.join(distDir, asset);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await copyFile(path.join(rootDir, "public", asset), destination);
+  }));
   await viteBuild({
     root: rootDir,
     mode,
@@ -50,21 +54,12 @@ try {
 
   const prerenderedHtml = template.replace(
     emptyRootPattern,
-    `<div id="root">${appHtml}</div>`,
+    () => `<div id="root">${appHtml}</div>`,
   );
   await writeFile(indexPath, prerenderedHtml, "utf8");
-  ({ indexPath: verifiedPath } = await verifyDist({ rootDir }));
 } finally {
   await rm(serverOutDir, { force: true, recursive: true });
 }
 
-try {
-  await access(serverOutDir);
-  throw new Error(`Temporary SSR output was not removed: ${serverOutDir}`);
-} catch (error) {
-  if (!(error && typeof error === "object" && "code" in error && error.code === "ENOENT")) {
-    throw error;
-  }
-}
-
+const { indexPath: verifiedPath } = await verifyDist({ rootDir });
 console.log(`Built and verified prerendered HTML: ${verifiedPath}`);

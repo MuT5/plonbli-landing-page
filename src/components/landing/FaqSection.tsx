@@ -1,28 +1,24 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { motion } from "framer-motion";
 
 import Reveal from "@/components/landing/Reveal";
 import { landingContent } from "@/content/landing.pl";
 import { useClientReady } from "@/context/client-ready";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import type { FaqItem as FaqItemContent } from "@/types/landing";
 
 interface FaqItemProps {
-  index: number;
   item: FaqItemContent;
 }
 
-function FaqItem({ index, item }: FaqItemProps) {
+function FaqItem({ item }: FaqItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const clientReady = useClientReady();
-  const reducedMotion = useReducedMotion();
   const isExpanded = clientReady ? isOpen : true;
   const answerId = `faq-answer-${item.id}`;
   const questionId = `faq-question-${item.id}`;
 
   return (
-    <Reveal delay={index * 0.05}>
+    <div>
       <div className="faq-item" data-open={isExpanded}>
         <h3>
           <button
@@ -35,17 +31,9 @@ function FaqItem({ index, item }: FaqItemProps) {
             onClick={() => setIsOpen((open) => !open)}
           >
             <span>{item.question}</span>
-          <motion.span
-            aria-hidden="true"
-            className="faq-item-icon inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface)]"
-            animate={{
-              rotate: isExpanded ? 180 : 0,
-              scale: isExpanded && !reducedMotion ? 1.04 : 1,
-            }}
-            transition={{ duration: reducedMotion ? 0.16 : 0.28, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <ChevronDown className="size-4" />
-            </motion.span>
+            <span aria-hidden="true" className="faq-item-icon inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface)]">
+              <ChevronDown className={`size-4 motion-safe:transition-transform motion-safe:duration-300${isExpanded ? " rotate-180" : ""}`} />
+            </span>
           </button>
         </h3>
 
@@ -64,7 +52,7 @@ function FaqItem({ index, item }: FaqItemProps) {
           </div>
         </div>
       </div>
-    </Reveal>
+    </div>
   );
 }
 
@@ -72,17 +60,17 @@ export default function FaqSection() {
   const content = landingContent.faq;
 
   return (
-    <section id="faq" className="section-space scroll-mt-24">
+    <section id="faq" className="section-space" tabIndex={-1} aria-labelledby="faq-title">
       <div className="site-container grid gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
         <Reveal className="lg:sticky lg:top-28">
           <p className="eyebrow">{content.eyebrow}</p>
-          <h2 className="section-title mt-5">{content.title}</h2>
+          <h2 id="faq-title" className="section-title mt-5">{content.title}</h2>
           <p className="section-lead mt-5">{content.description}</p>
         </Reveal>
 
         <div className="space-y-3">
-          {content.items.map((item, index) => (
-            <FaqItem key={item.id} index={index} item={item} />
+          {content.items.map((item) => (
+            <FaqItem key={item.id} item={item} />
           ))}
         </div>
       </div>

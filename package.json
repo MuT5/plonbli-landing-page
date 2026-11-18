@@ -1,5 +1,5 @@
 {
-  "name": "plonbli-landing-page",
+  "name": "od-swoich-landing",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -22,7 +22,6 @@
     "verify:dist": "node scripts/verify-dist.mjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.103.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",

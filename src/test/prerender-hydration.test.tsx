@@ -6,10 +6,10 @@ import { describe, expect, it, vi } from "vitest";
 import App from "@/App";
 
 describe("prerender hydration", () => {
-  it("hydrates the server markup without mismatch warnings", async () => {
+  it("hydrates without warnings or replacing the server-rendered content", async () => {
     const container = document.createElement("div");
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    container.innerHTML = renderToString(<App initialAnimations={false} />);
+    container.innerHTML = renderToString(<App initialClientReady={false} />);
     const serverHeading = container.querySelector("h1");
     const signupSelector = 'form, input[type="email"], .waitlist-noscript-fallback, a[href="#lista-oczekujacych"]';
     const serverFaq = container.querySelector<HTMLElement>(".faq-item");
@@ -26,7 +26,7 @@ describe("prerender hydration", () => {
     let root: Root | undefined;
 
     await act(async () => {
-      root = hydrateRoot(container, <App initialAnimations={false} />);
+      root = hydrateRoot(container, <App initialClientReady={false} />);
       await Promise.resolve();
     });
 
@@ -36,7 +36,8 @@ describe("prerender hydration", () => {
       .filter((message) => /hydration|did not match|server html/i.test(message));
 
     expect(hydrationMessages).toEqual([]);
-    expect(container.querySelector("h1")).not.toBe(serverHeading);
+    expect(container.querySelector("h1")).toBe(serverHeading);
+    expect(container.querySelector(".faq-item")).toBe(serverFaq);
     expect(container.querySelector(signupSelector)).toBeNull();
     expect(container.querySelector(".faq-item")).toHaveAttribute("data-open", "false");
     expect(container.querySelector(".faq-item-panel")).toHaveAttribute("aria-hidden", "true");

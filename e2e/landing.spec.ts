@@ -37,10 +37,10 @@ test("renders the pre-launch story without inviting users to subscribe", async (
   expect(consoleErrors).toEqual([]);
 });
 
-test("keeps the story readable and does not expose a subscription fallback without JavaScript", async ({ browser, baseURL }) => {
+test("keeps mobile navigation, the story and FAQ usable without JavaScript", async ({ browser, baseURL }) => {
   if (!baseURL) throw new Error("Missing Playwright baseURL");
 
-  const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
+  const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
 
   try {
@@ -49,6 +49,11 @@ test("keeps the story readable and does not expose a subscription fallback witho
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.locator('form, input[type="email"], .waitlist-noscript-fallback')).toHaveCount(0);
     await expect(page.locator('[data-cta-id="hero-how-it-works"]')).toHaveAttribute("href", "#jak-to-dziala");
+    await page.locator("header summary").click();
+    const mobileNav = page.getByRole("navigation", { name: "Nawigacja mobilna" });
+    await expect(mobileNav).toBeVisible();
+    await mobileNav.getByRole("link", { name: "FAQ" }).click();
+    await expect(page).toHaveURL(/#faq$/);
 
     const firstFaq = page.locator(".faq-item").first();
     const firstAnswer = firstFaq.locator(".faq-item-panel");
@@ -389,6 +394,9 @@ test("uses three steps, a cohesive type system and a route inside the image", as
   await page.goto("/");
   const section = page.locator("#jak-to-dziala");
   await expect(section.locator("[data-story-step]")).toHaveCount(3);
+  const firstStep = section.locator('[data-story-step="1"]');
+  await expect(firstStep.getByRole("heading", { name: "Znajdź miejsce na mapie" })).toHaveCount(1);
+  await expect(firstStep.locator(".atlas-step-description")).toHaveText(/^Otwórz aplikację\s+Od\s+Swoich\b/);
   await expect(section.getByText("04", { exact: true })).toHaveCount(0);
   await expect(section.locator(".atlas-story-stage [data-testid='atlas-route']")).toHaveCount(1);
 

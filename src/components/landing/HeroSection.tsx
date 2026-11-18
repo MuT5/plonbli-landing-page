@@ -38,7 +38,7 @@ export default function HeroSection() {
             </picture>
           </div>
           <figcaption>
-            <a href={siteConfig.links.howItWorks} className="atlas-caption-link" aria-label="Przejdź do sekcji Jak to działa">
+            <a href={siteConfig.links.howItWorks} className="atlas-caption-link" aria-label={`${hero.caption}. Przejdź do sekcji Jak to działa`}>
               <span className="atlas-plate-index" aria-hidden="true">01</span>
               <span>{hero.caption}</span>
               <ArrowDownRight aria-hidden="true" />

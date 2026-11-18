@@ -11,7 +11,7 @@ if (!root) {
 }
 
 if (root.hasChildNodes()) {
-  hydrateRoot(root, <App initialAnimations={false} />);
+  hydrateRoot(root, <App initialClientReady={false} />);
 } else {
   createRoot(root).render(<App />);
 }

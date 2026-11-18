@@ -1,6 +1,11 @@
-import { readFile, stat } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+
+import { publicAssets } from "./public-assets.mjs";
+
+const generatedAssets = /^assets\/[\w.-]+-[\w-]{8,}\.[a-z0-9]+$/i;
+const publishedFiles = new Set(["index.html", "sitemap.xml", "robots.txt", ...publicAssets]);
 
 function assert(condition, message) {
   if (!condition) throw new Error(`dist verification failed: ${message}`);
@@ -42,6 +47,54 @@ async function assertAsset(distDir, relativePath, minimumBytes = 100) {
   return assetPath;
 }
 
+async function verifyPublishedFiles(distDir, relativeDir = "") {
+  const items = await readdir(path.join(distDir, relativeDir), { withFileTypes: true });
+  for (const item of items) {
+    const relativePath = relativeDir ? relativeDir + "/" + item.name : item.name;
+    if (item.isDirectory()) {
+      assert(["assets", "fonts", "landing"].includes(relativePath), "unexpected published directory: " + relativePath);
+      await verifyPublishedFiles(distDir, relativePath);
+      continue;
+    }
+    assert(item.isFile() && (publishedFiles.has(relativePath) || generatedAssets.test(relativePath)),
+      "unexpected published file: " + relativePath);
+    if (/\.(?:js|css|html)$/i.test(relativePath)) {
+      const source = await readFile(path.join(distDir, relativePath), "utf8");
+      assert(!/plonbli/i.test(source), "legacy branding in " + relativePath);
+      if (relativePath.endsWith(".css")) {
+        for (const [, reference] of source.matchAll(/url\(\s*["']?\/(?!\/)([^\s)"']+)/gi)) {
+          assert(publishedFiles.has(reference) || generatedAssets.test(reference), "unapproved asset referenced in CSS: " + reference);
+          await assertAsset(distDir, reference);
+        }
+      }
+    }
+  }
+}
+
+function sameOriginAsset(url, origin, label) {
+  const assetUrl = new URL(url);
+  assert(assetUrl.origin === origin && !assetUrl.search && !assetUrl.hash, label + " must point to a static asset on the canonical origin");
+  const relativePath = assetUrl.pathname.slice(1);
+  assert(publicAssets.includes(relativePath), label + " is not an approved public asset");
+  return relativePath;
+}
+
+async function verifyReferencedAssets(distDir, markup) {
+  const assetReferences = new Set();
+  for (const [, reference] of markup.matchAll(/\b(?:src|href)="\/([^"/][^"]*)"/gi)) assetReferences.add(reference);
+  for (const [, candidates] of markup.matchAll(/\bsrcset="([^"]+)"/gi)) {
+    for (const candidate of candidates.split(",")) {
+      const [reference] = candidate.trim().split(/\s+/);
+      assert(reference.startsWith("/") && !reference.startsWith("//"), "srcset must point to a local asset");
+      assetReferences.add(reference.slice(1));
+    }
+  }
+  for (const reference of assetReferences) {
+    assert(publishedFiles.has(reference) || generatedAssets.test(reference), "unapproved asset referenced in HTML: " + reference);
+    await assertAsset(distDir, reference);
+  }
+}
+
 function readPngDimensions(buffer) {
   const signature = "89504e470d0a1a0a";
   assert(buffer.subarray(0, 8).toString("hex") === signature, "invalid PNG signature");
@@ -79,6 +132,10 @@ export async function verifyDist({ rootDir } = {}) {
   const distDir = path.join(projectRoot, "dist");
   const indexPath = path.join(distDir, "index.html");
   const html = await readFile(indexPath, "utf8");
+  await verifyPublishedFiles(distDir);
+  await verifyReferencedAssets(distDir, html);
+  assert(/<script\b[^>]*type="module"[^>]*src="\/assets\/[^"]+\.js"/i.test(html), "hashed module script is missing");
+  assert(/<link\s+[^>]*rel="stylesheet"[^>]*href="\/assets\/[^"]+\.css"/i.test(html), "hashed stylesheet is missing");
 
   assert(!html.includes("__SITE_LOCALE__"), "locale placeholder was not replaced");
   assert(!html.includes("<!-- site-metadata -->"), "metadata placeholder was not replaced");
@@ -105,9 +162,10 @@ export async function verifyDist({ rootDir } = {}) {
   const openGraphUrl = readMetaContent(html, "property", "og:url");
   const openGraphImage = readMetaContent(html, "property", "og:image");
   const twitterImage = readMetaContent(html, "name", "twitter:image");
-  assert(canonical.startsWith("https://"), "canonical URL must be absolute HTTPS");
+  const siteUrl = new URL(canonical);
+  assert(siteUrl.protocol === "https:" && canonical === siteUrl.origin + "/", "canonical URL must be the root HTTPS page");
   assert(openGraphUrl === canonical, "canonical and og:url differ");
-  assert(openGraphImage.startsWith("https://"), "og:image must be absolute HTTPS");
+  await assertAsset(distDir, sameOriginAsset(openGraphImage, siteUrl.origin, "og:image"));
   assert(openGraphImage === twitterImage, "Open Graph and Twitter images differ");
   assert(readMetaContent(html, "property", "og:image:width") === "1200", "OG image width is not 1200");
   assert(readMetaContent(html, "property", "og:image:height") === "630", "OG image height is not 630");
@@ -116,7 +174,7 @@ export async function verifyDist({ rootDir } = {}) {
     readFile(path.join(distDir, "robots.txt"), "utf8"),
     readFile(path.join(distDir, "sitemap.xml"), "utf8"),
   ]);
-  const siteOrigin = new URL(canonical).origin;
+  const siteOrigin = siteUrl.origin;
   assert(robots.includes(`Sitemap: ${siteOrigin}/sitemap.xml`), "robots sitemap URL differs from canonical");
   assert(sitemap.includes(`<loc>${canonical}</loc>`), "sitemap URL differs from canonical");
 
@@ -125,6 +183,14 @@ export async function verifyDist({ rootDir } = {}) {
   const structuredData = JSON.parse(jsonLdMatches[0][1]);
   assert(structuredData["@context"] === "https://schema.org", "invalid JSON-LD context");
   assert(Array.isArray(structuredData["@graph"]), "JSON-LD graph is missing");
+  const organization = structuredData["@graph"].find((entry) => entry["@type"] === "Organization");
+  const website = structuredData["@graph"].find((entry) => entry["@type"] === "WebSite");
+  assert(organization?.url === canonical && organization?.["@id"] === canonical + "#organization",
+    "Organization URL and ID must match canonical");
+  assert(website?.url === canonical && website?.["@id"] === canonical + "#website",
+    "WebSite URL and ID must match canonical");
+  assert(website.publisher?.["@id"] === organization["@id"], "WebSite publisher must link to the Organization");
+  await assertAsset(distDir, sameOriginAsset(organization.logo, siteOrigin, "Organization logo"));
 
   const rootStart = html.indexOf('<div id="root">');
   const bodyEnd = html.indexOf("</body>", rootStart);
@@ -137,33 +203,21 @@ export async function verifyDist({ rootDir } = {}) {
   assert(prerenderedRoot.includes('class="faq-item" data-open="true"'), "no-JS FAQ is not expanded");
   assert(/class="faq-item-panel"[^>]*aria-hidden="false"/i.test(prerenderedRoot), "no-JS FAQ answers are hidden");
   assert(prerenderedRoot.includes('id="jak-to-dziala"'), "prerendered discovery story is missing");
+  const targets = new Set([...prerenderedRoot.matchAll(/\bid="([^"]+)"/g)].map(([, id]) => id));
+  for (const [, fragment] of prerenderedRoot.matchAll(/\bhref="#([^"]+)"/g)) {
+    assert(targets.has(fragment), "unresolved fragment link: #" + fragment);
+  }
   const inlineStyles = [...prerenderedRoot.matchAll(/style="([^"]*)"/gi)].map((match) => match[1]);
   assert(
     !inlineStyles.some((style) => /(?:^|;)\s*opacity:\s*0(?:;|\s|$)/i.test(style)),
     "prerendered content contains an opacity: 0 inline style",
   );
 
-  const requiredAssets = [
-    "favicon.ico",
-    "favicon-48.png",
-    "favicon-96.png",
-    "apple-touch-icon.png",
-    "od-swoich-pin-96.webp",
-    "od-swoich-pin-192.webp",
-    "landing/og-od-swoich.jpg",
-    ...Object.entries({
-      "morning": [768, 1280, 1536], "morning-portrait": [640, 960],
-      "entry": [640, 960], "harvest": [640, 960], "meeting": [640, 960],
-    }).flatMap(([view, widths]) => widths.flatMap((width) =>
-      ["avif", "webp"].map((extension) => `landing/atlas-garden-${view}-${width}.${extension}`))),
-    "fonts/source-sans-3-latin.woff2",
-    "fonts/source-sans-3-latin-ext.woff2",
-    "fonts/OFL-Source-Sans-3.txt",
-    "fonts/alegreya-600-700-latin.woff2",
-    "fonts/alegreya-600-700-latin-ext.woff2",
-    "fonts/OFL-Alegreya.txt",
-  ];
-  await Promise.all(requiredAssets.map((asset) => assertAsset(distDir, asset)));
+  await Promise.all(publicAssets.map((asset) => assertAsset(distDir, asset)));
+  const notFound = await readFile(path.join(distDir, "404.html"), "utf8");
+  assert(notFound.includes('lang="pl"') && notFound.includes('name="robots" content="noindex"'), "404 must be localized and excluded from indexing");
+  assert(notFound.includes("Nie znaleziono strony") && notFound.includes('href="/"'), "404 must explain the error and link to the homepage");
+  await verifyReferencedAssets(distDir, notFound);
 
   const expectedRasterDimensions = [
     ["favicon-48.png", 48, 48, readPngDimensions],

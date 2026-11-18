@@ -61,11 +61,11 @@ export default function HowItWorksSection() {
       stage.style.setProperty("--atlas-route-remaining", String(0.92 * (1 - result.progress)));
     };
     const queue = () => { if (onScreen && !frame) frame = window.requestAnimationFrame(draw); };
-    const visibility = new IntersectionObserver(([entry]) => {
+    const visibility = typeof IntersectionObserver !== "undefined" ? new IntersectionObserver(([entry]) => {
       onScreen = entry.isIntersecting;
       if (onScreen) queue();
-    }, { rootMargin: "100% 0px" });
-    visibility.observe(layout);
+    }, { rootMargin: "100% 0px" }) : undefined;
+    visibility?.observe(layout);
     const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(queue) : undefined;
     [stage, ...copies].forEach((el) => observer?.observe(el));
     window.addEventListener("scroll", queue, { passive: true });
@@ -74,7 +74,7 @@ export default function HowItWorksSection() {
     return () => {
       window.cancelAnimationFrame(frame);
       observer?.disconnect();
-      visibility.disconnect();
+      visibility?.disconnect();
       window.removeEventListener("scroll", queue);
       window.removeEventListener("resize", queue);
       layers.forEach((el) => el.style.removeProperty("opacity"));
@@ -84,7 +84,7 @@ export default function HowItWorksSection() {
   }, [reduced]);
 
   return (
-    <section id="jak-to-dziala" className="atlas-story section-space scroll-mt-24" aria-labelledby="atlas-heading">
+    <section id="jak-to-dziala" className="atlas-story section-space" tabIndex={-1} aria-labelledby="atlas-heading">
       <div className="site-container">
         <header className="atlas-story-heading">
           <p className="eyebrow">{content.eyebrow}</p>
@@ -100,14 +100,14 @@ export default function HowItWorksSection() {
             ))}
             <AtlasRoute />
           </div>
-          <ol className="atlas-story-list">
+          <ol className="atlas-story-list" role="list">
             {content.steps.map((step, i) => {
               const scene = storyScenes[i];
               return (
                 <li key={scene.id} className="atlas-story-step" data-story-step={step.number}>
                   <div className="atlas-static-frame" data-static-scene={scene.id}><ScenePicture scene={scene} /></div>
                   <div className="atlas-story-copy" data-story-card={step.number}>
-                    <p className="atlas-step-index"><span>{String(step.number).padStart(2, "0")}</span>{scene.label}</p>
+                    <p className="atlas-step-index"><span aria-hidden="true">{String(step.number).padStart(2, "0")}</span>{scene.label}</p>
                     <h3>{step.title}</h3>
                     <p className="atlas-step-description">{step.description}</p>
                   </div>

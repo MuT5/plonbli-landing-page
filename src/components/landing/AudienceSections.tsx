@@ -7,11 +7,11 @@ export function ForLocalsSection() {
   const local = landingContent.forLocals;
 
   return (
-    <section id="dla-szukajacych-lokalnie" className="section-space scroll-mt-24">
+    <section id="dla-szukajacych-lokalnie" className="section-space" tabIndex={-1} aria-labelledby="for-locals-heading">
       <div className="site-container grid items-start gap-12 lg:grid-cols-[.82fr_1.18fr] lg:gap-20">
         <Reveal className="lg:sticky lg:top-28">
           <p className="eyebrow">{local.eyebrow}</p>
-          <h2 className="section-title mt-5">{local.title}</h2>
+          <h2 id="for-locals-heading" className="section-title mt-5">{local.title}</h2>
           <p className="section-lead mt-5">{local.description}</p>
         </Reveal>
 
@@ -21,8 +21,8 @@ export function ForLocalsSection() {
               <article className="benefit-card">
                 <span className="benefit-icon"><LandingIcon name={benefit.icon} className="size-6" /></span>
                 <div>
-                  <h3 className="font-display text-2xl font-bold text-[var(--color-olive)] sm:text-3xl">{benefit.title}</h3>
-                  <p className="mt-3 text-base leading-7 text-[var(--color-ink-muted)] sm:text-lg sm:leading-8">{benefit.description}</p>
+                  <h3>{benefit.title}</h3>
+                  <p>{benefit.description}</p>
                 </div>
               </article>
             </Reveal>
@@ -37,13 +37,13 @@ export function ForLocalPlacesSection() {
   const places = landingContent.forLocalPlaces;
 
   return (
-    <section id="dla-lokalnych-miejsc" className="section-space relative scroll-mt-24">
-      <span id="dla-gospodarstw" aria-hidden="true" className="absolute top-0 scroll-mt-24" />
+    <section id="dla-lokalnych-miejsc" className="section-space relative" tabIndex={-1} aria-labelledby="for-places-heading">
+      <span id="dla-gospodarstw" aria-hidden="true" className="absolute top-0" />
       <div className="site-container">
         <div className="local-places-section-shell grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
           <Reveal>
             <p className="eyebrow">{places.eyebrow}</p>
-            <h2 className="section-title mt-5">{places.title}</h2>
+            <h2 id="for-places-heading" className="section-title mt-5">{places.title}</h2>
             <p className="section-lead mt-5">{places.description}</p>
             <div className="mt-8">
               <CtaLink content={places.cta} />
@@ -53,12 +53,12 @@ export function ForLocalPlacesSection() {
             {places.benefits.map((benefit, index) => (
               <Reveal key={benefit.id} delay={index * 0.06}>
                 <article className="local-places-benefit-card">
-                  <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-brand)] text-[var(--color-ivory)]">
-                    <LandingIcon name={benefit.icon} className="size-5" />
+                  <span>
+                    <LandingIcon name={benefit.icon} className="size-6" />
                   </span>
                   <div>
-                    <h3 className="font-display text-2xl font-bold text-[var(--color-olive)]">{benefit.title}</h3>
-                    <p className="mt-2 leading-7 text-[var(--color-ink-muted)]">{benefit.description}</p>
+                    <h3>{benefit.title}</h3>
+                    <p>{benefit.description}</p>
                   </div>
                 </article>
               </Reveal>

@@ -109,8 +109,8 @@ export function AmbientStorySequence({ children, initialScene = "contact" }: Amb
                 <img
                   src={`${import.meta.env.BASE_URL}${scene.mobileSrc}`}
                   alt=""
-                  width="800"
-                  height="1000"
+                  width="960"
+                  height="640"
                   loading="lazy"
                   {...{ fetchpriority: "low" }}
                   decoding="async"

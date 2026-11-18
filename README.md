@@ -10,7 +10,7 @@ Od Swoich pomaga odkrywać miejsca w okolicy i kontaktować się bezpośrednio. 
 - jedno źródło metadanych SEO, Open Graph, danych strukturalnych i ikon;
 - statyczny prerender pełnej treści strony podczas buildu.
 
-Aktualny podział treści, materiały zdjęciowe i osobny etap migracji domeny opisuje [instrukcja atlasu](docs/OD_SWOICH_ATLAS.md).
+Aktualny podział treści, ilustracje i listę kontrolną przed publikacją opisuje [instrukcja atlasu](docs/OD_SWOICH_ATLAS.md).
 
 ## Wymagania
 
@@ -24,9 +24,9 @@ npm ci
 npm run dev
 ```
 
-## Status zapisów
+## Dane odwiedzających
 
-Zapisy są wyłączone. Podgląd i build strony nie wymagają konta Supabase, kluczy ani pliku `.env`. Zmiana nie usuwa wcześniej zebranych adresów ani nie zmienia reguł dostępu do zdalnej bazy.
+Strona nie ma formularza, systemu analityki ani zewnętrznej bazy danych. Do uruchomienia podglądu i zbudowania strony nie są potrzebne klucze ani plik `.env`.
 
 ## Build i prerender
 
@@ -55,4 +55,4 @@ npm run test:e2e
 
 ## Wdrożenie
 
-GitHub Actions odpowiada za kontrolę jakości i nie publikuje strony. Hosting konfiguruje się niezależnie w Netlify albo Vercelu, używając polecenia `npm run build` i katalogu wynikowego `dist`.
+GitHub Actions odpowiada za kontrolę jakości. Produkcję buduje Netlify z gałęzi `main`; ustawienia komendy, katalogu wynikowego i wersji Node są zapisane w `netlify.toml`. Bazowy adres strony i metadanych to `https://odswoich.pl`.

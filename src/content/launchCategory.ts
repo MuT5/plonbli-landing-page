@@ -19,19 +19,19 @@ export interface LaunchCategory {
 
 export const launchCategory: LaunchCategory = {
   hero: {
-    lead: "Zaczynamy od lokalnego jedzenia. Pomożemy ci znaleźć gospodarstwo w okolicy i zapytać, czy można już przyjechać po młodą marchew albo pęczek rzodkiewek.",
+    lead: "Zaczynamy od lokalnego jedzenia. Na mapie Od\u00a0Swoich znajdziesz miejsca, gdzie kupisz warzywa, owoce czy miód prosto u źródła.",
     asset: "landing/atlas-garden-morning",
     caption: "Przy zbiorze marchwi",
     alt: "Akwarela: trzy osoby zbierają marchew na grządkach. Za nimi widać dom, ceglaną stodołę i tunel foliowy.",
   },
   why: [
-    "Co rano mijasz ten sam zjazd z głównej drogi. Dopiero kiedy sąsiadka przynosi stamtąd pęczek rzodkiewek, dowiadujesz się, że tuż za zakrętem ktoś uprawia warzywa.",
-    "Z aplikacją Od\u00a0Swoich łatwiej znajdziesz takie miejsce i jeszcze przed wyjazdem zapytasz, po co warto przyjechać.",
+    "Co rano mijasz ten sam zjazd z głównej drogi. Któregoś dnia sąsiadka przynosi z tamtego gospodarstwa świeże rzodkiewki. Dopiero wtedy dowiadujesz się, że tuż za zakrętem ktoś uprawia warzywa.",
+    "Od\u00a0Swoich powstaje po to, żeby takie miejsca łatwiej było znaleźć. Jeszcze przed wyjazdem sprawdzisz ofertę i zapytasz o odbiór.",
   ],
   storyImages: {
     discovery: {
       desktopSrc: "landing/atlas-garden-entry-960.webp", mobileSrc: "landing/atlas-garden-entry-640.webp",
-      label: "Droga do gospodarstwa", alt: "Otwarta drewniana brama pod jabłonią. Za nią polna droga prowadzi między grządkami na podwórze.",
+      label: "Blisko ciebie", alt: "Otwarta drewniana brama pod jabłonią. Za nią polna droga prowadzi między grządkami na podwórze.",
     },
     offer: {
       desktopSrc: "landing/atlas-garden-harvest-960.webp", mobileSrc: "landing/atlas-garden-harvest-640.webp",
@@ -44,5 +44,5 @@ export const launchCategory: LaunchCategory = {
   },
   whoCanJoin: "Na początek zapraszamy osoby prowadzące gospodarstwa, sady, pasieki, piekarnie i serowarnie oraz wszystkich, którzy chcą odkrywać takie miejsca.",
   availableOffer: "To zależy od miejsca i sezonu. W gospodarstwie mogą to być młoda marchew, kalarepa i rzodkiewki, w sadzie owoce, a w pasiece miód.",
-  searchDescription: "Poznaj Od Swoich, atlas lokalnych miejsc. Pomoże ci znaleźć gospodarstwa w okolicy, sprawdzić, co jest w sezonie, i porozmawiać z ludźmi, którzy uprawiają warzywa.",
+  searchDescription: "Znajdź na mapie Od Swoich gospodarstwa, sady i pasieki w okolicy. Sprawdź sezonową ofertę i umów odbiór prosto u źródła.",
 };

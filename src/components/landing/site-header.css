@@ -1,0 +1,27 @@
+.site-header .mobile-navigation { inset-inline: 0; }
+
+/* With no script, keep the native disclosure in the page flow for fragment links. */
+.site-header[data-static="true"] { position: relative; }
+.mobile-menu-fallback summary { list-style: none; }
+.mobile-menu-fallback summary::-webkit-details-marker { display: none; }
+.mobile-menu-fallback .mobile-navigation { max-height: min(24rem, 65vh); }
+
+.mobile-navigation--enhanced {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-.375rem);
+  transition: opacity 180ms ease-out, transform 180ms ease-out, visibility 0s linear 180ms;
+}
+
+.mobile-navigation--enhanced[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition-delay: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-navigation--enhanced { transition: none; transform: none; }
+}

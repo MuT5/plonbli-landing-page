@@ -56,7 +56,7 @@ function renderSiteMetadata() {
 
 function siteMetadataPlugin(): Plugin {
   return {
-    name: "plonbli-site-metadata",
+    name: "od-swoich-site-metadata",
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
         const pathname = request.url?.split("?", 1)[0];

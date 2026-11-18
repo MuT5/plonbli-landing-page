@@ -1,4 +1,4 @@
-/* The photograph stays behind the paper pages. Only the gutters between
+/* The illustration stays behind the paper pages. Only the gutters between
    chapters expose it, so no text inherits its changing contrast. */
 .ambient-story-sequence {
   display: grid;
@@ -68,9 +68,21 @@
 }
 .local-places-benefit-card > span { color: var(--color-ivory); background: var(--color-brand); }
 .benefit-card h3,
-.local-places-benefit-card h3 { font-family: var(--font-atlas); font-weight: 610; color: var(--color-ink); line-height: 1.2; letter-spacing: -.012em; }
+.local-places-benefit-card h3 {
+  font-size: clamp(1.4rem, 2vw, 1.65rem);
+  font-weight: 610;
+  color: var(--color-ink);
+  line-height: 1.2;
+  letter-spacing: -.012em;
+}
+.benefit-card p,
+.local-places-benefit-card p {
+  margin-block-start: .5rem;
+  color: var(--color-ink-muted);
+  font-size: clamp(1.0625rem, 1.35vw, 1.15rem);
+  line-height: 1.55;
+}
 .local-places-section-shell > :first-child { align-self: center; }
-.local-places-section-shell .button-secondary { color: var(--color-brand); background: var(--color-ivory); }
 
 #faq .site-container { align-items: start; }
 #faq .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-block: 0; }
