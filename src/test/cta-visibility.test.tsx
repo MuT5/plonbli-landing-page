@@ -17,4 +17,14 @@ describe("discovery CTA visibility", () => {
       expect(container.querySelector(link.hash)).not.toBeNull();
     }
   });
+
+  it("explains the prelaunch status to visitors and place owners without a signup or app link", () => {
+    const { container } = render(<App />);
+    const hero = container.querySelector(".atlas-intro");
+    expect(hero).toHaveTextContent("Zapowiedź atlasu");
+    expect(hero?.querySelector(".atlas-caption-link")).toHaveTextContent("Poznaj trzy kroki");
+    expect(hero?.querySelector(".atlas-caption-link")).toHaveAttribute("href", "#jak-to-dziala");
+    expect(container.querySelector("#dla-lokalnych-miejsc")).toHaveTextContent("Na razie nie przyjmujemy zgłoszeń");
+    expect(container.querySelector('[data-faq-answer="who-can-join"]')).toHaveTextContent("Sposób dołączenia podamy na tej stronie");
+  });
 });

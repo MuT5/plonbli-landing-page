@@ -16,19 +16,19 @@ const rawLandingContent = (category: LaunchCategory) => ({
     ],
   },
   hero: {
-    eyebrow: "Atlas lokalnych miejsc",
+    eyebrow: "Zapowiedź atlasu lokalnych miejsc",
     title: brandHeadline,
     titleLines: brandHeadlineLines,
     description: category.hero.lead,
     primaryCta: {
       id: "hero-how-it-works",
-      label: "Zobacz, jak to działa",
-      ariaLabel: "Zobacz, jak to działa",
+      label: "Zobacz, jak to będzie działać",
+      ariaLabel: "Zobacz, jak to będzie działać",
       target: "howItWorks",
       variant: "primary",
     },
     imageAlt: category.hero.alt,
-    imageLinkLabel: "Zacznij od mapy",
+    imageLinkLabel: "Poznaj trzy kroki",
   },
   why: {
     eyebrow: `Dlaczego powstaje ${brandInCopy}?`,
@@ -44,22 +44,22 @@ const rawLandingContent = (category: LaunchCategory) => ({
         id: "find-nearby",
         number: 1,
         icon: "map-pin",
-        title: "Znajdź miejsce na mapie",
-        description: `Otwórz aplikację ${brandInCopy} i zobacz, kto działa w twojej okolicy.`,
+        title: "Odkryjesz miejsce na mapie",
+        description: `Po starcie aplikacji ${brandInCopy} sprawdzisz na mapie, kto działa w twojej okolicy.`,
       },
       {
         id: "check-offer",
         number: 2,
         icon: "search",
-        title: "Sprawdź, co oferuje",
-        description: "Zajrzyj do aktualnej oferty, zanim zaplanujesz wizytę.",
+        title: "Poznasz ofertę",
+        description: "Zobaczysz, co jest dostępne, zanim zaplanujesz wizytę.",
       },
       {
         id: "contact-directly",
         number: 3,
         icon: "message-circle",
-        title: "Odezwij się bezpośrednio",
-        description: "Zapytaj o szczegóły i umów odbiór bezpośrednio z osobą, do której się wybierasz.",
+        title: "Umówisz odbiór",
+        description: "O szczegóły zapytasz osobę, która prowadzi to miejsce. Wspólnie ustalicie, kiedy możesz zajrzeć.",
       },
     ],
   },
@@ -91,7 +91,7 @@ const rawLandingContent = (category: LaunchCategory) => ({
   forLocalPlaces: {
     eyebrow: "Dla lokalnych miejsc",
     title: "Daj się znaleźć sąsiadom.",
-    description: "Pokaż, czym się zajmujesz i jak do ciebie trafić. Nawet komuś, kto po raz pierwszy słyszy o twoim miejscu.",
+    description: "Po starcie pokażesz sąsiadom, co oferujesz i jak do ciebie trafić. Na razie nie przyjmujemy zgłoszeń. Gdy otworzymy nabór, tutaj znajdziesz instrukcję dodania miejsca.",
     benefits: [
       {
         id: "local-presence",
@@ -129,11 +129,11 @@ const rawLandingContent = (category: LaunchCategory) => ({
         id: "direct-purchase",
         question: `Czy w aplikacji ${brandInCopy} będzie można kupować?`,
         answer:
-          `Zakup, odbiór i płatność ustalicie bezpośrednio między sobą. W aplikacji ${brandInCopy} znajdziesz lokalne miejsce, poznasz jego ofertę i skontaktujesz się z osobą, która je prowadzi.`,
+          `W aplikacji ${brandInCopy} znajdziesz miejsce i skontaktujesz się z osobą, która je prowadzi. Sam zakup, odbiór i płatność ustalicie już bezpośrednio między sobą.`,
       },
       {
         id: "who-can-join",
-        question: "Kto będzie mógł dołączyć?",
+        question: "Kto będzie mógł dołączyć i jak zgłosić miejsce?",
         answer: category.whoCanJoin,
       },
       {

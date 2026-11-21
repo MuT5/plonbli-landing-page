@@ -56,9 +56,8 @@ export default function HowItWorksSection() {
     const draw = () => {
       frame = 0;
       if (!stage.clientHeight) return;
-      const result = atlasScrollState(copies.map((el) => el.getBoundingClientRect()), window.innerHeight, stage.getBoundingClientRect().bottom, mobile.matches);
+      const result = atlasScrollState(copies.map((el) => el.getBoundingClientRect()), window.innerHeight, mobile.matches);
       layers.forEach((el, i) => { el.style.opacity = String(result.photos[i]); });
-      copies.forEach((el, i) => { el.style.setProperty("--atlas-copy-opacity", String(result.copy[i])); });
       stage.style.setProperty("--atlas-route-remaining", String(0.92 * (1 - result.progress)));
     };
     const queue = () => { if (onScreen && !frame) frame = window.requestAnimationFrame(draw); };
@@ -79,7 +78,6 @@ export default function HowItWorksSection() {
       window.removeEventListener("scroll", queue);
       window.removeEventListener("resize", queue);
       layers.forEach((el) => el.style.removeProperty("opacity"));
-      copies.forEach((el) => el.style.removeProperty("--atlas-copy-opacity"));
       stage.style.removeProperty("--atlas-route-remaining");
     };
   }, [reduced]);

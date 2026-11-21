@@ -140,6 +140,21 @@ export async function verifyDist({ rootDir } = {}) {
   assert(/<script\b[^>]*type="module"[^>]*src="\/assets\/[^"]+\.js"/i.test(html), "hashed module script is missing");
   assert(/<link\s+[^>]*rel="stylesheet"[^>]*href="\/assets\/[^"]+\.css"/i.test(html), "hashed stylesheet is missing");
 
+  // A returning browser must use the same fingerprinted fonts in the preload and CSS,
+  // and a fingerprinted image for every portrait/landscape srcset option.
+  const cssPath = html.match(/<link\b[^>]*rel="stylesheet"[^>]*href="(\/assets\/[^"]+\.css)"/i)[1];
+  const css = await readFile(path.join(distDir, cssPath.slice(1)), "utf8");
+  for (const asset of publicAssets.filter((file) => file.endsWith(".woff2") || file.startsWith("landing/atlas-garden-morning-"))) {
+    const { name, ext } = path.parse(asset);
+    const pattern = new RegExp(`/assets/${escapeRegExp(name)}-[\\w-]{8}${escapeRegExp(ext)}(?=["')\\s,])`);
+    const isFont = ext === ".woff2";
+    const matchedUrl = pattern.exec(isFont ? css : html)?.[0];
+    assert(matchedUrl, `no fingerprinted reference to ${asset} in ${isFont ? "CSS" : "hero markup"}`);
+    if (isFont && name.endsWith("-latin")) {
+      assert(html.includes(`as="font" type="font/woff2" href="${matchedUrl}"`), `preload must reuse CSS URL for ${asset}`);
+    }
+  }
+
   assert(!html.includes("__SITE_LOCALE__"), "locale placeholder was not replaced");
   assert(!html.includes("<!-- site-metadata -->"), "metadata placeholder was not replaced");
   assert(!html.includes("fonts.googleapis.com"), "build still depends on Google Fonts");

@@ -5,7 +5,7 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Vite fingerprints bundles. Unversioned HTML, fonts and images keep Netlify's revalidation defaults.
+# Vite fingerprints bundles, fonts and hero artwork. Stable URLs keep Netlify's revalidation defaults.
 [[headers]]
   for = "/assets/*"
   [headers.values]

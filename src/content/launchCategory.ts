@@ -18,12 +18,13 @@ export interface LaunchCategory {
   readonly storyImages: Readonly<Record<StoryStage, SceneImage>>;
   readonly whoCanJoin: string;
   readonly availableOffer: string;
+  readonly searchTitle: string;
   readonly searchDescription: string;
 }
 
 export const launchCategory: LaunchCategory = {
   hero: {
-    lead: "Zaczynamy od lokalnego jedzenia. Na mapie Od\u00a0Swoich znajdziesz miejsca, gdzie kupisz warzywa, owoce czy miód prosto u źródła.",
+    lead: "Tworzymy mapę lokalnych gospodarstw. W aplikacji Od\u00a0Swoich sprawdzisz, gdzie kupić warzywa prosto od rolnika, owoce z sadu czy miód z pasieki.",
     asset: "landing/atlas-garden-morning",
     alt: "Akwarela: trzy osoby zbierają marchew na grządkach. Za nimi widać dom, ceglaną stodołę i tunel foliowy.",
   },
@@ -46,10 +47,11 @@ export const launchCategory: LaunchCategory = {
     },
     contact: {
       desktopSrc: "landing/atlas-garden-meeting-960.webp", mobileSrc: "landing/atlas-garden-meeting-640.webp",
-      label: "Rozmowa przy odbiorze", alt: "Gospodyni rozmawia z sąsiadem przy stole. Między nimi stoi skrzynka ze świeżą marchwią.",
+      label: "Kontakt przed odbiorem", alt: "Gospodyni rozmawia z sąsiadem przy stole. Między nimi stoi skrzynka ze świeżą marchwią.",
     },
   },
-  whoCanJoin: "Na początek zapraszamy osoby prowadzące gospodarstwa, sady, pasieki, piekarnie i serowarnie oraz wszystkich, którzy chcą odkrywać takie miejsca.",
-  availableOffer: "To zależy od miejsca i sezonu. W gospodarstwie mogą to być młoda marchew, kalarepa i rzodkiewki, w sadzie owoce, a w pasiece miód.",
-  searchDescription: "Znajdź na mapie Od Swoich gospodarstwa, sady i pasieki w okolicy. Sprawdź sezonową ofertę i umów odbiór prosto u źródła.",
+  whoCanJoin: "Swoje miejsce będą mogły zgłosić osoby prowadzące gospodarstwa, sady, pasieki, piekarnie i serowarnie. Zgłoszenia nie są jeszcze otwarte. Sposób dołączenia podamy na tej stronie.",
+  availableOffer: "Na mapie pokażemy lokalne produkty spożywcze dostępne u źródła. Zależnie od sezonu mogą to być marchew, kalarepa i rzodkiewki z gospodarstwa, owoce prosto z sadu czy miód z pasieki.",
+  searchTitle: "Mapa lokalnych gospodarstw i produktów",
+  searchDescription: "Od Swoich to powstająca mapa lokalnych gospodarstw. Sprawdzisz, gdzie kupić warzywa prosto od rolnika i inne lokalne produkty spożywcze.",
 };

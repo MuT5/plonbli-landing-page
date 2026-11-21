@@ -23,6 +23,14 @@ describe("site metadata contract", () => {
     ]);
   });
 
+  it("describes the launch category in search metadata without changing the social headline", () => {
+    expect(siteMetadata.title).toBe("Od Swoich | Mapa lokalnych gospodarstw i produktów");
+    expect(siteMetadata.description).toBe(launchCategory.searchDescription);
+    expect(siteMetadata.description).toContain("powstająca mapa lokalnych gospodarstw");
+    expect(siteMetadata.openGraph.title).toBe("Od Swoich. Dobre rzeczy mają swój adres.");
+    expect(siteMetadata.twitter.title).toBe(siteMetadata.openGraph.title);
+  });
+
   it("publishes an absolute social image with the recommended dimensions", () => {
     expect(siteMetadata.openGraph.image.url).toMatch(/^https:\/\//);
     expect(siteMetadata.openGraph.image.url).toBe(`${siteMetadata.siteUrl}/landing/og-od-swoich.jpg`);

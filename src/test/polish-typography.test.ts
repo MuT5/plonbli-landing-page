@@ -52,7 +52,7 @@ describe("Polish typography", () => {
     const visibleCopy = collectVisibleStrings(landingContent);
 
     expect(landingContent.hero.description).toContain("Od\u00A0Swoich");
-    expect(landingContent.hero.description).toContain("u\u00A0źródła");
+    expect(landingContent.hero.description).toContain("z\u00A0pasieki");
 
     for (const text of visibleCopy) {
       expect(text).not.toMatch(/(^|[\s([{„«])[aiouwzAIUOWZ] (?=\S)/u);

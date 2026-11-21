@@ -10,7 +10,6 @@ const unit = (value: number) => Math.max(0, Math.min(1, value));
 export function atlasScrollState(
   cards: CardBounds[],
   viewportHeight: number,
-  imageBottom: number,
   mobile: boolean,
 ) {
   const entryLine = mobile ? viewportHeight : viewportHeight * 0.65;
@@ -19,10 +18,5 @@ export function atlasScrollState(
   return {
     progress,
     photos: cards.map((_, i) => (i ? entered[i] : 1) - (entered[i + 1] ?? 0)),
-    copy: cards.map(({ top, height }) => {
-      if (!mobile) return 1;
-      const overlap = unit((imageBottom - top) / Math.max(1, height));
-      return 1 - overlap;
-    }),
   };
 }

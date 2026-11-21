@@ -37,6 +37,7 @@ describe("landing content contract", () => {
       },
       whoCanJoin: "Osoby, które tworzą ceramikę.",
       availableOffer: "Kubki i miski.",
+      searchTitle: "Mapa lokalnej ceramiki",
       searchDescription: "Lokalna ceramika i kontakt z osobami, które ją tworzą.",
     };
     const content = createLandingContent(edition);

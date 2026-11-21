@@ -2,6 +2,7 @@ import { ArrowDownRight, Map, MapPin } from "lucide-react";
 
 import CtaLink from "@/components/landing/CtaLink";
 import { siteConfig } from "@/config/site";
+import { heroImageUrl } from "@/content/heroArtwork";
 import { landingContent } from "@/content/landing.pl";
 import { launchCategory } from "@/content/launchCategory";
 
@@ -9,12 +10,12 @@ const sizes = "(min-width: 1440px) 690px, (min-width: 900px) 51vw, calc(100vw - 
 const portrait = "(max-width: 639px) and (orientation: portrait)";
 
 function imageSet(stem: string, widths: number[], ext: string) {
-  return widths.map((w) => `${stem}-${w}.${ext} ${w}w`).join(", ");
+  return widths.map((w) => `${heroImageUrl(stem, w, ext)} ${w}w`).join(", ");
 }
 
 export default function HeroSection() {
   const hero = landingContent.hero;
-  const stem = `${import.meta.env.BASE_URL}${launchCategory.hero.asset}`;
+  const stem = launchCategory.hero.asset;
 
   return (
     <section aria-labelledby="atlas-title" className="atlas-intro">
@@ -33,7 +34,7 @@ export default function HeroSection() {
               <source media={portrait} type="image/avif" srcSet={imageSet(stem + "-portrait", [640, 960], "avif")} sizes={sizes} />
               <source media={portrait} type="image/webp" srcSet={imageSet(stem + "-portrait", [640, 960], "webp")} sizes={sizes} />
               <source type="image/avif" srcSet={imageSet(stem, [768, 1280, 1536], "avif")} sizes={sizes} />
-              <img className="hero-image" src={stem + "-1280.webp"} srcSet={imageSet(stem, [768, 1280, 1536], "webp")}
+              <img className="hero-image" src={heroImageUrl(stem, 1280, "webp")} srcSet={imageSet(stem, [768, 1280, 1536], "webp")}
                 sizes={sizes} alt={hero.imageAlt} width="1536" height="1024" loading="eager" decoding="async" {...{ fetchpriority: "high" }} />
             </picture>
           </div>

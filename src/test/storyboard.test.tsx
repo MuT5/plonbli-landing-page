@@ -45,18 +45,19 @@ describe("atlas storyboard", () => {
   it("maps card entry in either direction to a full-strength image as its bottom arrives", () => {
     const state = (secondTop: number) => atlasScrollState([
       { top: -300, height: 200 }, { top: secondTop, height: 200 }, { top: 1400, height: 300 },
-    ], 800, 380, true);
+    ], 800, true);
     expect(state(800).photos).toEqual([1, 0, 0]);
     expect(state(700).photos).toEqual([0.5, 0.5, 0]);
     expect(state(600).photos).toEqual([0, 1, 0]);
     expect(state(750).photos).toEqual([0.75, 0.25, 0]);
   });
 
-  it("fades copy only after reaching the measured bottom edge of the photo", () => {
-    const before = { top: 381, height: 200 };
-    const halfway = { top: 280, height: 200 };
-    const behind = { top: 180, height: 200 };
-    expect(atlasScrollState([before, halfway, behind], 800, 380, true).copy).toEqual([1, 0.5, 0]);
-    expect(atlasScrollState([before, halfway, behind], 800, 380, false).copy).toEqual([1, 1, 1]);
+  it("completes the second transition at the bottom of the final card, even when text wraps", () => {
+    const state = (top: number) => atlasScrollState([
+      { top: -600, height: 100 }, { top: -120, height: 200 }, { top, height: 320 },
+    ], 800, true);
+    expect(state(480)).toEqual({ photos: [0, 0, 1], progress: 1 });
+    expect(state(640)).toEqual({ photos: [0, 0.5, 0.5], progress: 0.75 });
+    expect(state(800)).toEqual({ photos: [0, 1, 0], progress: 0.5 });
   });
 });

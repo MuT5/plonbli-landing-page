@@ -93,7 +93,8 @@
   .atlas-story-step + .atlas-story-step { border: 0; }
   .atlas-story-copy {
     pointer-events: auto; padding: 1rem .125rem 1.15rem; max-inline-size: none;
-    background: var(--color-surface); opacity: var(--atlas-copy-opacity, 1);
+    /* Keep copy on solid paper even where the card overlaps the sticky image. */
+    background-color: var(--color-surface);
   }
   .atlas-story-copy h3 { max-inline-size: 19ch; }
 }
@@ -107,7 +108,7 @@
   .atlas-story-step { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .95fr); gap: 2.5rem; align-items: center; min-block-size: 0; }
   .atlas-story-step + .atlas-story-step { border: 0; }
   .atlas-static-frame { display: block; aspect-ratio: 3 / 2; }
-  .atlas-story-copy { padding: 0; opacity: 1; }
+  .atlas-story-copy { padding: 0; }
 }
 @media (max-width: 639px) and (prefers-reduced-motion: reduce), (max-width: 639px) and (max-height: 519px), (max-width: 639px) and (scripting: none) {
   .atlas-story-step { grid-template-columns: 1fr; gap: 1rem; }

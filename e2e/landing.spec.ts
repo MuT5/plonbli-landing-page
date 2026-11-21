@@ -100,7 +100,7 @@ test("shows the whole farm watercolor and serves a phone-sized source in portrai
 
   expect(landscapeLayout.left).toBeGreaterThanOrEqual(0);
   expect(landscapeLayout.right).toBeLessThanOrEqual(landscapeLayout.clientWidth);
-  await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.currentSrc)).toMatch(/atlas-garden-morning-\d+\.(avif|webp)$/);
+  await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.currentSrc)).toMatch(/atlas-garden-morning-\d+-[\w-]{8,}\.(avif|webp)$/);
 });
 
 test("keeps the route inside the photo and spaces mobile cards by the photo height", async ({ page }) => {
@@ -128,24 +128,46 @@ test("keeps the route inside the photo and spaces mobile cards by the photo heig
   }
 });
 
-test("fades the outgoing mobile card starting at the actual photo edge", async ({ page }) => {
+test("keeps mobile step text readable throughout both photo overlaps in either direction", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 390, height: 919 });
   await page.goto("/");
   await expect(page.locator('[data-client-ready="true"]')).toBeAttached();
-  await positionCard(page, 2, 1);
-  const card = page.locator('[data-story-card="2"]');
-  const placeAtOverlap = async (fraction: number) => card.evaluate((el, amount) => {
-    const photoBottom = document.querySelector(".atlas-story-stage")!.getBoundingClientRect().bottom;
-    const rect = el.getBoundingClientRect();
-    window.scrollTo({ top: window.scrollY + rect.top - photoBottom + rect.height * amount, behavior: "instant" });
-  }, fraction);
-  await placeAtOverlap(-0.1);
-  await expect(card).toHaveCSS("opacity", "1");
-  await placeAtOverlap(0.5);
-  await expect.poll(() => card.evaluate(el => Math.abs(Number(getComputedStyle(el).opacity) - 0.5))).toBeLessThan(0.02);
-  await placeAtOverlap(1.05);
-  await expect(card).toHaveCSS("opacity", "0");
+  await page.evaluate(() => document.fonts.ready);
+  for (const reverse of [false, true]) {
+    for (const step of reverse ? [2, 1] : [1, 2]) {
+      const card = page.locator(`[data-story-card="${step}"]`);
+      for (const overlap of reverse ? [1, 0.5, 0] : [0, 0.5, 1]) {
+        const sample = await card.evaluate(async (el, fraction) => {
+          const stage = document.querySelector(".atlas-story-stage")!;
+          const bounds = el.getBoundingClientRect();
+          const photoBottom = parseFloat(getComputedStyle(stage).top) + stage.getBoundingClientRect().height;
+          window.scrollTo({ top: window.scrollY + bounds.top - photoBottom + bounds.height * fraction, behavior: "instant" });
+          await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+          const cardBox = el.getBoundingClientRect();
+          const background = getComputedStyle(el).backgroundColor;
+          const description = el.querySelector(".atlas-step-description")!;
+          const luminance = (color: string) => {
+            const [r, g, b] = (color.match(/[\d.]+/g) ?? []).map(channel => {
+              const s = Number(channel) / 255;
+              return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+            });
+            return r * 0.2126 + g * 0.7152 + b * 0.0722;
+          };
+          return {
+            offsetError: Math.abs(stage.getBoundingClientRect().bottom - cardBox.top - fraction * cardBox.height),
+            opacity: getComputedStyle(el).opacity,
+            background,
+            contrast: (luminance(background) + 0.05) / (luminance(getComputedStyle(description).color) + 0.05),
+          };
+        }, overlap);
+        expect(sample.offsetError).toBeLessThanOrEqual(1);
+        expect(sample.opacity).toBe("1");
+        expect(sample.background).toMatch(/^rgb\(/); // An opaque, not alpha-blended, surface.
+        expect(sample.contrast).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  }
 });
 
 test("syncs mobile photos to the entering card all the way forward and back", async ({ page }) => {
@@ -215,7 +237,7 @@ test("uses smooth section navigation unless reduced motion is requested", async 
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
 
-  const storyLink = page.getByRole("link", { name: "Zacznij od mapy", exact: true });
+  const storyLink = page.getByRole("link", { name: "Poznaj trzy kroki", exact: true });
   const storySection = page.locator("#jak-to-dziala");
 
   await expect(storyLink).toHaveAttribute("href", "#jak-to-dziala");
@@ -395,8 +417,8 @@ test("uses three steps, a cohesive type system and a route inside the image", as
   const section = page.locator("#jak-to-dziala");
   await expect(section.locator("[data-story-step]")).toHaveCount(3);
   const firstStep = section.locator('[data-story-step="1"]');
-  await expect(firstStep.getByRole("heading", { name: "Znajdź miejsce na mapie" })).toHaveCount(1);
-  await expect(firstStep.locator(".atlas-step-description")).toHaveText(/^Otwórz aplikację\s+Od\s+Swoich\b/);
+  await expect(firstStep.getByRole("heading", { name: "Odkryjesz miejsce na mapie" })).toHaveCount(1);
+  await expect(firstStep.locator(".atlas-step-description")).toHaveText(/^Po starcie aplikacji\s+Od\s+Swoich\b/);
   await expect(section.getByText("04", { exact: true })).toHaveCount(0);
   await expect(section.locator(".atlas-story-stage [data-testid='atlas-route']")).toHaveCount(1);
 

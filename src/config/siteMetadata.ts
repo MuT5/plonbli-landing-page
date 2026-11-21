@@ -6,7 +6,8 @@ const canonicalUrl = `${siteUrl}/` as const;
 const name = "Od Swoich";
 export const brandHeadlineLines = ["Dobre rzeczy", "mają swój adres."] as const;
 export const brandHeadline = brandHeadlineLines.join(" ");
-const title = `${name}. ${brandHeadline}`;
+const title = `${name} | ${launchCategory.searchTitle}`;
+const socialTitle = `${name}. ${brandHeadline}`;
 const description = launchCategory.searchDescription;
 const socialDescription = launchCategory.searchDescription;
 
@@ -34,7 +35,7 @@ export const siteMetadata = {
     appleTouchIcon: "/apple-touch-icon.png",
   },
   openGraph: {
-    title,
+    title: socialTitle,
     description: socialDescription,
     type: "website",
     image: {
@@ -47,7 +48,7 @@ export const siteMetadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title,
+    title: socialTitle,
     description: socialDescription,
   },
   organizationLogoUrl: `${siteUrl}/od-swoich-pin-192.webp`,
