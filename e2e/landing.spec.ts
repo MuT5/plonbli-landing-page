@@ -452,8 +452,7 @@ test("removes defensive disclaimers and the public contact email", async ({ page
   await expect(profiles.nth(0)).toHaveAttribute("href", "https://x.com/odswoich");
   const telegram = page.locator("footer").getByRole("link", { name: "Grupa na Telegramie (Od Swoich)", exact: true });
   await expect(telegram).toBeVisible();
-  await expect(telegram).toHaveAttribute("href", "https://t.me/Plonbligrupa");
+  await expect(telegram).toHaveAttribute("href", "https://t.me/OdSwoich");
   const legacyLinks = page.locator('a[href*="plonbli" i], a[href*="1YkUnnggkF"]');
-  await expect(legacyLinks).toHaveCount(1);
-  await expect(legacyLinks).toHaveAttribute("href", "https://t.me/Plonbligrupa");
+  await expect(legacyLinks).toHaveCount(0);
 });

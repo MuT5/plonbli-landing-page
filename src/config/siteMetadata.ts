@@ -14,7 +14,7 @@ const socialDescription = launchCategory.searchDescription;
 // Only owner-confirmed destinations belong here. Identity metadata excludes community groups.
 const socialProfiles: readonly SocialLinkConfig[] = [
   { channel: "x", label: "@odswoich", ariaLabel: "Od Swoich w serwisie X (@odswoich)", href: "https://x.com/odswoich" },
-  { channel: "telegramGroup", label: "Grupa na Telegramie", ariaLabel: "Grupa na Telegramie (Od Swoich)", href: "https://t.me/Plonbligrupa" },
+  { channel: "telegramGroup", label: "Grupa na Telegramie", ariaLabel: "Grupa na Telegramie (Od Swoich)", href: "https://t.me/OdSwoich" },
 ];
 
 export const siteMetadata = {

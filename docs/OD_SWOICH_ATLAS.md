@@ -13,7 +13,7 @@ The site uses a series of watercolors of a fictional Polish vegetable farm to il
 ## Editing content
 
 - Set display titles in the local Alegreya serif; use Source Sans 3 for reading text, small labels and navigation. Both include Polish diacritics. See `public/fonts` for the licenses.
-- The footer links to the confirmed [X profile](https://x.com/odswoich) and [Telegram community group](https://t.me/Plonbligrupa). Keep them in `src/config/siteMetadata.ts`; only identity profiles belong in the Organization markup. The Telegram group URL is the only approved legacy brand reference in the build.
+- The footer links to the confirmed [X profile](https://x.com/odswoich) and [Telegram community group](https://t.me/OdSwoich). Keep them in `src/config/siteMetadata.ts`; only identity profiles belong in the Organization markup.
 
 - Change the current category in `src/content/launchCategory.ts`. The evergreen brand promise, step titles and layout stay the same. The ceramics fixture in the content tests is intentionally not shipped as a public category.
 - The canonical section hash is `#dla-lokalnych-miejsc`. Keep the adjacent `#dla-gospodarstw` anchor working for old links.

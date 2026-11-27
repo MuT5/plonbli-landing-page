@@ -87,12 +87,12 @@ describe("landing content contract", () => {
     }
   });
 
-  it("keeps the contact email private and allows only the requested legacy group URL", () => {
+  it("keeps the contact email private and excludes legacy branding and links", () => {
     const serializedPublicContent = JSON.stringify({ siteConfig, landingContent });
 
     expect(serializedPublicContent).not.toContain("plonbli@gmail.com");
     expect(Object.prototype.hasOwnProperty.call(siteConfig, "contact")).toBe(false);
-    expect(serializedPublicContent.replace('"https://t.me/Plonbligrupa"', '""')).not.toMatch(/plonbli|1YkUnnggkF/i);
+    expect(serializedPublicContent).not.toMatch(/plonbli|1YkUnnggkF/i);
   });
 
   it("keeps the journey at exactly three ordered steps", () => {

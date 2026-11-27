@@ -19,7 +19,7 @@ describe("site footer visibility", () => {
     expect(socialLinks[0]).toHaveTextContent("@odswoich");
     expect(socialLinks[0].querySelector("svg.site-footer-social-mark")).toHaveAttribute("aria-hidden", "true");
     const telegram = within(footer).getByRole("link", { name: "Grupa na Telegramie (Od Swoich)" });
-    expect(telegram).toHaveAttribute("href", "https://t.me/Plonbligrupa");
+    expect(telegram).toHaveAttribute("href", "https://t.me/OdSwoich");
     expect(telegram).toHaveTextContent("Grupa na Telegramie");
     for (const { ariaLabel, href } of siteConfig.social) {
       const link = within(footer).getByRole("link", { name: ariaLabel });

@@ -19,7 +19,7 @@ describe("site metadata contract", () => {
     expect(siteConfig.social).toEqual(siteMetadata.socialProfiles);
     expect(siteMetadata.socialProfiles.map(({ href }) => href)).toEqual([
       "https://x.com/odswoich",
-      "https://t.me/Plonbligrupa",
+      "https://t.me/OdSwoich",
     ]);
   });
 
